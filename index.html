@@ -1445,7 +1445,8 @@
  <span class="intro-label">A Note from Sabra</span>
  <p class="intro-text">Your home is either working for your family<br>or quietly working against you. <em>The goal is to change that.</em></p>
  </div>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/bedroom-layered-bedding.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/bedroom-layered-bedding.jpg" alt="Primary bedroom with layered linen bedding and a chunky knit throw, styled by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture></section>
+<section class="photo-band pair"><picture><source type="image/webp" srcset="images/kitchen-island.webp"/><img loading="lazy" decoding="async" width="1400" height="933" src="images/kitchen-island.jpg" alt="Quartz waterfall island with black pendant lighting, dark cabinetry and a marble backsplash in a Sabra &amp; Co. designed kitchen" style="object-position:center center"/></picture><picture><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture></section>
+
 
 <section class="philosophy-band lw-dark-over reveal">
  
@@ -1468,7 +1469,8 @@
  </div>
  </div>
  </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/piano-nook-wide.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/piano-nook-wide.jpg" alt="Sage green upright piano styled with a trailing plant in a Sabra &amp; Co. designed living room."/></picture><picture><source type="image/webp" srcset="images/piano-keys-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-keys-detail.jpg" alt="Close-up of a sage green piano and worn ivory keys, reworked for a family home by Sabra &amp; Co."/></picture></section>
+<section class="photo-band trio"><picture><source type="image/webp" srcset="images/piano-nook-wide.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/piano-nook-wide.jpg" alt="Sage green upright piano styled with a trailing plant in a Sabra &amp; Co. designed living room."/></picture><picture><source type="image/webp" srcset="images/piano-keys-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-keys-detail.jpg" alt="Close-up of a sage green piano and worn ivory keys, reworked for a family home by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/piano-jute-texture.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-jute-texture.jpg" alt="Sage green piano against a woven jute rug and knit throw in a Sabra &amp; Co. living room."/></picture></section>
+
 
 <section class="about-split reveal" id="about">
  <div class="about-image"><picture><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Warm, light filled living room with a neutral linen sectional, layered throw pillows and a framed gallery wall, designed by Sabra &amp; Co. in Colorado Springs" style="object-position:center center"/></picture></div>
@@ -1586,7 +1588,8 @@
  <blockquote>"Now I walk in and I just... exhale. It looks beautiful, but more than that, it finally makes sense for how we actually live."</blockquote>
  <cite>Sarah M., mother of three</cite>
  </div>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/jewelry-tray-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/jewelry-tray-detail.jpg" alt="Travertine catchall tray holding everyday jewelry on a light oak nightstand, styled by Sabra &amp; Co."/></picture></section>
+<section class="photo-band wide"><picture><source type="image/webp" srcset="images/gallery-wall-art-detail.webp"/><img loading="lazy" decoding="async" width="1400" height="933" src="images/gallery-wall-art-detail.jpg" alt="Framed vintage landscape and floral art hung salon style above a cream sofa layered with striped and floral pillows, by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+
 
 <section class="contact-section reveal" id="contact">
  <div class="contact-left lw-dark-over">
@@ -1656,16 +1659,24 @@
     .hero-image{order:0;}
   }
 
-  /* Photo bands between sections. Photographs are shown in full, never cropped:
-     the height is capped and each width follows its own proportions. */
+  /* Photo bands between sections. Photographs are shown whole, never cropped:
+     height is capped and each width follows the photo's own proportions.
+     .pair = two side by side, .trio = three, .wide = a single feature photo. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
     gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
   .photo-band picture{display:block;line-height:0;}
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
-  @media(max-width:1100px){ .photo-band{padding:48px 20px;} .photo-band img{max-height:420px;} }
+  .photo-band.trio img{max-height:470px;}
+  .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
+  @media(max-width:1100px){
+    .photo-band{padding:48px 20px;}
+    .photo-band img{max-height:420px;}
+    .photo-band.trio img{max-height:340px;}
+    .photo-band.wide img{max-height:460px;}
+  }
   @media(max-width:768px){
     .photo-band{flex-direction:column;align-items:center;padding:34px 16px;gap:14px;}
-    .photo-band img{max-height:none;width:100%;}
+    .photo-band img,.photo-band.trio img,.photo-band.wide img{max-height:none;width:100%;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
@@ -1679,8 +1690,8 @@
  <h4 style="font-family:'Cormorant',serif;font-size:1rem;font-weight:500;margin-bottom:1.2rem;color:#1E1A16;">Explore</h4>
  <ul style="list-style:none;padding:0;margin:0;">
  <li style="margin-bottom:.6rem;"><a href="about.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">About</a></li>
- <li style="margin-bottom:.6rem;"><a href="services.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Services</a>
-<a href="gallery.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Gallery</a></li>
+ <li style="margin-bottom:.6rem;"><a href="services.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Services</a></li>
+<li style="margin-bottom:.6rem;"><a href="gallery.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Gallery</a></li>
  <li style="margin-bottom:.6rem;"><a href="contact.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Contact</a></li>
  </ul>
  </div>

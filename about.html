@@ -870,7 +870,8 @@
  <a href="contact.html" class="cta-btn" style="background:var(--charcoal,#1E1A16);color:var(--cream,#F5F0E8);border:none;">Work With Me</a>
  </div>
 </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/living-room-coffee-table.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/living-room-coffee-table.jpg" alt="Living room with a warm wood coffee table, cream sectional and layered jute rug by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/styling-book-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/styling-book-detail.jpg" alt="Open design book and dried eucalyptus styled on a wood coffee table by Sabra &amp; Co."/></picture></section>
+<section class="photo-band pair"><picture><source type="image/webp" srcset="images/living-room-coffee-table.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/living-room-coffee-table.jpg" alt="Living room with a warm wood coffee table, cream sectional and layered jute rug by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/styling-book-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/styling-book-detail.jpg" alt="Open design book and dried eucalyptus styled on a wood coffee table by Sabra &amp; Co."/></picture></section>
+
 
 
 <!-- PHILOSOPHY, limewash dark with pilasters & brass frame quote -->
@@ -886,7 +887,8 @@
  <a href="contact.html" class="cta-btn out" style="margin-top:2.5rem;">Start the Conversation</a>
  </div>
 </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/nightstand-tulips.webp"/><img loading="lazy" decoding="async" width="1000" height="1499" src="images/nightstand-tulips.jpg" alt="Nightstand vignette with fresh tulips and ribbed glassware, styled by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/bedroom-layered-bedding.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/bedroom-layered-bedding.jpg" alt="Primary bedroom with layered linen bedding and a chunky knit throw, styled by Sabra &amp; Co."/></picture></section>
+<section class="photo-band trio"><picture><source type="image/webp" srcset="images/nightstand-tulips.webp"/><img loading="lazy" decoding="async" width="1000" height="1499" src="images/nightstand-tulips.jpg" alt="Nightstand vignette with fresh tulips and ribbed glassware, styled by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/jewelry-tray-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/jewelry-tray-detail.jpg" alt="Travertine catchall tray holding everyday jewelry on a light oak nightstand, styled by Sabra &amp; Co."/></picture></section>
+
 
 
 <!-- PROCESS, light limewash with wood plank borders -->
@@ -952,7 +954,8 @@
  <p class="bt" style="margin-top:1rem;font-size:.82rem;">Sabra, Founder of Sabra &amp; Co.</p>
  </div>
 </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/sabra-fabric-samples.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/sabra-fabric-samples.jpg" alt="Sabra of Sabra &amp; Co. comparing linen upholstery samples against a floor plan."/></picture><picture><source type="image/webp" srcset="images/piano-nook-styled.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-nook-styled.jpg" alt="Sage green piano styled with a knit bench throw and soft linen drapery by Sabra &amp; Co."/></picture></section>
+<section class="photo-band wide"><picture><source type="image/webp" srcset="images/bedroom-wide.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/bedroom-wide.jpg" alt="Sunlit bedroom with corner windows, linen drapery, a woven headboard and layered faux fur throw, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+
 
 
 <!-- CTA, dark limewash -->
@@ -979,24 +982,36 @@
  .f-copy-m{display:block!important;}
  }
  
-  /* About hero: frame matches the photo (1000x1499) so none of it is cropped.
-     Overrides the earlier stack of height rules on this element. */
-  .hero-photo-single{width:100% !important;height:auto !important;min-height:0 !important;
-    max-height:none !important;aspect-ratio:1000/1499;align-self:start !important;
-    background-size:cover !important;background-position:center center !important;}
+  /* About hero: sized to fit the screen so Sabra is the focus.
+     The crop comes off the top, losing the shelving rather than her. */
+  .hero-photo-single{width:100% !important;height:660px !important;min-height:0 !important;
+    max-height:none !important;aspect-ratio:auto !important;align-self:start !important;
+    background-size:cover !important;background-position:center 62% !important;}
   .hero-photo-single img{width:100% !important;height:100% !important;min-height:0 !important;
-    max-height:none !important;object-fit:cover;object-position:center center !important;}
+    max-height:none !important;object-fit:cover;object-position:center 62% !important;}
+  @media(max-width:768px){
+    .hero-photo-single{height:auto !important;aspect-ratio:1000/1499;}
+    .hero-photo-single img{object-position:center center !important;}
+  }
 
-  /* Photo bands between sections. Photographs are shown in full, never cropped:
-     the height is capped and each width follows its own proportions. */
+  /* Photo bands between sections. Photographs are shown whole, never cropped:
+     height is capped and each width follows the photo's own proportions.
+     .pair = two side by side, .trio = three, .wide = a single feature photo. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
     gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
   .photo-band picture{display:block;line-height:0;}
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
-  @media(max-width:1100px){ .photo-band{padding:48px 20px;} .photo-band img{max-height:420px;} }
+  .photo-band.trio img{max-height:470px;}
+  .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
+  @media(max-width:1100px){
+    .photo-band{padding:48px 20px;}
+    .photo-band img{max-height:420px;}
+    .photo-band.trio img{max-height:340px;}
+    .photo-band.wide img{max-height:460px;}
+  }
   @media(max-width:768px){
     .photo-band{flex-direction:column;align-items:center;padding:34px 16px;gap:14px;}
-    .photo-band img{max-height:none;width:100%;}
+    .photo-band img,.photo-band.trio img,.photo-band.wide img{max-height:none;width:100%;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
@@ -1010,8 +1025,8 @@
  <h4 style="font-family:'Cormorant',serif;font-size:1rem;font-weight:500;margin-bottom:1.2rem;color:#1E1A16;">Explore</h4>
  <ul style="list-style:none;padding:0;margin:0;">
  <li style="margin-bottom:.6rem;"><a href="about.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">About</a></li>
- <li style="margin-bottom:.6rem;"><a href="services.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Services</a>
-<a href="gallery.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Gallery</a></li>
+ <li style="margin-bottom:.6rem;"><a href="services.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Services</a></li>
+<li style="margin-bottom:.6rem;"><a href="gallery.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Gallery</a></li>
  <li style="margin-bottom:.6rem;"><a href="contact.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Contact</a></li>
  </ul>
  </div>

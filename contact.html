@@ -1625,7 +1625,8 @@
  </div>
  </div>
 </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture></section>
+<section class="photo-band pair"><picture><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture></section>
+
 
 
 <section class="sec-tile-contact" style="text-align:center;">
@@ -1636,7 +1637,8 @@
  <a href="tel:+16154774090" class="btn btn-dark">Call Me</a>
  </div>
 </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/piano-jute-texture.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-jute-texture.jpg" alt="Sage green piano against a woven jute rug and knit throw in a Sabra &amp; Co. living room."/></picture><picture><source type="image/webp" srcset="images/bedroom-layered-bedding.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/bedroom-layered-bedding.jpg" alt="Primary bedroom with layered linen bedding and a chunky knit throw, styled by Sabra &amp; Co."/></picture></section>
+<section class="photo-band wide"><picture><source type="image/webp" srcset="images/kitchen-open-plan.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/kitchen-open-plan.jpg" alt="Open plan kitchen with a marble island, boucle counter stools and an arched glass cabinet, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+
 
 
 <footer style="display:block !important;background:rgba(246,243,240,0.97);padding:4rem 8rem 2rem;position:relative;box-sizing:border-box;width:100%;">
@@ -1659,16 +1661,24 @@
   .form-status.is-ok{color:#4A5D46;}
   form[data-contact-form].is-sending button[type=submit]{opacity:.55;pointer-events:none;}
 
-  /* Photo bands between sections. Photographs are shown in full, never cropped:
-     the height is capped and each width follows its own proportions. */
+  /* Photo bands between sections. Photographs are shown whole, never cropped:
+     height is capped and each width follows the photo's own proportions.
+     .pair = two side by side, .trio = three, .wide = a single feature photo. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
     gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
   .photo-band picture{display:block;line-height:0;}
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
-  @media(max-width:1100px){ .photo-band{padding:48px 20px;} .photo-band img{max-height:420px;} }
+  .photo-band.trio img{max-height:470px;}
+  .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
+  @media(max-width:1100px){
+    .photo-band{padding:48px 20px;}
+    .photo-band img{max-height:420px;}
+    .photo-band.trio img{max-height:340px;}
+    .photo-band.wide img{max-height:460px;}
+  }
   @media(max-width:768px){
     .photo-band{flex-direction:column;align-items:center;padding:34px 16px;gap:14px;}
-    .photo-band img{max-height:none;width:100%;}
+    .photo-band img,.photo-band.trio img,.photo-band.wide img{max-height:none;width:100%;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
@@ -1682,8 +1692,8 @@
  <h4 style="font-family:'Cormorant',serif;font-size:1rem;font-weight:500;margin-bottom:1.2rem;color:#1E1A16;">Explore</h4>
  <ul style="list-style:none;padding:0;margin:0;">
  <li style="margin-bottom:.6rem;"><a href="about.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">About</a></li>
- <li style="margin-bottom:.6rem;"><a href="services.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Services</a>
-<a href="gallery.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Gallery</a></li>
+ <li style="margin-bottom:.6rem;"><a href="services.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Services</a></li>
+<li style="margin-bottom:.6rem;"><a href="gallery.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Gallery</a></li>
  <li style="margin-bottom:.6rem;"><a href="contact.html" style="font-size:.9rem;color:#7A6C5E;text-decoration:none;">Contact</a></li>
  </ul>
  </div>
