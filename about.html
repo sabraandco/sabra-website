@@ -954,7 +954,7 @@
  <p class="bt" style="margin-top:1rem;font-size:.82rem;">Sabra, Founder of Sabra &amp; Co.</p>
  </div>
 </section>
-<section class="photo-band wide"><picture><source type="image/webp" srcset="images/bedroom-wide.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/bedroom-wide.jpg" alt="Sunlit bedroom with corner windows, linen drapery, a woven headboard and layered faux fur throw, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+<section class="photo-band wide"><picture><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Warm, light filled living room with a neutral linen sectional, layered throw pillows and a framed gallery wall, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
 
 
 
@@ -982,37 +982,14 @@
  .f-copy-m{display:block!important;}
  }
  
-  /* About hero: sized to fit the screen so Sabra is the focus.
-     The crop comes off the top, losing the shelving rather than her. */
-  .hero-photo-single{width:100% !important;height:660px !important;min-height:0 !important;
-    max-height:none !important;aspect-ratio:auto !important;align-self:start !important;
+  /* About hero photo fills its half of the hero completely, no cream gap beneath.
+     It matches the height of the text column and focuses on Sabra. */
+  .hero-photo-single{width:100% !important;height:100% !important;min-height:100% !important;
+    max-height:none !important;aspect-ratio:auto !important;align-self:stretch !important;
     background-size:cover !important;background-position:center 62% !important;}
-  .hero-photo-single img{width:100% !important;height:100% !important;min-height:0 !important;
-    max-height:none !important;object-fit:cover;object-position:center 62% !important;}
-  @media(max-width:768px){
-    .hero-photo-single{height:auto !important;aspect-ratio:1000/1499;}
-    .hero-photo-single img{object-position:center center !important;}
-  }
-
-  /* Photo bands between sections. Photographs are shown whole, never cropped:
-     height is capped and each width follows the photo's own proportions.
-     .pair = two side by side, .trio = three, .wide = a single feature photo. */
-  .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
-    gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
-  .photo-band picture{display:block;line-height:0;}
-  .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
-  .photo-band.trio img{max-height:470px;}
-  .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
-  @media(max-width:1100px){
-    .photo-band{padding:48px 20px;}
-    .photo-band img{max-height:420px;}
-    .photo-band.trio img{max-height:340px;}
-    .photo-band.wide img{max-height:460px;}
-  }
-  @media(max-width:768px){
-    .photo-band{flex-direction:column;align-items:center;padding:34px 16px;gap:14px;}
-    .photo-band img,.photo-band.trio img,.photo-band.wide img{max-height:none;width:100%;}
-  }
+  .hero-photo-single img{width:100% !important;height:100% !important;min-height:100% !important;
+    max-height:none !important;object-fit:cover !important;object-position:center 62% !important;}
+  .hero{align-items:stretch !important;}
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
  <div class="f-inner" style="display:grid;grid-template-columns:1.8fr 2fr;gap:4rem;margin-bottom:2rem;">
