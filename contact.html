@@ -1625,7 +1625,7 @@
  </div>
  </div>
 </section>
-<section class="photo-band pair"><picture><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture></section>
+<section class="photo-band pair"><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture><picture style="flex:0.6672 1 0"><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture></section>
 
 
 
@@ -1637,7 +1637,7 @@
  <a href="tel:+16154774090" class="btn btn-dark">Call Me</a>
  </div>
 </section>
-<section class="photo-band wide"><picture><source type="image/webp" srcset="images/kitchen-open-plan.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/kitchen-open-plan.jpg" alt="Open plan kitchen with a marble island, boucle counter stools and an arched glass cabinet, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+<section class="photo-band wide"><picture style="flex:1.4989 1 0"><source type="image/webp" srcset="images/kitchen-open-plan.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/kitchen-open-plan.jpg" alt="Open plan kitchen with a marble island, boucle counter stools and an arched glass cabinet, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
 
 
 
@@ -1677,8 +1677,13 @@
     .photo-band.wide img{max-height:460px;}
   }
   @media(max-width:768px){
-    .photo-band{flex-direction:column;align-items:center;padding:34px 16px;gap:14px;}
-    .photo-band img,.photo-band.trio img,.photo-band.wide img{max-height:none;width:100%;}
+    /* keep the desktop arrangement on phones: photos side by side with cream around */
+    .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
+      justify-content:center;padding:42px 9%;gap:10px;}
+    .photo-band picture{flex:1 1 0;min-width:0;}
+    .photo-band img,.photo-band.trio img,.photo-band.wide img{
+      max-height:none;width:100%;height:auto;max-width:100%;}
+    .photo-band.wide{padding:42px 9%;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>

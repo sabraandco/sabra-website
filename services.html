@@ -1743,7 +1743,7 @@
 
  </div>
  </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/pantry-open-shelving.webp"/><img loading="lazy" decoding="async" width="896" height="1200" src="images/pantry-open-shelving.jpg" alt="Organized pantry with labeled jars and warm wood open shelving, designed by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/pantry-labeled-jars.webp"/><img loading="lazy" decoding="async" width="1264" height="848" src="images/pantry-labeled-jars.jpg" alt="Labeled glass pantry jars filled with dry goods, part of a Sabra &amp; Co. organizing system."/></picture></section>
+<section class="photo-band"><picture style="flex:0.7467 1 0"><source type="image/webp" srcset="images/pantry-open-shelving.webp"/><img loading="lazy" decoding="async" width="896" height="1200" src="images/pantry-open-shelving.jpg" alt="Organized pantry with labeled jars and warm wood open shelving, designed by Sabra &amp; Co."/></picture><picture style="flex:1.4906 1 0"><source type="image/webp" srcset="images/pantry-labeled-jars.webp"/><img loading="lazy" decoding="async" width="1264" height="848" src="images/pantry-labeled-jars.jpg" alt="Labeled glass pantry jars filled with dry goods, part of a Sabra &amp; Co. organizing system."/></picture></section>
 
 
 <section class="sec-tile-bg" style="text-align:center;">
@@ -1755,7 +1755,7 @@
  <a href="contact.html" class="btn btn-dark">Book a Free Discovery Call</a>
  </div>
 </section>
-<section class="photo-band"><picture><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Light filled living room with a linen sectional and framed gallery wall, designed by Sabra &amp; Co."/></picture><picture><source type="image/webp" srcset="images/living-room-floor-lamp.webp"/><img loading="lazy" decoding="async" width="1000" height="1500" src="images/living-room-floor-lamp.jpg" alt="Living room corner with a pleated floor lamp and framed landscape art, designed by Sabra &amp; Co."/></picture></section>
+<section class="photo-band"><picture style="flex:1.3393 1 0"><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Light filled living room with a linen sectional and framed gallery wall, designed by Sabra &amp; Co."/></picture><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/living-room-floor-lamp.webp"/><img loading="lazy" decoding="async" width="1000" height="1500" src="images/living-room-floor-lamp.jpg" alt="Living room corner with a pleated floor lamp and framed landscape art, designed by Sabra &amp; Co."/></picture></section>
 
 
 <footer style="display:block !important;background:rgba(246,243,240,0.97);padding:4rem 8rem 2rem;position:relative;box-sizing:border-box;width:100%;">
@@ -1778,8 +1778,11 @@
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
   @media(max-width:1100px){ .photo-band{padding:48px 20px;} .photo-band img{max-height:420px;} }
   @media(max-width:768px){
-    .photo-band{flex-direction:column;align-items:center;padding:34px 16px;gap:14px;}
-    .photo-band img{max-height:none;width:100%;}
+    /* keep the desktop arrangement on phones: photos side by side with cream around */
+    .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
+      justify-content:center;padding:42px 9%;gap:10px;}
+    .photo-band picture{flex:1 1 0;min-width:0;}
+    .photo-band img{max-height:none;width:100%;height:auto;max-width:100%;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>

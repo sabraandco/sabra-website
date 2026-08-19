@@ -1610,7 +1610,7 @@
   </div>
  </div>
 </section>
-<section class="photo-band wide"><picture><source type="image/webp" srcset="images/nightstand-tulips-wide.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/nightstand-tulips-wide.jpg" alt="Fresh tulips, ribbed glassware and a design book styled on a light oak nightstand beside linen drapery, by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+<section class="photo-band wide"><picture style="flex:1.4989 1 0"><source type="image/webp" srcset="images/nightstand-tulips-wide.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/nightstand-tulips-wide.jpg" alt="Fresh tulips, ribbed glassware and a design book styled on a light oak nightstand beside linen drapery, by Sabra &amp; Co." style="object-position:center center"/></picture></section>
 
 
 <footer style="display:block !important;background:rgba(246,243,240,0.97);padding:4rem 8rem 2rem;position:relative;box-sizing:border-box;width:100%;">
@@ -1664,8 +1664,13 @@
     .photo-band.wide img{max-height:460px;}
   }
   @media(max-width:768px){
-    .photo-band{flex-direction:column;align-items:center;padding:34px 16px;gap:14px;}
-    .photo-band img,.photo-band.trio img,.photo-band.wide img{max-height:none;width:100%;}
+    /* keep the desktop arrangement on phones: photos side by side with cream around */
+    .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
+      justify-content:center;padding:42px 9%;gap:10px;}
+    .photo-band picture{flex:1 1 0;min-width:0;}
+    .photo-band img,.photo-band.trio img,.photo-band.wide img{
+      max-height:none;width:100%;height:auto;max-width:100%;}
+    .photo-band.wide{padding:42px 9%;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
