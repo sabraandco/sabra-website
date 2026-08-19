@@ -1924,7 +1924,7 @@
     // the longest one gets a little more time
     function holdFor(n){
       var words = quotes[n].textContent.trim().split(/\s+/).length;
-      return Math.max(2200, Math.min(5000, words * 260));
+      return Math.max(3400, Math.min(5000, words * 260));
     }
     var timer = null;
     function start(){ if (!reduced) timer = setTimeout(function(){ show(i+1); start(); }, holdFor(i)); }

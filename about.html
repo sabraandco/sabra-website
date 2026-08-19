@@ -887,7 +887,7 @@
  <a href="contact.html" class="cta-btn out" style="margin-top:2.5rem;">Start the Conversation</a>
  </div>
 </section>
-<section class="photo-band trio"><picture style="--r:0.6671"><source type="image/webp" srcset="images/nightstand-tulips.webp"/><img loading="lazy" decoding="async" width="1000" height="1499" src="images/nightstand-tulips.jpg" alt="Nightstand vignette with fresh tulips and ribbed glassware, styled by Sabra &amp; Co."/></picture><picture style="--r:0.6672"><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture><picture style="--r:0.6667"><source type="image/webp" srcset="images/jewelry-tray-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/jewelry-tray-detail.jpg" alt="Travertine catchall tray holding everyday jewelry on a light oak nightstand, styled by Sabra &amp; Co."/></picture></section>
+<section class="photo-band trio pre-wood"><picture style="--r:0.6671"><source type="image/webp" srcset="images/nightstand-tulips.webp"/><img loading="lazy" decoding="async" width="1000" height="1499" src="images/nightstand-tulips.jpg" alt="Nightstand vignette with fresh tulips and ribbed glassware, styled by Sabra &amp; Co."/></picture><picture style="--r:0.6672"><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture><picture style="--r:0.6667"><source type="image/webp" srcset="images/jewelry-tray-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/jewelry-tray-detail.jpg" alt="Travertine catchall tray holding everyday jewelry on a light oak nightstand, styled by Sabra &amp; Co."/></picture></section>
 
 
 
@@ -1024,6 +1024,12 @@
       max-height:none !important;object-fit:contain !important;
       object-position:center center !important;display:block;margin:0 auto;}
   }
+
+  /* The wood plank above the process section is positioned 30px into the block above it,
+     so the photos there need extra clearance or the plank clips them. */
+  .photo-band.pre-wood{padding-bottom:96px;}
+  @media(max-width:1100px){ .photo-band.pre-wood{padding-bottom:82px;} }
+  @media(max-width:768px){ .photo-band.pre-wood{padding-bottom:62px;} }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
  <div class="f-inner" style="display:grid;grid-template-columns:1.8fr 2fr;gap:4rem;margin-bottom:2rem;">
