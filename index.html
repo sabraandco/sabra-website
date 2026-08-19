@@ -1445,7 +1445,7 @@
  <span class="intro-label">A Note from Sabra</span>
  <p class="intro-text">Your home is either working for your family<br>or quietly working against you. <em>The goal is to change that.</em></p>
  </div>
-<section class="photo-band pair"><picture style="flex:1.5005 1 0"><source type="image/webp" srcset="images/kitchen-island.webp"/><img loading="lazy" decoding="async" width="1400" height="933" src="images/kitchen-island.jpg" alt="Quartz waterfall island with black pendant lighting, dark cabinetry and a marble backsplash in a Sabra &amp; Co. designed kitchen" style="object-position:center center"/></picture><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture></section>
+<section class="photo-band pair"><picture style="--r:1.5005"><source type="image/webp" srcset="images/kitchen-island.webp"/><img loading="lazy" decoding="async" width="1400" height="933" src="images/kitchen-island.jpg" alt="Quartz waterfall island with black pendant lighting, dark cabinetry and a marble backsplash in a Sabra &amp; Co. designed kitchen" style="object-position:center center"/></picture><picture style="--r:0.6667"><source type="image/webp" srcset="images/nightstand-candle-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/nightstand-candle-detail.jpg" alt="Nightstand tray with a candle and design book in afternoon light, styled by Sabra &amp; Co."/></picture></section>
 
 
 <section class="philosophy-band lw-dark-over reveal">
@@ -1469,7 +1469,7 @@
  </div>
  </div>
  </section>
-<section class="photo-band trio"><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/piano-nook-wide.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/piano-nook-wide.jpg" alt="Sage green upright piano styled with a trailing plant in a Sabra &amp; Co. designed living room."/></picture><picture style="flex:0.6672 1 0"><source type="image/webp" srcset="images/piano-keys-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-keys-detail.jpg" alt="Close-up of a sage green piano and worn ivory keys, reworked for a family home by Sabra &amp; Co."/></picture><picture style="flex:0.6672 1 0"><source type="image/webp" srcset="images/piano-jute-texture.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-jute-texture.jpg" alt="Sage green piano against a woven jute rug and knit throw in a Sabra &amp; Co. living room."/></picture></section>
+<section class="photo-band trio"><picture style="--r:0.6667"><source type="image/webp" srcset="images/piano-nook-wide.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/piano-nook-wide.jpg" alt="Sage green upright piano styled with a trailing plant in a Sabra &amp; Co. designed living room."/></picture><picture style="--r:0.6672"><source type="image/webp" srcset="images/piano-keys-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-keys-detail.jpg" alt="Close-up of a sage green piano and worn ivory keys, reworked for a family home by Sabra &amp; Co."/></picture><picture style="--r:0.6672"><source type="image/webp" srcset="images/piano-jute-texture.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/piano-jute-texture.jpg" alt="Sage green piano against a woven jute rug and knit throw in a Sabra &amp; Co. living room."/></picture></section>
 
 
 <section class="about-split reveal" id="about">
@@ -1588,7 +1588,7 @@
  <blockquote>"Now I walk in and I just... exhale. It looks beautiful, but more than that, it finally makes sense for how we actually live."</blockquote>
  <cite>Sarah M., mother of three</cite>
  </div>
-<section class="photo-band wide"><picture style="flex:1.4989 1 0"><source type="image/webp" srcset="images/bedroom-wide.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/bedroom-wide.jpg" alt="Sunlit bedroom with corner windows, linen drapery, a woven headboard and layered faux fur throw, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+<section class="photo-band wide"><picture style="--r:1.4989"><source type="image/webp" srcset="images/bedroom-wide.webp"/><img loading="lazy" decoding="async" width="1400" height="934" src="images/bedroom-wide.jpg" alt="Sunlit bedroom with corner windows, linen drapery, a woven headboard and layered faux fur throw, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
 
 
 <section class="contact-section reveal" id="contact">
@@ -1664,7 +1664,7 @@
      .pair = two side by side, .trio = three, .wide = a single feature photo. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
     gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
-  .photo-band picture{display:block;line-height:0;}
+  .photo-band picture{display:block;line-height:0;flex:0 0 auto;}
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
   .photo-band.trio img{max-height:470px;}
   .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
@@ -1677,11 +1677,24 @@
   @media(max-width:768px){
     /* keep the desktop arrangement on phones: photos side by side with cream around */
     .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
-      justify-content:center;padding:42px 9%;gap:10px;}
-    .photo-band picture{flex:1 1 0;min-width:0;}
+      justify-content:center;padding:30px 4.5%;gap:9px;}
+    .photo-band picture{flex:var(--r,1) 1 0;min-width:0;}
     .photo-band img,.photo-band.trio img,.photo-band.wide img{
       max-height:none;width:100%;height:auto;max-width:100%;}
-    .photo-band.wide{padding:42px 9%;}
+    .photo-band.wide{padding:30px 4.5%;}
+  }
+
+  @media(max-width:768px){
+    /* Hero photos get the same cream border as the photos between content,
+       shown whole at their own proportions rather than filling the screen. */
+    .hero-image,.page-hero-photo,.hero-photo-single{
+      height:auto !important;min-height:0 !important;max-height:none !important;
+      aspect-ratio:auto !important;padding:0 4.5% 26px !important;
+      background-image:none !important;overflow:visible !important;}
+    .hero-image img,.page-hero-photo img,.hero-photo-single img{
+      width:88% !important;height:auto !important;min-height:0 !important;
+      max-height:none !important;object-fit:contain !important;
+      object-position:center center !important;display:block;margin:0 auto;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>

@@ -1743,7 +1743,7 @@
 
  </div>
  </section>
-<section class="photo-band"><picture style="flex:0.7467 1 0"><source type="image/webp" srcset="images/pantry-open-shelving.webp"/><img loading="lazy" decoding="async" width="896" height="1200" src="images/pantry-open-shelving.jpg" alt="Organized pantry with labeled jars and warm wood open shelving, designed by Sabra &amp; Co."/></picture><picture style="flex:1.4906 1 0"><source type="image/webp" srcset="images/pantry-labeled-jars.webp"/><img loading="lazy" decoding="async" width="1264" height="848" src="images/pantry-labeled-jars.jpg" alt="Labeled glass pantry jars filled with dry goods, part of a Sabra &amp; Co. organizing system."/></picture></section>
+<section class="photo-band"><picture style="--r:0.7467"><source type="image/webp" srcset="images/pantry-open-shelving.webp"/><img loading="lazy" decoding="async" width="896" height="1200" src="images/pantry-open-shelving.jpg" alt="Organized pantry with labeled jars and warm wood open shelving, designed by Sabra &amp; Co."/></picture><picture style="--r:1.4906"><source type="image/webp" srcset="images/pantry-labeled-jars.webp"/><img loading="lazy" decoding="async" width="1264" height="848" src="images/pantry-labeled-jars.jpg" alt="Labeled glass pantry jars filled with dry goods, part of a Sabra &amp; Co. organizing system."/></picture></section>
 
 
 <section class="sec-tile-bg" style="text-align:center;">
@@ -1755,7 +1755,7 @@
  <a href="contact.html" class="btn btn-dark">Book a Free Discovery Call</a>
  </div>
 </section>
-<section class="photo-band"><picture style="flex:1.3393 1 0"><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Light filled living room with a linen sectional and framed gallery wall, designed by Sabra &amp; Co."/></picture><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/living-room-floor-lamp.webp"/><img loading="lazy" decoding="async" width="1000" height="1500" src="images/living-room-floor-lamp.jpg" alt="Living room corner with a pleated floor lamp and framed landscape art, designed by Sabra &amp; Co."/></picture></section>
+<section class="photo-band"><picture style="--r:1.3393"><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Light filled living room with a linen sectional and framed gallery wall, designed by Sabra &amp; Co."/></picture><picture style="--r:0.6667"><source type="image/webp" srcset="images/living-room-floor-lamp.webp"/><img loading="lazy" decoding="async" width="1000" height="1500" src="images/living-room-floor-lamp.jpg" alt="Living room corner with a pleated floor lamp and framed landscape art, designed by Sabra &amp; Co."/></picture></section>
 
 
 <footer style="display:block !important;background:rgba(246,243,240,0.97);padding:4rem 8rem 2rem;position:relative;box-sizing:border-box;width:100%;">
@@ -1774,15 +1774,28 @@
      the height is capped and each width follows its own proportions. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
     gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
-  .photo-band picture{display:block;line-height:0;}
+  .photo-band picture{display:block;line-height:0;flex:0 0 auto;}
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
   @media(max-width:1100px){ .photo-band{padding:48px 20px;} .photo-band img{max-height:420px;} }
   @media(max-width:768px){
     /* keep the desktop arrangement on phones: photos side by side with cream around */
     .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
-      justify-content:center;padding:42px 9%;gap:10px;}
-    .photo-band picture{flex:1 1 0;min-width:0;}
+      justify-content:center;padding:30px 4.5%;gap:9px;}
+    .photo-band picture{flex:var(--r,1) 1 0;min-width:0;}
     .photo-band img{max-height:none;width:100%;height:auto;max-width:100%;}
+  }
+
+  @media(max-width:768px){
+    /* Hero photos get the same cream border as the photos between content,
+       shown whole at their own proportions rather than filling the screen. */
+    .hero-image,.page-hero-photo,.hero-photo-single{
+      height:auto !important;min-height:0 !important;max-height:none !important;
+      aspect-ratio:auto !important;padding:0 4.5% 26px !important;
+      background-image:none !important;overflow:visible !important;}
+    .hero-image img,.page-hero-photo img,.hero-photo-single img{
+      width:88% !important;height:auto !important;min-height:0 !important;
+      max-height:none !important;object-fit:contain !important;
+      object-position:center center !important;display:block;margin:0 auto;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>

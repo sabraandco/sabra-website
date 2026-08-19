@@ -1570,7 +1570,6 @@
 <div class="portfolio-wood-top"></div>
 <div class="portfolio-wood-bottom"></div>
 <div class="gallery-wall">
- <picture class="span-all"><source type="image/webp" srcset="images/gallery-wall-art-detail.webp"/><img loading="lazy" decoding="async" width="1400" height="933" src="images/gallery-wall-art-detail.jpg" alt="Framed vintage landscape and floral art hung salon style above a cream sofa layered with striped and floral pillows, by Sabra &amp; Co."/></picture>
  <div class="gw-row">
   <div class="gw-col">
    <picture><source type="image/webp" srcset="images/living-room-coffee-table.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/living-room-coffee-table.jpg" alt="Living room styled by Sabra &amp; Co. with a warm wood coffee table, cream sectional and layered jute rug in a Colorado Springs home"/></picture>
@@ -1634,9 +1633,10 @@
    <picture><source type="image/webp" srcset="images/kitchen-island.webp"/><img loading="lazy" decoding="async" width="1400" height="933" src="images/kitchen-island.jpg" alt="Quartz waterfall island with black pendant lighting, dark cabinetry and a marble backsplash in a Sabra &amp; Co. designed kitchen"/></picture>
   </div>
  </div>
+ <picture class="span-all"><source type="image/webp" srcset="images/gallery-wall-art-detail.webp"/><img loading="lazy" decoding="async" width="1400" height="933" src="images/gallery-wall-art-detail.jpg" alt="Framed vintage landscape and floral art hung salon style above a cream sofa layered with striped and floral pillows, by Sabra &amp; Co."/></picture>
 </div>
 </section>
-<section class="photo-band trio"><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/sabra-styling-pillows.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/sabra-styling-pillows.jpg" alt="Sabra of Sabra &amp; Co. arranging a floral linen pillow, the styling pass that finishes a project."/></picture><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/sabra-playing-piano.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/sabra-playing-piano.jpg" alt="Sabra of Sabra &amp; Co. playing a restored sage green piano in a family living room."/></picture><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/sabra-fabric-samples.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/sabra-fabric-samples.jpg" alt="Sabra of Sabra &amp; Co. comparing linen upholstery samples against a floor plan."/></picture></section>
+<section class="photo-band trio"><picture style="--r:0.6667"><source type="image/webp" srcset="images/sabra-styling-pillows.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/sabra-styling-pillows.jpg" alt="Sabra of Sabra &amp; Co. arranging a floral linen pillow, the styling pass that finishes a project."/></picture><picture style="--r:0.6667"><source type="image/webp" srcset="images/sabra-playing-piano.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/sabra-playing-piano.jpg" alt="Sabra of Sabra &amp; Co. playing a restored sage green piano in a family living room."/></picture><picture style="--r:0.6667"><source type="image/webp" srcset="images/sabra-fabric-samples.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/sabra-fabric-samples.jpg" alt="Sabra of Sabra &amp; Co. comparing linen upholstery samples against a floor plan."/></picture></section>
 
 
 <section class="contact-section" id="enquire">
@@ -1697,7 +1697,7 @@
      .pair = two side by side, .trio = three, .wide = a single feature photo. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
     gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
-  .photo-band picture{display:block;line-height:0;}
+  .photo-band picture{display:block;line-height:0;flex:0 0 auto;}
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
   .photo-band.trio img{max-height:470px;}
   .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
@@ -1710,11 +1710,11 @@
   @media(max-width:768px){
     /* keep the desktop arrangement on phones: photos side by side with cream around */
     .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
-      justify-content:center;padding:42px 9%;gap:10px;}
-    .photo-band picture{flex:1 1 0;min-width:0;}
+      justify-content:center;padding:30px 4.5%;gap:9px;}
+    .photo-band picture{flex:var(--r,1) 1 0;min-width:0;}
     .photo-band img,.photo-band.trio img,.photo-band.wide img{
       max-height:none;width:100%;height:auto;max-width:100%;}
-    .photo-band.wide{padding:42px 9%;}
+    .photo-band.wide{padding:30px 4.5%;}
   }
 
 
@@ -1755,6 +1755,19 @@
     .gallery-wall .gw-row{flex-direction:row;gap:6px;}
     .gallery-wall .gw-col{gap:6px;}
     .portfolio-section{padding:34px 0 34px !important;}
+  }
+
+  @media(max-width:768px){
+    /* Hero photos get the same cream border as the photos between content,
+       shown whole at their own proportions rather than filling the screen. */
+    .hero-image,.page-hero-photo,.hero-photo-single{
+      height:auto !important;min-height:0 !important;max-height:none !important;
+      aspect-ratio:auto !important;padding:0 4.5% 26px !important;
+      background-image:none !important;overflow:visible !important;}
+    .hero-image img,.page-hero-photo img,.hero-photo-single img{
+      width:88% !important;height:auto !important;min-height:0 !important;
+      max-height:none !important;object-fit:contain !important;
+      object-position:center center !important;display:block;margin:0 auto;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>

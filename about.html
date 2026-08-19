@@ -870,7 +870,7 @@
  <a href="contact.html" class="cta-btn" style="background:var(--charcoal,#1E1A16);color:var(--cream,#F5F0E8);border:none;">Work With Me</a>
  </div>
 </section>
-<section class="photo-band pair"><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/living-room-coffee-table.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/living-room-coffee-table.jpg" alt="Living room with a warm wood coffee table, cream sectional and layered jute rug by Sabra &amp; Co."/></picture><picture style="flex:0.6672 1 0"><source type="image/webp" srcset="images/styling-book-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/styling-book-detail.jpg" alt="Open design book and dried eucalyptus styled on a wood coffee table by Sabra &amp; Co."/></picture></section>
+<section class="photo-band pair"><picture style="--r:0.6667"><source type="image/webp" srcset="images/living-room-coffee-table.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/living-room-coffee-table.jpg" alt="Living room with a warm wood coffee table, cream sectional and layered jute rug by Sabra &amp; Co."/></picture><picture style="--r:0.6672"><source type="image/webp" srcset="images/styling-book-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/styling-book-detail.jpg" alt="Open design book and dried eucalyptus styled on a wood coffee table by Sabra &amp; Co."/></picture></section>
 
 
 
@@ -887,7 +887,7 @@
  <a href="contact.html" class="cta-btn out" style="margin-top:2.5rem;">Start the Conversation</a>
  </div>
 </section>
-<section class="photo-band trio"><picture style="flex:0.6671 1 0"><source type="image/webp" srcset="images/nightstand-tulips.webp"/><img loading="lazy" decoding="async" width="1000" height="1499" src="images/nightstand-tulips.jpg" alt="Nightstand vignette with fresh tulips and ribbed glassware, styled by Sabra &amp; Co."/></picture><picture style="flex:0.6672 1 0"><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture><picture style="flex:0.6667 1 0"><source type="image/webp" srcset="images/jewelry-tray-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/jewelry-tray-detail.jpg" alt="Travertine catchall tray holding everyday jewelry on a light oak nightstand, styled by Sabra &amp; Co."/></picture></section>
+<section class="photo-band trio"><picture style="--r:0.6671"><source type="image/webp" srcset="images/nightstand-tulips.webp"/><img loading="lazy" decoding="async" width="1000" height="1499" src="images/nightstand-tulips.jpg" alt="Nightstand vignette with fresh tulips and ribbed glassware, styled by Sabra &amp; Co."/></picture><picture style="--r:0.6672"><source type="image/webp" srcset="images/bedroom-mirror-corner.webp"/><img loading="lazy" decoding="async" width="900" height="1349" src="images/bedroom-mirror-corner.jpg" alt="Bedroom corner with an antique round mirror, linen drapery and fresh tulips, designed by Sabra &amp; Co."/></picture><picture style="--r:0.6667"><source type="image/webp" srcset="images/jewelry-tray-detail.webp"/><img loading="lazy" decoding="async" width="900" height="1350" src="images/jewelry-tray-detail.jpg" alt="Travertine catchall tray holding everyday jewelry on a light oak nightstand, styled by Sabra &amp; Co."/></picture></section>
 
 
 
@@ -954,7 +954,7 @@
  <p class="bt" style="margin-top:1rem;font-size:.82rem;">Sabra, Founder of Sabra &amp; Co.</p>
  </div>
 </section>
-<section class="photo-band wide"><picture style="flex:1.3393 1 0"><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Warm, light filled living room with a neutral linen sectional, layered throw pillows and a framed gallery wall, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
+<section class="photo-band wide"><picture style="--r:1.3393"><source type="image/webp" srcset="images/living-room-gallery-wall.webp"/><img loading="lazy" decoding="async" width="1200" height="896" src="images/living-room-gallery-wall.jpg" alt="Warm, light filled living room with a neutral linen sectional, layered throw pillows and a framed gallery wall, designed by Sabra &amp; Co." style="object-position:center center"/></picture></section>
 
 
 
@@ -996,7 +996,7 @@
      .pair = two side by side, .trio = three, .wide = a single feature photo. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
     gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
-  .photo-band picture{display:block;line-height:0;}
+  .photo-band picture{display:block;line-height:0;flex:0 0 auto;}
   .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
   .photo-band.trio img{max-height:470px;}
   .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
@@ -1009,11 +1009,24 @@
   @media(max-width:768px){
     /* keep the desktop arrangement on phones: photos side by side with cream around */
     .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
-      justify-content:center;padding:42px 9%;gap:10px;}
-    .photo-band picture{flex:1 1 0;min-width:0;}
+      justify-content:center;padding:30px 4.5%;gap:9px;}
+    .photo-band picture{flex:var(--r,1) 1 0;min-width:0;}
     .photo-band img,.photo-band.trio img,.photo-band.wide img{
       max-height:none;width:100%;height:auto;max-width:100%;}
-    .photo-band.wide{padding:42px 9%;}
+    .photo-band.wide{padding:30px 4.5%;}
+  }
+
+  @media(max-width:768px){
+    /* Hero photos get the same cream border as the photos between content,
+       shown whole at their own proportions rather than filling the screen. */
+    .hero-image,.page-hero-photo,.hero-photo-single{
+      height:auto !important;min-height:0 !important;max-height:none !important;
+      aspect-ratio:auto !important;padding:0 4.5% 26px !important;
+      background-image:none !important;overflow:visible !important;}
+    .hero-image img,.page-hero-photo img,.hero-photo-single img{
+      width:88% !important;height:auto !important;min-height:0 !important;
+      max-height:none !important;object-fit:contain !important;
+      object-position:center center !important;display:block;margin:0 auto;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
