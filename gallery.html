@@ -1708,26 +1708,21 @@
   /* Photo bands between sections. Photographs are shown whole, never cropped:
      height is capped and each width follows the photo's own proportions.
      .pair = two side by side, .trio = three, .wide = a single feature photo. */
-  .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;
-    gap:18px;padding:64px 28px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
-  .photo-band picture{display:block;line-height:0;flex:0 0 auto;}
-  .photo-band img{display:block;width:auto;height:auto;max-height:540px;max-width:100%;}
-  .photo-band.trio img{max-height:470px;}
-  .photo-band.wide img{max-height:620px;max-width:min(100%,1040px);}
+  .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:nowrap;
+    gap:10px;padding:52px 16px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
+  .photo-band picture{display:block;line-height:0;flex:var(--r,1) 1 0;min-width:0;}
+  .photo-band img{display:block;width:100%;height:auto;max-height:none;max-width:100%;}
   @media(max-width:1100px){
-    .photo-band{padding:48px 20px;}
-    .photo-band img{max-height:420px;}
-    .photo-band.trio img{max-height:340px;}
-    .photo-band.wide img{max-height:460px;}
+    .photo-band{padding:42px 14px;gap:9px;}
   }
   @media(max-width:768px){
     /* keep the desktop arrangement on phones: photos side by side with cream around */
     .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
-      justify-content:center;padding:30px 4.5%;gap:9px;}
+      justify-content:center;padding:26px 12px;gap:8px;}
     .photo-band picture{flex:var(--r,1) 1 0;min-width:0;}
     .photo-band img,.photo-band.trio img,.photo-band.wide img{
       max-height:none;width:100%;height:auto;max-width:100%;}
-    .photo-band.wide{padding:30px 4.5%;}
+    .photo-band.wide{padding:26px 12px;}
   }
 
 
@@ -1787,7 +1782,7 @@
   /* Rotating testimonials. All quotes share one grid cell so the block is as tall
      as the longest and nothing shifts as they fade between each other. */
   .quote-stack{display:grid;}
-  .quote-stack blockquote{grid-area:1/1;opacity:0;transition:opacity .9s ease;
+  .quote-stack blockquote{grid-area:1/1;opacity:0;transition:opacity .55s ease;
     pointer-events:none;}
   .quote-stack blockquote.is-active{opacity:1;pointer-events:auto;}
   .quote-dots{display:flex;gap:7px;justify-content:center;margin-top:1.4rem;}
@@ -1946,7 +1941,7 @@
       dot.addEventListener('click', function(){ show(n); restart(); });
     });
     var timer = null;
-    function start(){ if (!reduced) timer = setInterval(function(){ show(i+1); }, 7000); }
+    function start(){ if (!reduced) timer = setInterval(function(){ show(i+1); }, 4500); }
     function stop(){ if (timer) { clearInterval(timer); timer = null; } }
     function restart(){ stop(); start(); }
     block.addEventListener('mouseenter', stop);
