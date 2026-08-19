@@ -995,20 +995,20 @@
      height is capped and each width follows the photo's own proportions.
      .pair = two side by side, .trio = three, .wide = a single feature photo. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:nowrap;
-    gap:10px;padding:52px 16px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
+    gap:10px;padding:52px 34px;background-color:#F0EAE0;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px),repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px);position:relative;z-index:1;}
   .photo-band picture{display:block;line-height:0;flex:var(--r,1) 1 0;min-width:0;}
   .photo-band img{display:block;width:100%;height:auto;max-height:none;max-width:100%;}
   @media(max-width:1100px){
-    .photo-band{padding:42px 14px;gap:9px;}
+    .photo-band{padding:42px 26px;gap:9px;}
   }
   @media(max-width:768px){
     /* keep the desktop arrangement on phones: photos side by side with cream around */
     .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
-      justify-content:center;padding:26px 12px;gap:8px;}
+      justify-content:center;padding:26px 20px;gap:8px;}
     .photo-band picture{flex:var(--r,1) 1 0;min-width:0;}
     .photo-band img,.photo-band.trio img,.photo-band.wide img{
       max-height:none;width:100%;height:auto;max-width:100%;}
-    .photo-band.wide{padding:26px 12px;}
+    .photo-band.wide{padding:26px 20px;}
   }
 
   @media(max-width:768px){
@@ -1017,7 +1017,7 @@
     .hero-image,.page-hero-photo,.hero-photo-single{
       height:auto !important;min-height:0 !important;max-height:none !important;
       aspect-ratio:auto !important;padding:26px 4.5% !important;
-      background-image:none !important;background-color:var(--cream,#F5F0E8) !important;
+      background-color:#F0EAE0;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px),repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px) !important;
       overflow:visible !important;}
     .hero-image img,.page-hero-photo img,.hero-photo-single img{
       width:88% !important;height:auto !important;min-height:0 !important;

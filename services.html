@@ -1787,14 +1787,14 @@
   /* Photo bands between sections. Photographs are shown in full, never cropped:
      the height is capped and each width follows its own proportions. */
   .photo-band{display:flex;justify-content:center;align-items:flex-start;flex-wrap:nowrap;
-    gap:10px;padding:52px 16px;background:var(--cream,#F5F0E8);position:relative;z-index:1;}
+    gap:10px;padding:52px 34px;background-color:#F0EAE0;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px),repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px);position:relative;z-index:1;}
   .photo-band picture{display:block;line-height:0;flex:var(--r,1) 1 0;min-width:0;}
   .photo-band img{display:block;width:100%;height:auto;max-height:none;max-width:100%;}
-  @media(max-width:1100px){ .photo-band{padding:42px 14px;gap:9px;} }
+  @media(max-width:1100px){ .photo-band{padding:42px 26px;gap:9px;} }
   @media(max-width:768px){
     /* keep the desktop arrangement on phones: photos side by side with cream around */
     .photo-band{flex-direction:row;flex-wrap:nowrap;align-items:flex-start;
-      justify-content:center;padding:26px 12px;gap:8px;}
+      justify-content:center;padding:26px 20px;gap:8px;}
     .photo-band picture{flex:var(--r,1) 1 0;min-width:0;}
     .photo-band img{max-height:none;width:100%;height:auto;max-width:100%;}
   }
@@ -1805,7 +1805,7 @@
     .hero-image,.page-hero-photo,.hero-photo-single{
       height:auto !important;min-height:0 !important;max-height:none !important;
       aspect-ratio:auto !important;padding:26px 4.5% !important;
-      background-image:none !important;background-color:var(--cream,#F5F0E8) !important;
+      background-color:#F0EAE0;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px),repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(140,118,92,.05) 2px,rgba(140,118,92,.05) 3px) !important;
       overflow:visible !important;}
     .hero-image img,.page-hero-photo img,.hero-photo-single img{
       width:88% !important;height:auto !important;min-height:0 !important;
@@ -1816,7 +1816,7 @@
   /* Rotating testimonials. All quotes share one grid cell so the block is as tall
      as the longest and nothing shifts as they fade between each other. */
   .quote-stack{display:grid;}
-  .quote-stack blockquote{grid-area:1/1;opacity:0;transition:opacity .55s ease;
+  .quote-stack blockquote{grid-area:1/1;opacity:0;transition:opacity .4s ease;
     pointer-events:none;}
   .quote-stack blockquote.is-active{opacity:1;pointer-events:auto;}
   .quote-dots{display:flex;gap:7px;justify-content:center;margin-top:1.4rem;}
@@ -1920,9 +1920,15 @@
     Array.prototype.forEach.call(dots, function(dot, n){
       dot.addEventListener('click', function(){ show(n); restart(); });
     });
+    // each quote is held just long enough to read it: short lines move on quickly,
+    // the longest one gets a little more time
+    function holdFor(n){
+      var words = quotes[n].textContent.trim().split(/\s+/).length;
+      return Math.max(2200, Math.min(5000, words * 260));
+    }
     var timer = null;
-    function start(){ if (!reduced) timer = setInterval(function(){ show(i+1); }, 4500); }
-    function stop(){ if (timer) { clearInterval(timer); timer = null; } }
+    function start(){ if (!reduced) timer = setTimeout(function(){ show(i+1); start(); }, holdFor(i)); }
+    function stop(){ if (timer) { clearTimeout(timer); timer = null; } }
     function restart(){ stop(); start(); }
     block.addEventListener('mouseenter', stop);
     block.addEventListener('mouseleave', start);
