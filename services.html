@@ -1744,6 +1744,20 @@
  </div>
  </section>
 <section class="photo-band"><picture style="--r:0.7467"><source type="image/webp" srcset="images/pantry-open-shelving.webp"/><img loading="lazy" decoding="async" width="896" height="1200" src="images/pantry-open-shelving.jpg" alt="Organized pantry with labeled jars and warm wood open shelving, designed by Sabra &amp; Co."/></picture><picture style="--r:1.4906"><source type="image/webp" srcset="images/pantry-labeled-jars.webp"/><img loading="lazy" decoding="async" width="1264" height="848" src="images/pantry-labeled-jars.jpg" alt="Labeled glass pantry jars filled with dry goods, part of a Sabra &amp; Co. organizing system."/></picture></section>
+<div class="pull-quote bg-wainscot" data-quote-rotator>
+ <div class="quote-stack">
+  <blockquote class="is-active">"It is literally so perfect, I could cry!!"</blockquote>
+  <blockquote>"I think it is so amazing how designers just have this talent. I could never in a million years put this together and you did this in a few days"</blockquote>
+  <blockquote>"There are no words!! This is beyond what I could have even expected!!"</blockquote>
+ </div>
+ <cite>Client in Colorado Springs</cite>
+ <div class="quote-dots">
+  <button type="button" aria-current="true" aria-label="Show testimonial 1"></button>
+  <button type="button" aria-current="false" aria-label="Show testimonial 2"></button>
+  <button type="button" aria-current="false" aria-label="Show testimonial 3"></button>
+ </div>
+</div>
+
 
 
 <section class="sec-tile-bg" style="text-align:center;">
@@ -1790,12 +1804,27 @@
        shown whole at their own proportions rather than filling the screen. */
     .hero-image,.page-hero-photo,.hero-photo-single{
       height:auto !important;min-height:0 !important;max-height:none !important;
-      aspect-ratio:auto !important;padding:0 4.5% 26px !important;
-      background-image:none !important;overflow:visible !important;}
+      aspect-ratio:auto !important;padding:26px 4.5% !important;
+      background-image:none !important;background-color:var(--cream,#F5F0E8) !important;
+      overflow:visible !important;}
     .hero-image img,.page-hero-photo img,.hero-photo-single img{
       width:88% !important;height:auto !important;min-height:0 !important;
       max-height:none !important;object-fit:contain !important;
       object-position:center center !important;display:block;margin:0 auto;}
+  }
+
+  /* Rotating testimonials. All quotes share one grid cell so the block is as tall
+     as the longest and nothing shifts as they fade between each other. */
+  .quote-stack{display:grid;}
+  .quote-stack blockquote{grid-area:1/1;opacity:0;transition:opacity .9s ease;
+    pointer-events:none;}
+  .quote-stack blockquote.is-active{opacity:1;pointer-events:auto;}
+  .quote-dots{display:flex;gap:7px;justify-content:center;margin-top:1.4rem;}
+  .quote-dots button{width:7px;height:7px;padding:0;border-radius:50%;cursor:pointer;
+    border:1px solid rgba(106,90,74,.55);background:transparent;transition:background .3s ease;}
+  .quote-dots button[aria-current="true"]{background:rgba(106,90,74,.75);}
+  @media (prefers-reduced-motion: reduce){
+    .quote-stack blockquote{transition:none;}
   }
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
@@ -1866,6 +1895,44 @@
  }
  document.addEventListener('DOMContentLoaded', fixFooter);
  window.addEventListener('resize', fixFooter);
+})();
+</script>
+
+<script>
+(function(){
+  var blocks = document.querySelectorAll('[data-quote-rotator]');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Array.prototype.forEach.call(blocks, function(block){
+    var quotes = block.querySelectorAll('.quote-stack blockquote');
+    var dots = block.querySelectorAll('.quote-dots button');
+    if (quotes.length < 2) return;
+    var i = 0;
+    for (var n = 0; n < quotes.length; n++) {
+      if (quotes[n].classList.contains('is-active')) { i = n; break; }
+    }
+    function show(next){
+      quotes[i].classList.remove('is-active');
+      if (dots[i]) dots[i].setAttribute('aria-current','false');
+      i = (next + quotes.length) % quotes.length;
+      quotes[i].classList.add('is-active');
+      if (dots[i]) dots[i].setAttribute('aria-current','true');
+    }
+    Array.prototype.forEach.call(dots, function(dot, n){
+      dot.addEventListener('click', function(){ show(n); restart(); });
+    });
+    var timer = null;
+    function start(){ if (!reduced) timer = setInterval(function(){ show(i+1); }, 7000); }
+    function stop(){ if (timer) { clearInterval(timer); timer = null; } }
+    function restart(){ stop(); start(); }
+    block.addEventListener('mouseenter', stop);
+    block.addEventListener('mouseleave', start);
+    block.addEventListener('focusin', stop);
+    block.addEventListener('focusout', start);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) stop(); else restart();
+    });
+    start();
+  });
 })();
 </script>
 </body>
