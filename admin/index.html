@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Journal Editor | Sabra &amp; Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root{--cream:#F5F0E8;--linen:#F0EAE0;--charcoal:#1E1A16;--taupe:#6D6154;--brown:#3A2E24;
+    --line:rgba(155,135,108,.38);}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);
+    background:var(--cream);letter-spacing:.02em;}
+  header.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:1.1rem 1.6rem;background:#FBF8F3;border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:50;}
+  .brand{font-family:'Cormorant',serif;font-size:1.15rem;letter-spacing:.18em;}
+  .bar .right{display:flex;gap:.6rem;align-items:center;}
+  main{max-width:860px;margin:0 auto;padding:2.2rem 1.4rem 6rem;}
+  h1{font-family:'Cormorant',serif;font-weight:300;font-size:2rem;margin:0 0 .4rem;}
+  .sub{color:#7A6C5E;font-size:.9rem;margin:0 0 2rem;line-height:1.7;}
+  label{display:block;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+    color:#7A6C5E;margin:0 0 .45rem;}
+  input[type=text],input[type=password],textarea,select{
+    width:100%;padding:.7rem .8rem;font-family:'Jost',sans-serif;font-size:.95rem;font-weight:300;
+    color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);border-radius:0;
+    outline:none;}
+  input:focus,textarea:focus,select:focus{border-color:#7A6C5E;}
+  textarea{line-height:1.75;resize:vertical;min-height:120px;}
+  .field{margin-bottom:1.3rem;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .hint{font-size:.78rem;color:#8A7C6E;margin-top:.35rem;line-height:1.6;}
+  button{font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    padding:.7rem 1.5rem;border:1px solid var(--charcoal);background:var(--charcoal);color:var(--cream);
+    cursor:pointer;transition:background .2s;}
+  button:hover{background:var(--brown);}
+  button.ghost{background:transparent;color:var(--charcoal);border-color:var(--line);}
+  button.ghost:hover{background:rgba(30,26,22,.06);}
+  button.tiny{padding:.4rem .75rem;font-size:.62rem;}
+  button:disabled{opacity:.5;cursor:default;}
+  .block{border:1px solid var(--line);background:#FBF8F3;padding:1rem;margin-bottom:.9rem;}
+  .block .top{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.7rem;}
+  .block .kind{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#7A6C5E;}
+  .block .tools{display:flex;gap:.35rem;}
+  .adders{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 2rem;}
+  .thumb{max-width:150px;height:auto;display:block;margin-top:.6rem;border:1px solid var(--line);}
+  .status{margin-top:1.2rem;font-size:.9rem;line-height:1.7;min-height:1.4em;}
+  .status.err{color:#8C3A2B;}
+  .status.ok{color:#4A5D46;}
+  .card{max-width:420px;margin:12vh auto;padding:2.2rem;border:1px solid var(--line);background:#FBF8F3;}
+  .hidden{display:none;}
+  fieldset{border:1px solid var(--line);padding:1.2rem;margin:0 0 1.6rem;}
+  legend{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:#7A6C5E;padding:0 .5rem;}
+  @media(max-width:700px){ .row{grid-template-columns:1fr;} main{padding:1.4rem 1rem 5rem;} }
+</style>
+</head>
+<body>
+
+<!-- ------------------------------------------------------------- login -->
+<section id="login">
+  <div class="card">
+    <h1 style="text-align:center;">Journal Editor</h1>
+    <p class="sub" style="text-align:center;">Sabra &amp; Co.</p>
+    <div class="field">
+      <label for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password"/>
+    </div>
+    <button id="loginBtn" style="width:100%;">Sign in</button>
+    <p class="status" id="loginStatus"></p>
+  </div>
+</section>
+
+<!-- ------------------------------------------------------------- editor -->
+<div id="app" class="hidden">
+<header class="bar">
+  <span class="brand">SABRA &amp; CO.</span>
+  <span class="right">
+    <button class="ghost tiny" id="previewBtn">Preview</button>
+    <button id="publishBtn">Publish</button>
+  </span>
+</header>
+
+<main>
+  <h1>Write a post</h1>
+  <p class="sub">Type in plain text. Nothing here needs any code. Images are resized automatically
+  before they are uploaded.</p>
+
+  <fieldset>
+    <legend>The basics</legend>
+    <div class="field">
+      <label for="title">Title</label>
+      <input id="title" type="text" placeholder="How to warm up a gray living room"/>
+      <p class="hint">This becomes the headline and the web address.</p>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="category">Category</label>
+        <input id="category" type="text" value="Colour &amp; Warmth"/>
+      </div>
+      <div class="field">
+        <label for="readTime">Read time</label>
+        <input id="readTime" type="text" value="5 minute read"/>
+      </div>
+    </div>
+    <div class="field">
+      <label for="deck">Standfirst</label>
+      <textarea id="deck" rows="2" placeholder="One sentence under the title."></textarea>
+    </div>
+    <div class="field">
+      <label for="description">Search description</label>
+      <textarea id="description" rows="2" placeholder="What Google and AI assistants show. Around 25 words."></textarea>
+    </div>
+    <div class="field">
+      <label for="excerpt">Journal page summary</label>
+      <textarea id="excerpt" rows="2" placeholder="The couple of lines shown on the Journal index card."></textarea>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Lead photo</legend>
+    <div class="field">
+      <input id="leadFile" type="file" accept="image/*"/>
+      <p class="hint">Sits under the title. Large photos are fine, they are shrunk here first.</p>
+      <img id="leadThumb" class="thumb hidden" alt=""/>
+    </div>
+    <div class="field">
+      <label for="leadAlt">Photo description</label>
+      <input id="leadAlt" type="text" placeholder="What is in the photo, for screen readers and search."/>
+    </div>
+    <div class="field">
+      <label for="leadCaption">Caption</label>
+      <input id="leadCaption" type="text" placeholder="Shown under the photo."/>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>The post</legend>
+    <div id="blocks"></div>
+    <div class="adders">
+      <button class="ghost tiny" data-add="text">+ Paragraph</button>
+      <button class="ghost tiny" data-add="heading">+ Heading</button>
+      <button class="ghost tiny" data-add="subheading">+ Small heading</button>
+      <button class="ghost tiny" data-add="list">+ Bullet list</button>
+      <button class="ghost tiny" data-add="numbered">+ Numbered list</button>
+      <button class="ghost tiny" data-add="image">+ Photo</button>
+    </div>
+  </fieldset>
+
+  <button id="publishBtn2" style="width:100%;">Publish post</button>
+  <p class="status" id="status"></p>
+</main>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var blocks = [];
+  var leadImage = null;      // {stem, jpg, webp, w, h}
+  var uploads = [];
+
+  // ---------------------------------------------------------- login
+  function showApp(){ $('login').classList.add('hidden'); $('app').classList.remove('hidden'); }
+
+  $('loginBtn').addEventListener('click', function(){
+    var st = $('loginStatus'); st.className='status'; st.textContent='Checking...';
+    fetch('/api/admin-login', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({password: $('pw').value})})
+      .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
+      .then(function(o){
+        if(o && o.ok){ showApp(); addBlock('text'); }
+        else { st.className='status err'; st.textContent=(o && o.error) || 'Could not sign in.'; }
+      })
+      .catch(function(){ st.className='status err'; st.textContent='Could not reach the server.'; });
+  });
+  $('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') $('loginBtn').click(); });
+
+  // ---------------------------------------------------------- images
+  function slugify(t){
+    return String(t||'').toLowerCase().trim().replace(/['’]/g,'')
+      .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);
+  }
+
+  // shrink in the browser so we never upload a 30MB camera file
+  function processImage(file, stem){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function(){
+        var maxW = 1400;
+        var w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        var c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        var jpg = c.toDataURL('image/jpeg', 0.82).split(',')[1];
+        var webp = c.toDataURL('image/webp', 0.80).split(',')[1];
+        resolve({stem: stem, jpg: jpg, webp: webp, w: w, h: h,
+                 preview: 'data:image/jpeg;base64,' + jpg});
+      };
+      img.onerror = function(){ reject(new Error('That file could not be read as an image.')); };
+      img.src = url;
+    });
+  }
+
+  $('leadFile').addEventListener('change', function(e){
+    var f = e.target.files[0]; if(!f) return;
+    var stem = slugify($('title').value || f.name.replace(/\.[^.]+$/,'')) || ('photo-' + Date.now());
+    processImage(f, stem + '-lead').then(function(img){
+      leadImage = img;
+      $('leadThumb').src = img.preview; $('leadThumb').classList.remove('hidden');
+    }).catch(function(err){ alert(err.message); });
+  });
+
+  // ---------------------------------------------------------- blocks
+  var LABELS = {text:'Paragraph', heading:'Heading', subheading:'Small heading',
+                list:'Bullet list', numbered:'Numbered list', image:'Photo'};
+  var PLACEHOLDER = {
+    text:'Write as you would say it. Leave a blank line between paragraphs.',
+    heading:'Phrase it as a question where you can.',
+    subheading:'A short label.',
+    list:'One item per line.',
+    numbered:'One item per line.'
+  };
+
+  function addBlock(kind){
+    blocks.push({type:kind, text:'', image:null, alt:'', caption:''});
+    render();
+  }
+
+  function render(){
+    var wrap = $('blocks'); wrap.innerHTML = '';
+    blocks.forEach(function(b, i){
+      var d = document.createElement('div'); d.className = 'block';
+      var top = document.createElement('div'); top.className = 'top';
+      var kind = document.createElement('span'); kind.className = 'kind'; kind.textContent = LABELS[b.type];
+      var tools = document.createElement('span'); tools.className = 'tools';
+      [['↑', function(){ if(i>0){ var t=blocks[i-1]; blocks[i-1]=blocks[i]; blocks[i]=t; render(); } }],
+       ['↓', function(){ if(i<blocks.length-1){ var t=blocks[i+1]; blocks[i+1]=blocks[i]; blocks[i]=t; render(); } }],
+       ['✕', function(){ blocks.splice(i,1); render(); }]
+      ].forEach(function(pair){
+        var btn = document.createElement('button');
+        btn.className='ghost tiny'; btn.type='button'; btn.textContent=pair[0];
+        btn.addEventListener('click', pair[1]); tools.appendChild(btn);
+      });
+      top.appendChild(kind); top.appendChild(tools); d.appendChild(top);
+
+      if(b.type === 'image'){
+        var file = document.createElement('input'); file.type='file'; file.accept='image/*';
+        file.addEventListener('change', function(e){
+          var f=e.target.files[0]; if(!f) return;
+          var stem = slugify($('title').value || 'photo') + '-' + (i+1);
+          processImage(f, stem).then(function(img){
+            b.image = img; render();
+          }).catch(function(err){ alert(err.message); });
+        });
+        d.appendChild(file);
+        if(b.image){
+          var th=document.createElement('img'); th.className='thumb'; th.src=b.image.preview; d.appendChild(th);
+        }
+        [['alt','Photo description'],['caption','Caption']].forEach(function(p){
+          var lab=document.createElement('label'); lab.textContent=p[1]; lab.style.marginTop='.8rem';
+          var inp=document.createElement('input'); inp.type='text'; inp.value=b[p[0]]||'';
+          inp.addEventListener('input', function(){ b[p[0]]=inp.value; });
+          d.appendChild(lab); d.appendChild(inp);
+        });
+      } else {
+        var ta=document.createElement('textarea');
+        ta.rows = (b.type==='text') ? 5 : 2;
+        ta.placeholder = PLACEHOLDER[b.type] || '';
+        ta.value = b.text || '';
+        ta.addEventListener('input', function(){ b.text = ta.value; });
+        d.appendChild(ta);
+      }
+      wrap.appendChild(d);
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-add]'), function(btn){
+    btn.addEventListener('click', function(){ addBlock(btn.getAttribute('data-add')); });
+  });
+
+  // ---------------------------------------------------------- publish
+  function collect(){
+    uploads = [];
+    if(leadImage) uploads.push({stem:leadImage.stem, jpg:leadImage.jpg, webp:leadImage.webp});
+    var outBlocks = blocks.map(function(b){
+      if(b.type==='image'){
+        if(!b.image) return null;
+        uploads.push({stem:b.image.stem, jpg:b.image.jpg, webp:b.image.webp});
+        return {type:'image', image:b.image.stem, alt:b.alt, caption:b.caption,
+                pin:(($('title').value||'') + ' | Sabra & Co., Colorado Springs'),
+                w:b.image.w, h:b.image.h};
+      }
+      if(!String(b.text||'').trim()) return null;
+      return {type:b.type, text:b.text};
+    }).filter(Boolean);
+
+    return {
+      title: $('title').value.trim(),
+      category: $('category').value.trim(),
+      readTime: $('readTime').value.trim(),
+      deck: $('deck').value.trim(),
+      description: $('description').value.trim(),
+      excerpt: $('excerpt').value.trim(),
+      leadImage: leadImage ? leadImage.stem : '',
+      leadW: leadImage ? leadImage.w : 0,
+      leadH: leadImage ? leadImage.h : 0,
+      leadAlt: $('leadAlt').value.trim(),
+      leadCaption: $('leadCaption').value.trim(),
+      leadPin: ($('title').value.trim() + ' | Sabra & Co., Colorado Springs'),
+      blocks: outBlocks,
+      uploads: uploads
+    };
+  }
+
+  function publish(){
+    var st = $('status'); st.className='status';
+    var d = collect();
+    var missing = [];
+    ['title','deck','description','excerpt','category'].forEach(function(k){ if(!d[k]) missing.push(k); });
+    if(!d.leadImage) missing.push('lead photo');
+    if(!d.blocks.length) missing.push('some writing');
+    if(missing.length){ st.className='status err'; st.textContent='Still needed: ' + missing.join(', ') + '.'; return; }
+
+    $('publishBtn').disabled = true; $('publishBtn2').disabled = true;
+    st.textContent = 'Publishing. Large photos can take a moment...';
+
+    fetch('/api/publish', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(d)})
+      .then(function(r){ return r.json().catch(function(){ return {ok:false, error:'Unexpected reply.'}; }); })
+      .then(function(o){
+        if(o && o.ok){
+          st.className='status ok';
+          st.innerHTML = 'Published. ' + (o.note||'') + ' <a href="'+o.url+'" target="_blank">View the post</a>';
+        } else {
+          st.className='status err'; st.textContent = (o && o.error) || 'Something went wrong.';
+        }
+      })
+      .catch(function(){ st.className='status err'; st.textContent='Could not reach the server.'; })
+      .then(function(){ $('publishBtn').disabled=false; $('publishBtn2').disabled=false; });
+  }
+
+  $('publishBtn').addEventListener('click', publish);
+  $('publishBtn2').addEventListener('click', publish);
+
+  // ---------------------------------------------------------- preview
+  $('previewBtn').addEventListener('click', function(){
+    var d = collect();
+    var w = window.open('', '_blank');
+    var html = '<meta charset="utf-8"><title>Preview</title>' +
+      '<style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:0 20px;' +
+      'line-height:1.8;color:#2A2420;}h1{font-size:2rem;font-weight:400;}h2{margin-top:2rem;}' +
+      'img{max-width:100%;height:auto;}small{color:#7A6C5E;}</style>' +
+      '<small>' + esc(d.category) + ' · ' + esc(d.readTime) + '</small>' +
+      '<h1>' + esc(d.title) + '</h1><p><em>' + esc(d.deck) + '</em></p>' +
+      (leadImage ? '<img src="'+leadImage.preview+'"/>' : '');
+    d.blocks.forEach(function(b){
+      if(b.type==='image'){
+        var found = blocks.filter(function(x){ return x.image && x.image.stem===b.image; })[0];
+        html += found ? '<img src="'+found.image.preview+'"/><p><small>'+esc(b.caption||'')+'</small></p>' : '';
+      }
+      else if(b.type==='heading') html += '<h2>'+esc(b.text)+'</h2>';
+      else if(b.type==='subheading') html += '<h3>'+esc(b.text)+'</h3>';
+      else if(b.type==='list') html += '<ul>'+b.text.split('\n').filter(Boolean).map(function(i){return '<li>'+esc(i)+'</li>';}).join('')+'</ul>';
+      else if(b.type==='numbered') html += '<ol>'+b.text.split('\n').filter(Boolean).map(function(i){return '<li>'+esc(i)+'</li>';}).join('')+'</ol>';
+      else html += b.text.split(/\n\s*\n/).filter(Boolean).map(function(p){return '<p>'+esc(p)+'</p>';}).join('');
+    });
+    w.document.write(html); w.document.close();
+  });
+
+  function esc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+})();
+</script>
+</body>
+</html>
