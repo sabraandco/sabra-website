@@ -198,7 +198,16 @@
         URL.revokeObjectURL(url);
         var jpg = c.toDataURL('image/jpeg', 0.82).split(',')[1];
         var webp = c.toDataURL('image/webp', 0.80).split(',')[1];
-        resolve({stem: stem, jpg: jpg, webp: webp, w: w, h: h,
+        // smaller copies so phones do not download the full size version
+        var small = {};
+        [400, 800].forEach(function(tw){
+          if (tw >= w) return;
+          var c2 = document.createElement('canvas');
+          c2.width = tw; c2.height = Math.round(h * tw / w);
+          c2.getContext('2d').drawImage(img, 0, 0, c2.width, c2.height);
+          small[tw] = c2.toDataURL('image/webp', 0.78).split(',')[1];
+        });
+        resolve({stem: stem, jpg: jpg, webp: webp, small: small, w: w, h: h,
                  preview: 'data:image/jpeg;base64,' + jpg});
       };
       img.onerror = function(){ reject(new Error('That file could not be read as an image.')); };
@@ -286,14 +295,14 @@
   // ---------------------------------------------------------- publish
   function collect(){
     uploads = [];
-    if(leadImage) uploads.push({stem:leadImage.stem, jpg:leadImage.jpg, webp:leadImage.webp});
+    if(leadImage) uploads.push({stem:leadImage.stem, jpg:leadImage.jpg, webp:leadImage.webp, small:leadImage.small});
     var outBlocks = blocks.map(function(b){
       if(b.type==='image'){
         if(!b.image) return null;
-        uploads.push({stem:b.image.stem, jpg:b.image.jpg, webp:b.image.webp});
+        uploads.push({stem:b.image.stem, jpg:b.image.jpg, webp:b.image.webp, small:b.image.small});
         return {type:'image', image:b.image.stem, alt:b.alt, caption:b.caption,
                 pin:(($('title').value||'') + ' | Sabra & Co., Colorado Springs'),
-                w:b.image.w, h:b.image.h};
+                w:b.image.w, h:b.image.h, small:b.image.small};
       }
       if(!String(b.text||'').trim()) return null;
       return {type:b.type, text:b.text};
@@ -309,6 +318,7 @@
       leadImage: leadImage ? leadImage.stem : '',
       leadW: leadImage ? leadImage.w : 0,
       leadH: leadImage ? leadImage.h : 0,
+      leadSmall: leadImage ? leadImage.small : {},
       leadAlt: $('leadAlt').value.trim(),
       leadCaption: $('leadCaption').value.trim(),
       leadPin: ($('title').value.trim() + ' | Sabra & Co., Colorado Springs'),
