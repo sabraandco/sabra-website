@@ -83,6 +83,14 @@ async function putFile(path, contentBase64, message, sha) {
 
 // ---------------------------------------------------------------- content
 // Blocks come from the editor as plain text. Nothing here accepts raw HTML.
+
+// Builds a srcset from the resized copies the editor produced.
+function srcsetFor(stem, fullW, small, sizes) {
+  const parts = Object.keys(small || {}).sort((a,b)=>a-b).map(w => `images/${stem}-${w}.webp ${w}w`);
+  parts.push(`images/${stem}.webp ${fullW}w`);
+  return `srcset="${parts.join(', ')}" sizes="${sizes}"`;
+}
+
 function renderBlocks(blocks, slug) {
   const out = [];
   for (const b of blocks) {
@@ -105,7 +113,7 @@ function renderBlocks(blocks, slug) {
       const save = `<a class="pin-save" target="_blank" rel="noopener" href="https://www.pinterest.com/pin/create/button/?url=${page}&amp;media=${media}&amp;description=${urlEnc(b.pin || b.caption || '')}">Save to Pinterest</a>`;
       out.push(
         '  <figure>\n' +
-        `   <picture><source type="image/webp" srcset="images/${stem}.webp"/>` +
+        `   <picture><source type="image/webp" ${srcsetFor(stem, b.w || 900, b.small, '(max-width:768px) 80vw, 50vw')}/>` +
         `<img loading="lazy" decoding="async" width="${b.w || 900}" height="${b.h || 1350}" ` +
         `src="images/${stem}.jpg" alt="${esc(b.alt || b.caption || '')}" ` +
         `data-pin-description="${pin}"/></picture>\n` +
@@ -133,7 +141,7 @@ function buildArticle(d, slug) {
 </header>
 
 <figure class="article-lead">
- <picture><source type="image/webp" srcset="images/${d.leadImage}.webp"/><img fetchpriority="high" decoding="async" width="${d.leadW || 900}" height="${d.leadH || 1350}" src="images/${d.leadImage}.jpg" alt="${esc(d.leadAlt || d.title)}" data-pin-description="${esc(d.leadPin || d.title)}"/></picture>
+ <picture><source type="image/webp" ${srcsetFor(d.leadImage, d.leadW || 900, d.leadSmall, '(max-width:768px) 80vw, 50vw')}/><img fetchpriority="high" decoding="async" width="${d.leadW || 900}" height="${d.leadH || 1350}" src="images/${d.leadImage}.jpg" alt="${esc(d.leadAlt || d.title)}" data-pin-description="${esc(d.leadPin || d.title)}"/></picture>
  <figcaption>${esc(d.leadCaption || '')}${d.leadCaption ? '\n  ' + leadSave : leadSave}</figcaption>
 </figure>
 
@@ -144,7 +152,7 @@ ${renderBlocks(d.blocks || [], slug)}
 
 function buildCard(d, slug) {
   return `<a class="post-card" href="${slug}.html">
-  <div class="post-thumb"><picture><source type="image/webp" srcset="images/${d.leadImage}.webp"/><img loading="lazy" decoding="async" width="${d.leadW || 900}" height="${d.leadH || 1350}" src="images/${d.leadImage}.jpg" alt="${esc(d.title)}"/></picture></div>
+  <div class="post-thumb"><picture><source type="image/webp" ${srcsetFor(d.leadImage, d.leadW || 900, d.leadSmall, '(max-width:768px) 80vw, 50vw')}/><img loading="lazy" decoding="async" width="${d.leadW || 900}" height="${d.leadH || 1350}" src="images/${d.leadImage}.jpg" alt="${esc(d.title)}"/></picture></div>
   <div class="post-meta">${esc(d.category)} &nbsp;·&nbsp; ${esc(d.dateLabel)}</div>
   <h2>${esc(d.title)}</h2>
   <p>${esc(d.excerpt)}</p>
@@ -211,12 +219,15 @@ module.exports = async function handler(req, res) {
     // 1. images uploaded from the editor, already resized in the browser
     for (const img of (d.uploads || [])) {
       if (!/^[a-z0-9\-]+$/.test(img.stem)) throw new Error('Bad image name: ' + img.stem);
-      for (const ext of ['jpg', 'webp']) {
-        if (!img[ext]) continue;
+      const files = [['jpg', img.jpg], ['webp', img.webp]];
+      for (const [w, data] of Object.entries(img.small || {})) files.push([`${w}.webp`, data]);
+      for (const [ext, data] of files) {
+        if (!data) continue;
+        const name = ext.includes('.') ? `${img.stem}-${ext}` : `${img.stem}.${ext}`;
         let sha;
-        const existing = await gh(`contents/images/${img.stem}.${ext}?ref=${process.env.GITHUB_BRANCH || 'main'}`);
+        const existing = await gh(`contents/images/${name}?ref=${process.env.GITHUB_BRANCH || 'main'}`);
         if (existing.ok) sha = (await existing.json()).sha;
-        await putFile(`images/${img.stem}.${ext}`, img[ext], `Add image ${img.stem}.${ext}`, sha);
+        await putFile(`images/${name}`, data, `Add image ${name}`, sha);
       }
     }
 
