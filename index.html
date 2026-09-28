@@ -1504,6 +1504,7 @@
  <span class="service-num">One</span>
  <div class="service-name">Virtual<br><em>Design</em></div>
  <span class="service-price">Consultation fee: $250</span>
+<span class="service-fee-note">Design fee quoted after your consultation</span>
  <p class="service-tagline">"I want the full vision, I'll take it from there."</p>
  <p class="service-body">We go through the entire design process together, every decision, every detail, so you walk away with a complete plan you can execute on your own timeline and budget.</p>
  <div class="service-includes">
@@ -1529,6 +1530,7 @@
  <span class="service-num">Two</span>
  <div class="service-name">Full Service<br><em>Design</em></div>
  <span class="service-price">Consultation fee: $350</span>
+<span class="service-fee-note">Design fee quoted after your consultation</span>
  <p class="service-tagline">"I want it done, beautifully, seamlessly, completely."</p>
  <p class="service-body">We handle everything from first sketch to final pillow. Full design, sourcing, ordering, delivery coordination, installation, and final styling, so you walk in and it's already home.</p>
  <div class="service-includes">
@@ -1536,13 +1538,13 @@
  <ul>
  <li>In-home consultations (up to 3)</li>
  <li>Full procurement &amp; vendor management</li>
- <li>Trade-pricing access on furniture &amp; decor</li>
+ <li>Trade sourcing on furniture &amp; decor</li>
  <li>Delivery coordination &amp; installation day</li>
  <li>Styling &amp; final accessorizing on-site</li>
  <li>Punch list &amp; post-install follow-up</li>
  </ul>
  </div>
- <p class="service-note">We source at trade rates and pass the savings to you.</p>
+ <p class="service-note">Furnishings are billed separately from design fees.</p>
  <a class="service-cta" href="contact.html">Inquire</a>
  </div>
  </div>
@@ -1552,17 +1554,18 @@
  <span class="service-num">Three</span>
  <div class="service-name">Architectural<br><em>Design</em></div>
  <span class="service-price">Consultation fee: $500</span>
+<span class="service-fee-note">Design fee quoted after your consultation</span>
  <p class="service-tagline">"I want to change the bones, not just the furniture."</p>
- <p class="service-body">For spaces that need more than new furniture, structural changes, built-ins, custom cabinetry, or full renovations. We design and manage the entire transformation alongside your contractor.</p>
+ <p class="service-body">For spaces that need more than new furniture, structural changes, built-ins, custom cabinetry, or full renovations. We handle the design and manage the project alongside your licensed architect, engineer and contractor.</p>
  <div class="service-includes">
  <span class="service-includes-label">Everything in Full Service Design, plus</span>
  <ul>
- <li>Architectural planning &amp; drawings</li>
+ <li>Space planning &amp; layout design</li>
  <li>Custom cabinetry design &amp; specification</li>
- <li>Wall, ceiling &amp; structural detail design</li>
- <li>Licensed architect &amp; contractor coordination</li>
- <li>Permit management support</li>
- <li>Construction administration &amp; site visits</li>
+ <li>Wall, ceiling &amp; built-in detail design</li>
+ <li>Licensed architect &amp; engineer coordination</li>
+ <li>Permit support alongside your licensed team</li>
+ <li>Construction site visits &amp; design oversight</li>
  <li>Full project management start to finish</li>
  </ul>
  </div>
@@ -1721,6 +1724,13 @@
   @media (prefers-reduced-motion: reduce){
     .quote-stack blockquote{transition:none;}
   }
+
+  /* Small note under each consultation fee. Colours match the body text already
+     used inside each card, so it stays legible on the dark middle card too. */
+  .service-fee-note{display:block;margin-top:.45rem;font-family:'Jost',sans-serif;
+    font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#6D6154;
+    font-weight:300;line-height:1.6;}
+  .bead-card.dark .service-fee-note{color:rgba(245,240,232,.85);}
 </style>
  <div style="position:absolute;top:0;left:0;right:0;height:8px;background:url('images/beading-horizontal.png') repeat-x left top / 148px 8px;"></div>
  <div class="f-inner" style="display:grid;grid-template-columns:1.8fr 2fr;gap:4rem;margin-bottom:2rem;">
