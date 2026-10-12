@@ -32,7 +32,7 @@
   </url>
   <url>
     <loc>https://www.sabraandcompany.com/blog.html</loc>
-    <lastmod>2026-10-07</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -45,6 +45,12 @@
   <url>
     <loc>https://www.sabraandcompany.com/interior-designer-cost-colorado-springs.html</loc>
     <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.sabraandcompany.com/how-to-choose-a-couch-that-wears-in.html</loc>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
