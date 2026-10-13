@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Send a Newsletter | Sabra &amp; Co.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root{--cream:#F5F0E8;--charcoal:#1E1A16;--brown:#3A2E24;--muted:#6D6154;--line:rgba(155,135,108,.38);}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--cream);}
+  header.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.6rem;
+    background:#FBF8F3;border-bottom:1px solid var(--line);}
+  .brand{font-family:'Cormorant',serif;font-size:1.15rem;letter-spacing:.18em;}
+  .bar a{color:var(--muted);font-size:.8rem;}
+  main{max-width:1100px;margin:0 auto;padding:2.2rem 1.4rem 6rem;}
+  h1{font-family:'Cormorant',serif;font-weight:300;font-size:2rem;margin:0 0 .4rem;}
+  .sub{color:var(--muted);font-size:.92rem;margin:0 0 2rem;line-height:1.7;max-width:640px;}
+  label{display:block;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 .45rem;}
+  input[type=text],input[type=email],input[type=password],input[type=datetime-local]{width:100%;padding:.7rem .8rem;
+    font-family:'Jost',sans-serif;font-size:.95rem;font-weight:300;color:var(--charcoal);background:#FFFDFA;
+    border:1px solid var(--line);border-radius:0;}
+  input:focus{outline:2px solid var(--muted);outline-offset:1px;}
+  .field{margin-bottom:1.2rem;}
+  .hint{font-size:.8rem;color:var(--muted);margin-top:.35rem;line-height:1.6;}
+  button{font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    padding:.8rem 1.4rem;border:1px solid var(--charcoal);background:var(--charcoal);color:var(--cream);cursor:pointer;min-height:44px;}
+  button:hover{background:var(--brown);}
+  button.ghost{background:transparent;color:var(--charcoal);border-color:var(--line);}
+  button:disabled{opacity:.5;cursor:default;}
+  fieldset{border:1px solid var(--line);padding:1.2rem;margin:0 0 1.4rem;background:#FBF8F3;}
+  legend{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:0 .5rem;}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:2rem;align-items:start;}
+  .preview{position:sticky;top:1rem;}
+  .tabs{display:flex;gap:.4rem;margin-bottom:.6rem;}
+  .tabs button{padding:.4rem .8rem;font-size:.62rem;min-height:36px;}
+  .tabs button[aria-pressed=false]{background:transparent;color:var(--charcoal);border-color:var(--line);}
+  .frame{background:#fff;border:1px solid var(--line);height:78vh;display:flex;justify-content:center;overflow:hidden;}
+  iframe{border:0;width:100%;height:100%;transition:width .2s;}
+  .empty{padding:3rem 1.5rem;color:var(--muted);text-align:center;font-size:.92rem;line-height:1.7;}
+  .status{margin:.9rem 0 0;font-size:.92rem;line-height:1.6;min-height:1.4em;}
+  .status.err{color:#8C3A2B;} .status.ok{color:#4A5D46;}
+  .choice{display:flex;gap:1.2rem;margin:.2rem 0 .9rem;font-size:.92rem;}
+  .choice label{display:flex;gap:.4rem;align-items:center;font-size:.92rem;letter-spacing:0;text-transform:none;color:var(--charcoal);margin:0;}
+  .card{max-width:420px;margin:12vh auto;padding:2.2rem;border:1px solid var(--line);background:#FBF8F3;}
+  .hidden{display:none!important;}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}.preview{position:static}.frame{height:70vh}}
+</style>
+</head>
+<body>
+
+<section id="login">
+  <div class="card">
+    <h1 style="text-align:center;">Newsletter</h1>
+    <p class="sub" style="text-align:center;margin-bottom:1.4rem">Sabra &amp; Co.</p>
+    <div class="field">
+      <label for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password"/>
+    </div>
+    <button id="loginBtn" style="width:100%;">Sign in</button>
+    <p class="status" id="loginStatus" role="status"></p>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+<header class="bar">
+  <span class="brand">SABRA &amp; CO.</span>
+  <a href="/admin/">Journal editor</a>
+</header>
+<main>
+  <h1>Send a newsletter</h1>
+  <p class="sub">Choose the email file, send yourself a test, then send it to your list.
+  It goes out through Resend exactly as designed, fonts and all.</p>
+
+  <div class="grid">
+    <div>
+      <fieldset>
+        <legend>1. The email</legend>
+        <div class="field">
+          <label for="file">Newsletter file</label>
+          <input id="file" type="file" accept=".html,.htm,text/html"/>
+          <p class="hint">The .html file Claude made for this issue.</p>
+        </div>
+        <div class="field">
+          <label for="subject">Subject line</label>
+          <input id="subject" type="text"/>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Send yourself a test</legend>
+        <div class="field">
+          <label for="testTo">Send the test to</label>
+          <input id="testTo" type="email" autocomplete="email"/>
+        </div>
+        <div class="field">
+          <label for="testName">Name to greet you with</label>
+          <input id="testName" type="text" value="Sabra"/>
+          <p class="hint">Subscribers see their own first name, or &ldquo;there&rdquo; if they skipped it.</p>
+        </div>
+        <button id="testBtn" class="ghost" disabled>Send me a test</button>
+        <p class="status" id="testStatus" role="status"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Send to your list</legend>
+        <div class="choice" role="radiogroup" aria-label="When">
+          <label><input type="radio" name="when" value="now" checked/> Now</label>
+          <label><input type="radio" name="when" value="later"/> Schedule it</label>
+        </div>
+        <div class="field hidden" id="whenField">
+          <label for="whenAt">Send on</label>
+          <input id="whenAt" type="datetime-local"/>
+          <p class="hint">Your computer&rsquo;s time zone.</p>
+        </div>
+        <button id="sendBtn" disabled style="width:100%">Send to my Newsletter list</button>
+        <p class="status" id="sendStatus" role="status"></p>
+      </fieldset>
+    </div>
+
+    <div class="preview">
+      <div class="tabs">
+        <button type="button" id="viewDesk" aria-pressed="true">Computer</button>
+        <button type="button" id="viewPhone" aria-pressed="false">Phone</button>
+      </div>
+      <div class="frame">
+        <div class="empty" id="empty">Choose a newsletter file to see it here.</div>
+        <iframe id="frame" class="hidden" title="Email preview" sandbox></iframe>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var html = '';
+
+  function store(k, v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){} }
+
+  function showApp(){
+    $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+    $('testTo').value = store('sc_nl_test') || '';
+  }
+  function showLogin(msg){
+    $('app').classList.add('hidden'); $('login').classList.remove('hidden');
+    $('loginStatus').className = 'status err'; $('loginStatus').textContent = msg || '';
+  }
+
+  $('loginBtn').addEventListener('click', function(){
+    var st = $('loginStatus'); st.className = 'status'; st.textContent = 'Checking...';
+    fetch('/api/admin-login', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({password: $('pw').value})})
+      .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
+      .then(function(o){
+        if(o && o.ok){ st.textContent=''; showApp(); }
+        else { st.className='status err'; st.textContent=(o && o.error) || 'Could not sign in.'; }
+      })
+      .catch(function(){ st.className='status err'; st.textContent='Could not reach the server.'; });
+  });
+  $('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') $('loginBtn').click(); });
+
+  // ------------------------------------------------------------ file + preview
+  function previewHtml(){
+    var name = $('testName').value.trim();
+    return html
+      .replace(/\{\{\{\s*contact\.first_name\s*(?:\|([^}]*))?\}\}\}/g, function(_, f){
+        return (name || f || '').replace(/[<>&"]/g, ''); })
+      .replace(/\{\{\{\s*RESEND_UNSUBSCRIBE_URL\s*\}\}\}/g, '#');
+  }
+  function refresh(){
+    if(!html) return;
+    $('frame').srcdoc = previewHtml();
+    $('frame').classList.remove('hidden'); $('empty').classList.add('hidden');
+  }
+
+  $('file').addEventListener('change', function(e){
+    var f = e.target.files[0]; if(!f) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      html = String(reader.result || '');
+      var t = html.match(/<title>([\s\S]*?)<\/title>/i);
+      var tmp = document.createElement('textarea'); tmp.innerHTML = t ? t[1].trim() : '';
+      $('subject').value = tmp.value;
+      $('testBtn').disabled = false; $('sendBtn').disabled = false;
+      $('testStatus').textContent = ''; $('sendStatus').textContent = '';
+      refresh();
+    };
+    reader.readAsText(f);
+  });
+  $('testName').addEventListener('input', refresh);
+
+  function view(phone){
+    $('frame').style.width = phone ? '390px' : '100%';
+    $('viewPhone').setAttribute('aria-pressed', phone); $('viewDesk').setAttribute('aria-pressed', !phone);
+  }
+  $('viewDesk').addEventListener('click', function(){ view(false); });
+  $('viewPhone').addEventListener('click', function(){ view(true); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('input[name=when]'), function(r){
+    r.addEventListener('change', function(){
+      $('whenField').classList.toggle('hidden', r.value !== 'later' || !r.checked);
+    });
+  });
+
+  // ------------------------------------------------------------ actions
+  function call(payload, btn, st, busy){
+    st.className = 'status'; st.textContent = busy; btn.disabled = true;
+    return fetch('/api/newsletter', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)})
+      .then(function(r){ return r.json().catch(function(){ return {ok:false, error:'Unexpected reply.'}; }); })
+      .then(function(o){
+        if(o && o.signin) return showLogin('Your sign-in ran out. Sign in again; nothing was sent.');
+        st.className = 'status ' + (o && o.ok ? 'ok' : 'err');
+        st.textContent = (o && (o.message || o.error)) || 'Something went wrong.';
+        return o;
+      })
+      .catch(function(){ st.className='status err'; st.textContent='Could not reach the server. Nothing was sent.'; })
+      .then(function(o){ btn.disabled = false; return o; });
+  }
+
+  $('testBtn').addEventListener('click', function(){
+    store('sc_nl_test', $('testTo').value.trim());
+    call({action:'test', html: html, subject: $('subject').value, to: $('testTo').value,
+          name: $('testName').value}, $('testBtn'), $('testStatus'), 'Sending your test...');
+  });
+
+  $('sendBtn').addEventListener('click', function(){
+    var later = document.querySelector('input[name=when]:checked').value === 'later';
+    var when = '';
+    if(later){
+      if(!$('whenAt').value){ $('sendStatus').className='status err'; $('sendStatus').textContent='Pick a date and time.'; return; }
+      when = new Date($('whenAt').value).toISOString();
+    }
+    var subj = $('subject').value.trim();
+    var q = later
+      ? 'Schedule “' + subj + '” for ' + new Date($('whenAt').value).toLocaleString() + '?'
+      : 'Send “' + subj + '” to everyone on your Newsletter list now? This can’t be undone.';
+    if(!window.confirm(q)) return;
+    call({action:'send', html: html, subject: subj, when: when}, $('sendBtn'), $('sendStatus'),
+         later ? 'Scheduling...' : 'Sending...')
+      .then(function(o){ if(o && o.ok && !later) $('sendBtn').disabled = true; });
+  });
+})();
+</script>
+</body>
+</html>
