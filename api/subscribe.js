@@ -25,9 +25,9 @@ function welcomeEmail() {
   const html =
     '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:8px 4px">' +
     '<p style="' + p + '">Hi there,</p>' +
-    '<p style="' + p + '">Thank you for signing up. Every other week I&#39;ll send one email: a new ' +
-    'post from the journal, an idea you can use in your own home, and whatever I&#39;m loving lately. ' +
-    'That&#39;s it.</p>' +
+    '<p style="' + p + '">Thank you for signing up. I&#39;m so glad you&#39;re here. Every other week ' +
+    'I&#39;ll send one email with design tips you can actually use, my newest favorite finds, and a ' +
+    'peek at what I&#39;m working on. No boring newsletters, I promise.</p>' +
     '<p style="' + p + '">If you&#39;re planning a project, a good place to start is ' +
     '<a href="' + SITE + '/interior-designer-cost-colorado-springs.html" style="color:#1E1A16">what ' +
     'an interior designer actually costs in Colorado Springs</a>.</p>' +
@@ -39,8 +39,9 @@ function welcomeEmail() {
     'You&#39;re receiving this because you signed up on our website. If that wasn&#39;t you, just ' +
     'reply and I&#39;ll remove you.</div></div>';
   const text =
-    'Hi there,\n\nThank you for signing up. Every other week I\'ll send one email: a new post from ' +
-    'the journal, an idea you can use in your own home, and whatever I\'m loving lately. That\'s it.\n\n' +
+    'Hi there,\n\nThank you for signing up. I\'m so glad you\'re here. Every other week I\'ll send one ' +
+    'email with design tips you can actually use, my newest favorite finds, and a peek at what I\'m ' +
+    'working on. No boring newsletters, I promise.\n\n' +
     'If you\'re planning a project, a good place to start is what an interior designer actually costs ' +
     'in Colorado Springs: ' + SITE + '/interior-designer-cost-colorado-springs.html\n\n' +
     'Talk soon,\nSabra\n\n--\nSabra & Co. · ' + SITE + '\n' + ADDRESS + '\n' +
