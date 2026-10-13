@@ -127,8 +127,8 @@
     card.innerHTML =
       '<button type="button" class="nl-close" aria-label="Close">\u00d7</button>' +
       '<div class="nl-photo"><img src="images/sabra-newsletter.jpg" ' +
-      'srcset="images/sabra-newsletter-150.webp 150w, images/sabra-newsletter-300.webp 300w" ' +
-      'sizes="(max-width:600px) 48px, 150px" width="300" height="652" ' +
+      'srcset="images/sabra-newsletter-150.webp 150w, images/sabra-newsletter-300.webp 300w, images/sabra-newsletter-600.webp 600w" ' +
+      'sizes="(max-width:600px) 48px, 190px" width="600" height="1304" ' +
       'alt="Sabra, founder of Sabra &amp; Co., smiling at her desk"></div>' +
       '<div class="nl-body">' +
       '<div class="nl-title" id="nl-card-title">The best thing I ever did was ignore everyone\u2019s advice.</div>' +
