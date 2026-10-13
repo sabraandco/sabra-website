@@ -58,6 +58,10 @@ Open your site in a private window, enter your own email in the footer form, and
    An unsubscribe link and a physical address are both legal requirements for marketing email.
 6. Send yourself a test first, then send.
 
+The automatic welcome email already has its own unsubscribe link, handled by
+`api/unsubscribe.js`. Anyone who unsubscribes there is marked unsubscribed in Resend, so
+your newsletters skip them too.
+
 ---
 
 ## How the signup box behaves

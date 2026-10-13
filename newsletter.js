@@ -29,6 +29,73 @@
     try { if (s) s.setItem(KEY, JSON.stringify({ s: state, t: Date.now() })); } catch (e) {}
   }
 
+  var BASE_CSS = ".nl-skip{background:none;border:0;padding:.55rem 0 0;font-family:'Jost','Jost Fallback',sans-serif;font-size:.8rem;color:#6D6154;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:24px}.nl-skip:hover{color:#1E1A16}.nl-skip:focus-visible{outline:2px solid #1E1A16;outline-offset:2px}.nl-ask{padding:0 0 .5rem}.nl-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}";
+  function addBaseStyles() {
+    if (document.getElementById('nl-base-css')) return;
+    var st = document.createElement('style');
+    st.id = 'nl-base-css';
+    st.textContent = BASE_CSS;
+    document.head.appendChild(st);
+  }
+
+  /* ------------------------------------------------ after signup: first name */
+  function finish(form, message) {
+    form.__step = 'done';
+    form.innerHTML = '';
+    var done = document.createElement('div');
+    done.className = 'nl-done';
+    done.setAttribute('role', 'status');
+    done.textContent = message;              // textContent: a typed name can never become HTML
+    form.appendChild(done);
+    if (form.closest('.nl-card')) setTimeout(hideCard, 3200);
+  }
+
+  function askName(form, data) {
+    form.__step = 'name';
+    form.__ticket = data.ticket;
+    form.__already = !!data.already;
+    var id = 'nl-name-' + Math.random().toString(36).slice(2, 8);
+    form.innerHTML =
+      '<div class="nl-done nl-ask" role="status">' +
+      (data.already ? 'You’re already on the list!' : 'You’re in!') +
+      ' One more thing: what should I call you?</div>' +
+      '<label class="nl-sr" for="' + id + '">First name</label>' +
+      '<div class="nl-row"><input id="' + id + '" type="text" name="first_name" ' +
+      'autocomplete="given-name" maxlength="40" placeholder="First name">' +
+      '<button type="submit">Save</button></div>' +
+      '<button type="button" class="nl-skip">Skip</button>' +
+      '<div class="nl-status" aria-live="polite"></div>';
+    form.querySelector('.nl-skip').addEventListener('click', function () { sendName(form, 'skip'); });
+    var input = form.querySelector('input[name=first_name]');
+    // focus followed the button they just pressed, which is gone now
+    try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+  }
+
+  function sendName(form, action) {
+    if (form.__step !== 'name') return;
+    form.__step = 'sending';
+    var input = form.querySelector('input[name=first_name]');
+    var name = input ? input.value.trim() : '';
+    if (action === 'name' && !name) action = 'skip';
+    var buttons = form.querySelectorAll('button');
+    for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
+    var already = form.__already;
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: action, ticket: form.__ticket, name: name })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; });
+    }).then(function (d) {
+      var n = d && d.ok && d.name;
+      if (already) finish(form, n ? 'Thank you, ' + n + '!' : 'Thank you!');
+      else finish(form, n ? 'Nice to meet you, ' + n + '! Check your inbox for a welcome note.'
+                          : 'Perfect! Check your inbox for a welcome note.');
+    }).catch(function () {
+      finish(form, already ? 'Thank you!' : 'You’re on the list! Check your inbox for a welcome note.');
+    });
+  }
+
   /* ---------------------------------------------------------------- forms */
   function wire(form) {
     if (form.__wired) return;
@@ -38,6 +105,7 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (form.__step === 'name') { sendName(form, 'name'); return; }
       var email = form.querySelector('input[type=email]');
       var trap = form.querySelector('input[name=website]');
       if (!email.value.trim()) { email.focus(); return; }
@@ -60,10 +128,9 @@
         if (data && data.ok) {
           writeState('subscribed');
           form.classList.add('is-done');
-          form.innerHTML = '<div class="nl-done" role="status">' +
-            (data.already ? 'You’re already on the list. Thank you!'
-                          : 'You’re on the list. Check your inbox for a welcome note.') + '</p>';
-          if (form.closest('.nl-card')) setTimeout(hideCard, 3200);
+          if (data.ticket) askName(form, data);
+          else finish(form, data.already ? 'You\u2019re already on the list. Thank you!'
+                                         : 'You\u2019re on the list! Check your inbox for a welcome note.');
         } else {
           throw new Error((data && data.error) || 'error');
         }
@@ -192,6 +259,7 @@
   }
 
   function init() {
+    addBaseStyles();
     var forms = document.querySelectorAll('form[data-subscribe]');
     for (var i = 0; i < forms.length; i++) wire(forms[i]);
     // someone already on the list sees a thank-you instead of the inline forms
