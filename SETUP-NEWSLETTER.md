@@ -47,16 +47,29 @@ Open your site in a private window, enter your own email in the footer form, and
 
 ## Sending a newsletter
 
-1. Resend → **Broadcasts** → create a new broadcast
-2. Send it to the **Newsletter** segment
-3. Write it in the editor
-4. **Add the unsubscribe footer.** Resend does not add one for you. In the footer, link the
-   words "Unsubscribe" to `{{{RESEND_UNSUBSCRIBE_URL}}}`, typed exactly like that, with the
-   three curly brackets. Resend turns it into a personal link for each reader.
-5. Also in the footer: your website and your mailing address,
-   13395 Voyager Parkway, Suite 130 #722, Colorado Springs, CO 80921.
-   An unsubscribe link and a physical address are both legal requirements for marketing email.
-6. Send yourself a test first, then send.
+Send from **yoursite.com/admin/newsletter.html**, not from Resend's editor. Resend's editor
+swaps your fonts and styling for its own, so a designed email pasted there loses its look.
+
+**One time:** this page uses the same password as the Journal editor at /admin. If you have
+not set that up yet, add `ADMIN_PASSWORD` and `ADMIN_SECRET` in Vercel (see SETUP-ADMIN.md,
+step 2 and 3; the GitHub settings there are only needed for blog posts), then redeploy.
+
+**Each issue:**
+1. Upload any new photos for the issue to your site first (Claude gives you a small zip).
+2. Go to /admin/newsletter.html and sign in.
+3. **Choose the .html file** Claude made for the issue. The subject fills in and a preview shows,
+   with a button to see it at phone size.
+4. **Send me a test**, open it, and check the photos and the Unsubscribe link.
+5. **Send to my Newsletter list**, now or scheduled for a date and time.
+   It shows up in Resend under **Broadcasts**, where you can watch opens and unsubscribes.
+
+The page refuses to send an email that is missing the unsubscribe link or your mailing
+address, since both are legal requirements for marketing email.
+
+**If you ever write one in Resend's editor instead:** start with
+**Hi {{{contact.first_name|there}}}!**, and in the footer link the word "Unsubscribe" to
+`{{{RESEND_UNSUBSCRIBE_URL}}}` and add your website and mailing address,
+13395 Voyager Parkway, Suite 130 #722, Colorado Springs, CO 80921.
 
 The automatic welcome email already has its own unsubscribe link, handled by
 `api/unsubscribe.js`. Anyone who unsubscribes there is marked unsubscribed in Resend, so
@@ -80,6 +93,11 @@ your newsletters skip them too.
 - Ignored: shown again after 7 days.
 - Subscribed: never again, and the footer form shows a thank-you instead.
 - Never on the contact or thank-you pages.
+
+**First names:** right after someone signs up, the form asks "What should I call you?"
+with a Skip button. Names are saved in Resend (Contacts → First name). The welcome email
+waits up to 2 minutes so it can say their name; if they skip or close the page, it goes
+out as "Hi there!".
 
 **Seeing the card again yourself:** your browser remembers that you've seen it. Use a
 private window to see it fresh.
