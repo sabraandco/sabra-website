@@ -66,33 +66,99 @@ function readTicket(ticket, secret) {
   } catch (e) { return null; }
 }
 
+/* ---- welcome email: same design as the newsletters ---- */
+const C = { ink: '#1E1A16', text: '#3A2E24', muted: '#6D6154', sage: '#6B8070',
+  cream: '#F5F0E8', paper: '#FFFDF9', rule: '#E3DACC' };
+const SERIF = "'Cormorant',Georgia,'Times New Roman',serif";
+const SANS = "'Jost','Helvetica Neue',Helvetica,Arial,sans-serif";
+const P = 'margin:0 0 18px;font-family:' + SANS + ';font-size:16px;line-height:1.7;color:' + C.text;
+const START_HERE = [
+  ['What an interior designer actually costs', '/interior-designer-cost-colorado-springs.html'],
+  ['How to warm up a gray living room', '/warming-up-a-cold-gray-home.html'],
+  ['The couch everyone told me not to buy', '/how-to-choose-a-couch-that-wears-in.html'],
+];
+
+function emailImage(src, alt, w, caption) {
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
+    'style="margin:6px 0 24px"><tr><td align="center"><img src="' + SITE + src + '" width="' + w +
+    '" alt="' + alt + '" style="display:block;width:100%;max-width:' + w + 'px;height:auto;border:0">' +
+    (caption ? '<p style="margin:10px 0 0;font-family:' + SERIF + ';font-style:italic;font-size:17px;' +
+      'line-height:1.4;color:' + C.muted + ';text-align:center">' + caption + '</p>' : '') +
+    '</td></tr></table>';
+}
+
 function welcomeEmail(name, unsubscribeUrl) {
-  const hi = name ? 'Hi ' + name + '!' : 'Hi there!';
-  const p = 'margin:0 0 16px;font-size:16px;line-height:1.7;color:#3E352D';
-  const html =
-    '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:8px 4px">' +
-    '<p style="' + p + '">' + escapeHtml(hi) + '</p>' +
-    '<p style="' + p + '">Thank you so much for signing up! I&#39;m so glad you&#39;re here! Every other ' +
-    'week I&#39;ll send one email with design tips you can actually use, my newest favorite finds, and a ' +
-    'peek at what I&#39;m working on. No boring newsletters, I promise!</p>' +
-    '<p style="' + p + '">If you&#39;re planning a project, a good place to start is ' +
-    '<a href="' + SITE + '/interior-designer-cost-colorado-springs.html" style="color:#1E1A16">what ' +
-    'an interior designer actually costs in Colorado Springs</a>.</p>' +
-    '<p style="' + p + '">Talk soon!<br>Sabra</p>' +
-    '<div style="border-top:1px solid #E0D8CC;margin-top:28px;padding-top:14px;font-family:Arial,' +
-    'sans-serif;font-size:12px;line-height:1.7;color:#7A6C5E">' +
-    'Sabra &amp; Co. &middot; <a href="' + SITE + '" style="color:#7A6C5E">sabraandcompany.com</a><br>' +
-    ADDRESS + '<br>' +
-    'You&#39;re receiving this because you signed up at sabraandcompany.com. ' +
-    '<a href="' + unsubscribeUrl + '" style="color:#7A6C5E">Unsubscribe</a></div></div>';
+  const glad = 'I’m so glad you’re here' + (name ? ', ' + name : '') + '!';
+  const unsub = escapeHtml(unsubscribeUrl);
+  const startHere = START_HERE.map(function (s, i) {
+    return '<tr><td style="padding:14px 0;' + (i ? 'border-top:1px solid ' + C.rule + ';' : '') + '">' +
+      '<a href="' + SITE + s[1] + '" style="font-family:' + SERIF + ';font-size:22px;line-height:1.3;' +
+      'font-weight:500;color:' + C.ink + ';text-decoration:none">' + escapeHtml(s[0]) +
+      '&nbsp;<span style="color:' + C.sage + '">&rarr;</span></a></td></tr>';
+  }).join('');
+
+  const html = '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">' +
+    '<title>You&rsquo;re on the list!</title>' +
+    '<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;1,400;1,500&amp;' +
+    'family=Jost:wght@400;500&amp;display=swap" rel="stylesheet">' +
+    '<style>body{margin:0;padding:0;background:' + C.cream + '}' +
+    '@media (max-width:620px){.pad{padding-left:24px!important;padding-right:24px!important}' +
+    'h1{font-size:30px!important}}</style></head>' +
+    '<body style="margin:0;padding:0;background:' + C.cream + '">' +
+    '<div style="display:none;max-height:0;overflow:hidden;opacity:0">Thank you so much for signing up! ' +
+    'Here&rsquo;s what to expect, plus a few places to start.' + '&#8199;&#65279;&#847; '.repeat(40) + '</div>' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:' +
+    C.cream + '"><tr><td align="center" style="padding:24px 12px">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;' +
+    'background:' + C.paper + ';border:1px solid ' + C.rule + '">' +
+    // header
+    '<tr><td align="center" style="padding:36px 24px 26px;border-bottom:1px solid ' + C.rule + '">' +
+    '<a href="' + SITE + '" style="text-decoration:none;font-family:' + SERIF + ';font-size:24px;' +
+    'letter-spacing:7px;text-transform:uppercase;color:' + C.ink + ';font-weight:500">Sabra &amp; Co.</a>' +
+    '<p style="margin:8px 0 0;font-family:' + SANS + ';font-size:10px;letter-spacing:3px;text-transform:uppercase;' +
+    'color:' + C.muted + '">Settled Warmth &middot; Every other week</p></td></tr>' +
+    // welcome
+    '<tr><td class="pad" style="padding:34px 48px 16px">' +
+    '<h1 style="margin:0 0 18px;font-family:' + SERIF + ';font-size:34px;line-height:1.15;font-weight:500;' +
+    'color:' + C.ink + '">' + escapeHtml(glad) + '</h1>' +
+    '<p style="' + P + '">Thank you so much for signing up! Every other week I&rsquo;ll send one email with ' +
+    'design tips you can actually use, my newest favorite finds, and a peek at what I&rsquo;m working on. ' +
+    'No boring newsletters, I promise!</p>' +
+    emailImage('/images/email/welcome-rooms.jpg', 'Three rooms styled by Sabra: a living room with a wood ' +
+      'coffee table, a bed layered in warm linen, and a nightstand with tulips', 544,
+      'A few corners of Settled Warmth') +
+    '</td></tr>' +
+    // start here
+    '<tr><td class="pad" style="border-top:1px solid ' + C.rule + ';padding:34px 48px 20px">' +
+    '<p style="margin:0 0 4px;font-family:' + SANS + ';font-size:11px;letter-spacing:3px;text-transform:uppercase;' +
+    'color:' + C.sage + ';font-weight:500">Start here</p>' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' + startHere +
+    '</table></td></tr>' +
+    // sign off
+    '<tr><td class="pad" style="border-top:1px solid ' + C.rule + ';padding:34px 48px 16px">' +
+    '<p style="' + P + '">Hit reply and say hi! I read every one.</p>' +
+    '<p style="margin:26px 0 4px;font-family:' + SANS + ';font-size:16px;color:' + C.text + '">Talk soon!</p>' +
+    '<p style="margin:0 0 22px;font-family:' + SERIF + ';font-style:italic;font-size:34px;line-height:1.1;' +
+    'color:' + C.ink + '">Sabra</p></td></tr>' +
+    // footer
+    '<tr><td class="pad" align="center" style="background:' + C.cream + ';padding:28px 48px 34px;font-family:' +
+    SANS + ';font-size:12px;line-height:1.8;color:' + C.muted + '">' +
+    '<a href="' + SITE + '" style="color:' + C.muted + ';text-decoration:underline">sabraandcompany.com</a>' +
+    ' &nbsp;&middot;&nbsp; <a href="https://www.pinterest.com/sabraandco" style="color:' + C.muted +
+    ';text-decoration:underline">Pinterest</a><br>Sabra &amp; Co. &middot; ' + ADDRESS + '<br>' +
+    'You&rsquo;re receiving this because you signed up at sabraandcompany.com.<br>' +
+    '<a href="' + unsub + '" style="color:' + C.muted + ';text-decoration:underline">Unsubscribe</a>' +
+    '</td></tr></table></td></tr></table></body></html>';
+
   const text =
-    hi + '\n\nThank you so much for signing up! I\'m so glad you\'re here! Every other week I\'ll ' +
+    glad + '\n\nThank you so much for signing up! Every other week I\'ll ' +
     'send one email with design tips you can actually use, my newest favorite finds, and a peek at what ' +
-    'I\'m working on. No boring newsletters, I promise!\n\n' +
-    'If you\'re planning a project, a good place to start is what an interior designer actually costs ' +
-    'in Colorado Springs: ' + SITE + '/interior-designer-cost-colorado-springs.html\n\n' +
-    'Talk soon!\nSabra\n\n--\nSabra & Co. · ' + SITE + '\n' + ADDRESS + '\n' +
-    'You\'re receiving this because you signed up at sabraandcompany.com.\n' +
+    'I\'m working on. No boring newsletters, I promise!\n\nSTART HERE\n' +
+    START_HERE.map(function (s) { return '- ' + s[0] + ': ' + SITE + s[1]; }).join('\n') +
+    '\n\nHit reply and say hi! I read every one.\n\nTalk soon!\nSabra\n\n--\nSabra & Co. · ' + SITE + '\n' +
+    ADDRESS + '\nYou\'re receiving this because you signed up at sabraandcompany.com.\n' +
     'Unsubscribe: ' + unsubscribeUrl;
   return { subject: 'You’re on the list!', html: html, text: text };
 }
