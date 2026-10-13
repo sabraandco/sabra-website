@@ -84,13 +84,13 @@
       '<label class="nl-label" for="' + id + '">Email address</label>' +
       '<div class="nl-row">' +
       '<input id="' + id + '" type="email" name="email" autocomplete="email" required placeholder="you@example.com">' +
-      '<button type="submit">Subscribe</button></div>' +
+      '<button type="submit">' + (source === 'popup' ? 'I\u2019m in' : 'Subscribe') + '</button></div>' +
       '<input class="nl-trap" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
       '<div class="nl-status" aria-live="polite"></div></form>';
   }
 
   /* ---------------------------------------------------------------- card */
-  var CARD_CSS = ".nl-post .nl-eyebrow,.nl-card .nl-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:#6D6154}.nl-post .nl-text,.nl-card .nl-text{font-family:'Jost','Jost Fallback',sans-serif;font-size:.92rem;font-weight:300;line-height:1.7;color:#3E352D}.nl-card{position:fixed;right:24px;bottom:24px;z-index:120;width:360px;max-width:calc(100vw - 24px);background:#F5F0E8;border:1px solid rgba(155,135,108,.4);box-shadow:0 18px 50px rgba(30,26,22,.18);padding:26px 26px 20px;transform:translateY(24px);opacity:0;transition:transform .45s cubic-bezier(.22,.61,.36,1),opacity .45s ease}.nl-card.is-in{transform:none;opacity:1}.nl-card .nl-title{font-family:'Cormorant','Cormorant Fallback',serif;font-size:1.6rem;font-weight:300;line-height:1.2;color:#1E1A16;margin:.45rem 2rem .55rem 0}.nl-card .nl-form{margin-top:1rem;max-width:none}.nl-close{position:absolute;top:6px;right:6px;width:40px;height:40px;border:0;background:transparent;font-size:1.6rem;line-height:1;color:#6D6154;cursor:pointer}.nl-close:hover{color:#1E1A16}.nl-close:focus-visible,.nl-row button:focus-visible{outline:2px solid #1E1A16;outline-offset:2px}@media (max-width:600px){.nl-card{left:12px;right:12px;bottom:12px;width:auto;max-width:none;padding:18px 18px 12px}.nl-card .nl-eyebrow{display:none}.nl-card .nl-title{font-size:1.3rem;margin:0 2.2rem .35rem 0}.nl-card .nl-text{font-size:.84rem;line-height:1.55}.nl-card .nl-form{margin-top:.7rem}.nl-card .nl-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}@media (prefers-reduced-motion:reduce){.nl-card{transition:none}}";
+  var CARD_CSS = ".nl-card{position:fixed;right:24px;bottom:24px;z-index:120;width:470px;max-width:calc(100vw - 24px);display:grid;grid-template-columns:150px 1fr;background:#F5F0E8;border:1px solid rgba(155,135,108,.4);box-shadow:0 18px 50px rgba(30,26,22,.18);transform:translateY(24px);opacity:0;transition:transform .45s cubic-bezier(.22,.61,.36,1),opacity .45s ease}.nl-card.is-in{transform:none;opacity:1}.nl-photo{position:relative;overflow:hidden;background:#E8DFD2}.nl-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 28%;display:block}.nl-body{padding:24px 24px 16px 22px;min-width:0}.nl-card .nl-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:#6D6154}.nl-card .nl-title{font-family:'Cormorant','Cormorant Fallback',serif;font-size:1.5rem;font-weight:300;line-height:1.18;color:#1E1A16;margin:.1rem 1.6rem .6rem 0;text-wrap:balance}.nl-card .nl-text{font-family:'Jost','Jost Fallback',sans-serif;font-size:.88rem;font-weight:300;line-height:1.6;color:#3E352D}.nl-list{list-style:none;margin:.45rem 0 0;padding:0}.nl-list li{font-family:'Jost','Jost Fallback',sans-serif;font-size:.86rem;font-weight:300;line-height:1.5;color:#3E352D;padding-left:1.1rem;position:relative;margin:.2rem 0}.nl-list li::before{content:'';position:absolute;left:0;top:.72em;width:.6rem;height:1px;background:#B08D57}.nl-card .nl-form{margin-top:.9rem;max-width:none}.nl-short{display:none}.nl-fine{font-family:'Jost','Jost Fallback',sans-serif;font-size:.72rem;color:#6D6154;margin-top:.15rem}.nl-close{position:absolute;top:4px;right:4px;z-index:2;width:40px;height:40px;border:0;background:transparent;font-size:1.6rem;line-height:1;color:#6D6154;cursor:pointer}.nl-close:hover{color:#1E1A16}.nl-close:focus-visible,.nl-row button:focus-visible{outline:2px solid #1E1A16;outline-offset:2px}@media (max-width:600px){.nl-card{display:block;left:12px;right:12px;bottom:12px;width:auto;max-width:none}.nl-photo{position:absolute;top:14px;left:16px;width:48px;height:48px;border-radius:50%}.nl-body{padding:14px 16px 10px}.nl-card .nl-eyebrow{display:none}.nl-card .nl-title{font-size:1.18rem;line-height:1.2;margin:0 2.2rem 0 60px;min-height:48px;display:flex;align-items:center}.nl-card .nl-text{font-size:.82rem;margin-top:.5rem}.nl-list{display:none}.nl-card .nl-form{margin-top:.55rem}.nl-card .nl-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.nl-fine{display:none}.nl-wide{display:none}.nl-short{display:inline}}@media (prefers-reduced-motion:reduce){.nl-card{transition:none}}";
   function addCardStyles() {
     if (document.getElementById('nl-card-css')) return;
     var st = document.createElement('style');
@@ -125,11 +125,19 @@
     card.setAttribute('aria-modal', 'false');
     card.setAttribute('aria-labelledby', 'nl-card-title');
     card.innerHTML =
-      '<button type="button" class="nl-close" aria-label="Close">×</button>' +
-      '<div class="nl-eyebrow">The journal, by email</div>' +
-      '<div class="nl-title" id="nl-card-title">Notes on a home that feels settled</div>' +
-      '<div class="nl-text">One email every other week: new posts and ideas you can use at home. ' +
-      'Unsubscribe anytime.</div>' + formHTML('popup', 'card');
+      '<button type="button" class="nl-close" aria-label="Close">\u00d7</button>' +
+      '<div class="nl-photo"><img src="images/sabra-newsletter.jpg" ' +
+      'srcset="images/sabra-newsletter-150.webp 150w, images/sabra-newsletter-300.webp 300w" ' +
+      'sizes="(max-width:600px) 48px, 150px" width="300" height="652" ' +
+      'alt="Sabra, founder of Sabra &amp; Co., smiling at her desk"></div>' +
+      '<div class="nl-body">' +
+      '<div class="nl-title" id="nl-card-title">The best thing I ever did was ignore everyone\u2019s advice.</div>' +
+      '<div class="nl-text"><span class="nl-wide">Every other week I\u2019ll tell you what else I\u2019m ignoring, and what I\u2019m buying instead.</span>' +
+      '<span class="nl-short">Every other week: what else I\u2019m ignoring, what I\u2019m buying instead, and a peek at what I\u2019m working on.</span></div>' +
+      '<ul class="nl-list"><li>Design tips you can actually use</li>' +
+      '<li>My newest favorite finds</li><li>A peek at what I\u2019m working on</li></ul>' +
+      formHTML('popup', 'card') +
+      '<div class="nl-fine">Unsubscribe anytime. No hard feelings.</div></div>';
     document.body.appendChild(card);
     card.querySelector('.nl-close').addEventListener('click', function () {
       writeState('dismissed');
