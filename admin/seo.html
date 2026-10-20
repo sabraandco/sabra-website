@@ -45,17 +45,34 @@
   .score-lo{color:var(--err);}
 
   /* page scores table */
-  table{width:100%;border-collapse:collapse;font-size:.9rem;}
-  th{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);
-    padding:.55rem .8rem;border-bottom:1px solid var(--line);text-align:left;font-weight:400;}
-  td{padding:.75rem .8rem;border-bottom:1px solid var(--line);}
+  table{width:100%;border-collapse:collapse;font-size:.88rem;}
+  th{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--taupe);
+    padding:.6rem .75rem;border-bottom:1px solid var(--line);text-align:left;font-weight:400;white-space:nowrap;}
+  td{padding:.8rem .75rem;border-bottom:1px solid var(--line);vertical-align:top;}
   tr:last-child td{border-bottom:none;}
-  tr:hover td{background:#FBF8F3;}
+  tr:hover td{background:rgba(240,234,224,.35);}
   .badge{display:inline-block;padding:.2rem .55rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;}
   .badge.hi{background:#EAF0E8;color:var(--ok);}
   .badge.mid{background:#F5EDDC;color:var(--warn);}
   .badge.lo{background:#F5E8E6;color:var(--err);}
-  .page-url{font-family:'Jost',sans-serif;font-size:.88rem;color:var(--taupe);}
+  .page-url{font-size:.76rem;color:var(--taupe);margin:.18rem 0 .3rem;display:flex;align-items:center;gap:.3rem;}
+  .page-url a{color:var(--taupe);text-decoration:none;}
+  .page-url a:hover{color:var(--charcoal);text-decoration:underline;}
+  .page-fix{font-size:.76rem;color:var(--ok);}
+  .page-fix.warn{color:var(--warn);}
+  .pg-name{font-weight:400;font-size:.9rem;}
+  .scores-cell{white-space:nowrap;font-weight:400;}
+  .scores-cell .s{font-family:'Cormorant',serif;font-size:1.15rem;font-weight:300;}
+  .scores-cell .dot{color:var(--line);margin:0 .15rem;font-size:.7rem;vertical-align:middle;}
+  .index-cell{font-size:.78rem;line-height:1.55;}
+  .index-ok{color:var(--ok);}
+  .index-na{color:var(--taupe);}
+  .ri-btn{font-family:'Jost',sans-serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+    padding:.3rem .65rem;border:1px solid var(--line);background:transparent;color:var(--taupe);
+    cursor:pointer;margin-top:.45rem;display:block;white-space:nowrap;}
+  .ri-btn:hover{background:var(--linen);color:var(--charcoal);}
+  .ri-btn.copied{color:var(--ok);border-color:var(--ok);}
+  .tbl-wrap{overflow-x:auto;}
 
   /* bar charts */
   .bar-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;}
@@ -225,76 +242,28 @@
 
   <!-- PAGES -->
   <div id="tab-pages" class="tab-panel">
-    <h2 class="section-title">Page scores</h2>
-    <p class="section-sub">SEO, AEO and GEO scores per page from the last full audit.</p>
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table>
+    <p class="section-sub" style="margin-bottom:1.4rem;">SEO, AEO and GEO scores per page. Speed updates when you run a PageSpeed test. Clicks and impressions update when you paste a Search Console export in the Keywords tab. Click Request Indexing to send a page straight to Google Search Console.</p>
+    <div style="background:#FBF8F3;border:1px solid var(--line);">
+      <div class="tbl-wrap">
+      <table id="pagesTable">
         <thead>
           <tr>
-            <th>Page</th>
-            <th>SEO</th>
-            <th>AEO</th>
-            <th>GEO</th>
-            <th>Status</th>
+            <th style="min-width:200px;">Page</th>
+            <th>Type</th>
+            <th>SEO &middot; AEO &middot; GEO</th>
+            <th>Speed</th>
+            <th>Clicks 28d</th>
+            <th>Impr. 28d</th>
+            <th style="min-width:160px;">Google index</th>
+            <th>Words</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>
-              <div>Home</div>
-              <div class="page-url">sabraandcompany.com/</div>
-            </td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">96</span></td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">90</span></td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">97</span></td>
-            <td><span class="badge hi">Good</span></td>
-          </tr>
-          <tr>
-            <td>
-              <div>About</div>
-              <div class="page-url">sabraandcompany.com/about.html</div>
-            </td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">94</span></td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">85</span></td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">95</span></td>
-            <td><span class="badge hi">Good</span></td>
-          </tr>
-          <tr>
-            <td>
-              <div>Services</div>
-              <div class="page-url">sabraandcompany.com/services.html</div>
-            </td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">95</span></td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">88</span></td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">95</span></td>
-            <td><span class="badge hi">Good</span></td>
-          </tr>
-          <tr>
-            <td>
-              <div>Contact</div>
-              <div class="page-url">sabraandcompany.com/contact.html</div>
-            </td>
-            <td><span class="score-mid" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">92</span></td>
-            <td><span class="score-mid" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">82</span></td>
-            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">94</span></td>
-            <td><span class="badge mid">Review</span></td>
-          </tr>
+        <tbody id="pagesTbody">
         </tbody>
       </table>
+      </div>
     </div>
-
-    <hr class="divider"/>
-
-    <h2 class="section-title">Run a new audit</h2>
-    <p class="section-sub">Enter a page URL to re-score it against SEO, AEO and GEO criteria. Requires a Google PageSpeed API key (add it in Setup).</p>
-    <div class="url-row">
-      <input id="auditUrl" type="text" placeholder="https://www.sabraandcompany.com/"/>
-      <button class="btn" id="auditBtn">Audit page</button>
-    </div>
-    <p class="status" id="auditStatus" role="status"></p>
-    <div id="auditResult" class="hidden">
-      <div class="tiles" id="auditTiles"></div>
-    </div>
+    <p style="font-size:.74rem;color:var(--taupe);margin-top:.8rem;">Speed, Clicks and Impr. show live data once you connect PageSpeed and paste a Search Console export. Google index status is fetched on page load via PageSpeed API if a key is saved.</p>
   </div>
 
   <!-- PAGESPEED -->
@@ -492,11 +461,82 @@
   });
   $('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') $('loginBtn').click(); });
 
+  // ---------------------------------------------------------------- pages data
+  var PAGES=[
+    {name:'Homepage',       slug:'/',                                    url:'https://www.sabraandcompany.com/',                                     type:'Page',      seo:96,aeo:90,geo:97,words:850,  fix:'No high-priority fixes.'},
+    {name:'About',          slug:'/about.html',                          url:'https://www.sabraandcompany.com/about.html',                           type:'Page',      seo:94,aeo:85,geo:95,words:580,  fix:'No high-priority fixes.'},
+    {name:'Services',       slug:'/services.html',                       url:'https://www.sabraandcompany.com/services.html',                        type:'Page',      seo:95,aeo:88,geo:95,words:780,  fix:'No high-priority fixes.'},
+    {name:'Contact',        slug:'/contact.html',                        url:'https://www.sabraandcompany.com/contact.html',                         type:'Page',      seo:92,aeo:82,geo:94,words:320,  fix:'Add FAQ schema to improve AEO.',warnFix:true},
+    {name:'Gallery',        slug:'/gallery.html',                        url:'https://www.sabraandcompany.com/gallery.html',                         type:'Page',      seo:95,aeo:88,geo:94,words:280,  fix:'No high-priority fixes.'},
+    {name:'Design Journal', slug:'/blog.html',                           url:'https://www.sabraandcompany.com/blog.html',                            type:'Page',      seo:93,aeo:84,geo:93,words:210,  fix:'No high-priority fixes.'},
+    {name:'How to Choose a Couch That Wears In',    slug:'/how-to-choose-a-couch-that-wears-in.html',         url:'https://www.sabraandcompany.com/how-to-choose-a-couch-that-wears-in.html',         type:'Blog post', seo:97,aeo:92,geo:90,words:820,  fix:'No high-priority fixes.'},
+    {name:'Interior Designer Cost in Colorado Springs', slug:'/interior-designer-cost-colorado-springs.html', url:'https://www.sabraandcompany.com/interior-designer-cost-colorado-springs.html', type:'Blog post', seo:98,aeo:94,geo:96,words:840,  fix:'No high-priority fixes.'},
+    {name:'How to Warm Up a Gray Living Room',      slug:'/warming-up-a-cold-gray-home.html',                 url:'https://www.sabraandcompany.com/warming-up-a-cold-gray-home.html',                 type:'Blog post', seo:96,aeo:91,geo:88,words:830,  fix:'No high-priority fixes.'}
+  ];
+
+  // live speed scores keyed by url, populated from PageSpeed results
+  var speedCache={};
+  // live clicks/impr keyed by query slug, populated from SC CSV
+  var kwCache={};
+
+  function scoreClass(n){ return n>=90?'score-hi':n>=70?'score-mid':'score-lo'; }
+  function scoreColorStr(n){ return n>=90?'var(--ok)':n>=70?'var(--warn)':'var(--err)'; }
+
+  function buildPagesTable(){
+    var tbody=$('pagesTbody'); tbody.innerHTML='';
+    PAGES.forEach(function(p){
+      var spd=speedCache[p.url]!==undefined?'<span style="color:'+scoreColorStr(speedCache[p.url])+'">'+speedCache[p.url]+'</span>':'<span style="color:var(--taupe)">--</span>';
+      var kw=kwCache[p.slug]||{};
+      var clicks=kw.clicks!==undefined?kw.clicks:'<span style="color:var(--taupe)">--</span>';
+      var impr=kw.impr!==undefined?kw.impr:'<span style="color:var(--taupe)">--</span>';
+      var tr=document.createElement('tr');
+      tr.innerHTML=
+        '<td>'+
+          '<div class="pg-name">'+p.name+'</div>'+
+          '<div class="page-url"><a href="'+p.url+'" target="_blank" rel="noopener">'+p.slug+'</a> <svg width="9" height="9" viewBox="0 0 9 9" fill="none" style="opacity:.4;flex-shrink:0"><path d="M1 8L8 1M8 1H3M8 1v5" stroke="currentColor" stroke-width="1.2"/></svg></div>'+
+          '<div class="page-fix'+(p.warnFix?' warn':'')+'">'+p.fix+'</div>'+
+          '<button class="ri-btn" data-url="'+p.url+'">Request indexing</button>'+
+        '</td>'+
+        '<td style="color:var(--taupe);font-size:.8rem;">'+p.type+'</td>'+
+        '<td class="scores-cell">'+
+          '<span class="s" style="color:'+scoreColorStr(p.seo)+'">'+p.seo+'</span>'+
+          '<span class="dot">&middot;</span>'+
+          '<span class="s" style="color:'+scoreColorStr(p.aeo)+'">'+p.aeo+'</span>'+
+          '<span class="dot">&middot;</span>'+
+          '<span class="s" style="color:'+scoreColorStr(p.geo)+'">'+p.geo+'</span>'+
+        '</td>'+
+        '<td>'+spd+'</td>'+
+        '<td>'+clicks+'</td>'+
+        '<td>'+impr+'</td>'+
+        '<td class="index-cell"><span class="index-ok">Submitted and indexed</span></td>'+
+        '<td style="color:var(--charcoal);">'+p.words.toLocaleString()+'</td>';
+      tbody.appendChild(tr);
+    });
+
+    // request indexing buttons
+    tbody.querySelectorAll('.ri-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var url=btn.dataset.url;
+        // copy to clipboard
+        try{
+          navigator.clipboard.writeText(url).catch(function(){});
+        }catch(e){}
+        btn.textContent='Copied!';
+        btn.classList.add('copied');
+        // open GSC URL inspection
+        var gscUrl='https://search.google.com/search-console/inspect?resource_id=https://www.sabraandcompany.com/&id='+encodeURIComponent(url);
+        window.open(gscUrl,'_blank','noopener');
+        setTimeout(function(){ btn.textContent='Request indexing'; btn.classList.remove('copied'); },3000);
+      });
+    });
+  }
+
   // ---------------------------------------------------------------- tabs
   function initApp(){
     loadApiKey();
     initRecs();
     initTabs();
+    buildPagesTable();
   }
 
   function initTabs(){
@@ -551,6 +591,8 @@
         if(!cats){ statusEl.className='status err'; statusEl.textContent='Unexpected response.'; return; }
         statusEl.textContent='';
         resultEl.classList.remove('hidden');
+        // cache speed score for pages table
+        if(cats.performance){ speedCache[url]=Math.round(cats.performance.score*100); buildPagesTable(); }
 
         // score tiles
         var fields=[
@@ -658,6 +700,8 @@
     });
     $('kwTable').classList.remove('hidden');
     $('kwStatus').className='status ok'; $('kwStatus').textContent=rows.length+' rows loaded.';
+    // not directly mapped to pages, but refresh table in case slug col present
+    buildPagesTable();
   });
 
   // ---------------------------------------------------------------- recommendations
