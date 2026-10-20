@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>SEO Dashboard | Sabra &amp; Co.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root{--cream:#F5F0E8;--linen:#F0EAE0;--charcoal:#1E1A16;--taupe:#6D6154;--brown:#3A2E24;--line:rgba(155,135,108,.38);
+    --ok:#4A5D46;--warn:#7A5C2A;--err:#8C3A2B;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--cream);}
+  header.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.6rem;
+    background:#FBF8F3;border-bottom:1px solid var(--line);}
+  .brand{font-family:'Cormorant',serif;font-size:1.15rem;letter-spacing:.18em;}
+  .bar nav{display:flex;gap:1.4rem;align-items:center;}
+  .bar nav a{color:var(--taupe);font-size:.8rem;text-decoration:none;}
+  .bar nav a:hover{color:var(--charcoal);}
+  .bar nav a.active{color:var(--charcoal);font-weight:500;}
+  main{max-width:1140px;margin:0 auto;padding:2.2rem 1.4rem 6rem;}
+  h1{font-family:'Cormorant',serif;font-weight:300;font-size:2rem;margin:0 0 .3rem;}
+  .sub{color:var(--taupe);font-size:.92rem;margin:0 0 2.2rem;line-height:1.7;}
+  .card{background:#FBF8F3;border:1px solid var(--line);padding:1.5rem;}
+  .card + .card{margin-top:1.2rem;}
+
+  /* tabs */
+  .tab-bar{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:2rem;overflow-x:auto;}
+  .tab-bar button{font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
+    font-weight:400;padding:.65rem 1.1rem;border:none;border-bottom:2px solid transparent;background:transparent;
+    color:var(--taupe);cursor:pointer;white-space:nowrap;margin-bottom:-1px;}
+  .tab-bar button:hover{color:var(--charcoal);}
+  .tab-bar button.active{color:var(--charcoal);border-bottom-color:var(--charcoal);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* score tiles */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
+  .tile{background:#FBF8F3;border:1px solid var(--line);padding:1.2rem 1.2rem 1rem;text-align:center;}
+  .tile-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin-bottom:.5rem;}
+  .tile-score{font-family:'Cormorant',serif;font-size:2.8rem;font-weight:300;line-height:1;margin-bottom:.3rem;}
+  .tile-sub{font-size:.7rem;color:var(--taupe);}
+  .score-hi{color:var(--ok);}
+  .score-mid{color:var(--warn);}
+  .score-lo{color:var(--err);}
+
+  /* page scores table */
+  table{width:100%;border-collapse:collapse;font-size:.9rem;}
+  th{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);
+    padding:.55rem .8rem;border-bottom:1px solid var(--line);text-align:left;font-weight:400;}
+  td{padding:.75rem .8rem;border-bottom:1px solid var(--line);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:#FBF8F3;}
+  .badge{display:inline-block;padding:.2rem .55rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;}
+  .badge.hi{background:#EAF0E8;color:var(--ok);}
+  .badge.mid{background:#F5EDDC;color:var(--warn);}
+  .badge.lo{background:#F5E8E6;color:var(--err);}
+  .page-url{font-family:'Jost',sans-serif;font-size:.88rem;color:var(--taupe);}
+
+  /* bar charts */
+  .bar-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;}
+  .bar-name{width:80px;font-size:.78rem;color:var(--taupe);flex-shrink:0;text-align:right;}
+  .bar-track{flex:1;background:var(--linen);height:6px;border-radius:3px;}
+  .bar-fill{height:6px;border-radius:3px;background:var(--charcoal);}
+  .bar-val{width:28px;font-size:.78rem;text-align:right;flex-shrink:0;}
+
+  /* pagespeed */
+  .ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-bottom:1.6rem;}
+  .ps-tile{border:1px solid var(--line);padding:1rem;text-align:center;}
+  .ps-label{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.4rem;}
+  .ps-val{font-family:'Cormorant',serif;font-size:2.2rem;font-weight:300;line-height:1;}
+  .ps-unit{font-size:.7rem;color:var(--taupe);}
+
+  /* recommendations */
+  .rec-list{list-style:none;margin:0;padding:0;}
+  .rec-list li{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+  .rec-list li:last-child{border-bottom:none;}
+  .rec-pri{flex-shrink:0;width:56px;}
+  .rec-body h3{font-family:'Jost',sans-serif;font-size:.92rem;font-weight:400;margin:0 0 .25rem;}
+  .rec-body p{font-size:.85rem;color:var(--taupe);margin:0;line-height:1.6;}
+
+  /* setup steps */
+  .steps{counter-reset:step;}
+  .step{display:flex;gap:1.2rem;padding:1.2rem 0;border-bottom:1px solid var(--line);}
+  .step:last-child{border-bottom:none;}
+  .step-num{flex-shrink:0;width:2rem;height:2rem;border:1px solid var(--line);display:flex;align-items:center;
+    justify-content:center;font-family:'Cormorant',serif;font-size:1.1rem;font-weight:300;color:var(--taupe);}
+  .step-body h3{font-family:'Jost',sans-serif;font-size:.9rem;font-weight:400;margin:0 0 .3rem;}
+  .step-body p{font-size:.85rem;color:var(--taupe);margin:0 0 .5rem;line-height:1.6;}
+  .step-body code{font-size:.78rem;background:var(--linen);padding:.15rem .4rem;font-family:monospace;}
+  .step-body a{color:var(--charcoal);}
+
+  /* api key field */
+  .api-row{display:flex;gap:.6rem;margin-top:.8rem;}
+  .api-row input{flex:1;padding:.65rem .8rem;font-family:'Jost',sans-serif;font-size:.9rem;font-weight:300;
+    color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);border-radius:0;}
+  .api-row input:focus{outline:2px solid var(--taupe);outline-offset:1px;}
+  button.btn{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
+    padding:.7rem 1.2rem;border:1px solid var(--charcoal);background:var(--charcoal);color:var(--cream);
+    cursor:pointer;min-height:40px;white-space:nowrap;}
+  button.btn:hover{background:var(--brown);}
+  button.btn:disabled{opacity:.5;cursor:default;}
+  button.btn.ghost{background:transparent;color:var(--charcoal);border-color:var(--line);}
+  .status{margin:.7rem 0 0;font-size:.85rem;min-height:1.2em;line-height:1.5;}
+  .status.err{color:var(--err);} .status.ok{color:var(--ok);}
+
+  /* url input */
+  .url-row{display:flex;gap:.6rem;margin-bottom:1.4rem;}
+  .url-row input{flex:1;padding:.65rem .8rem;font-family:'Jost',sans-serif;font-size:.9rem;font-weight:300;
+    color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);border-radius:0;}
+  .url-row input:focus{outline:2px solid var(--taupe);outline-offset:1px;}
+
+  /* login */
+  .card-center{max-width:380px;margin:14vh auto;padding:2.2rem;border:1px solid var(--line);background:#FBF8F3;}
+  label.lbl{display:block;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin:0 0 .45rem;}
+  input[type=password]{width:100%;padding:.7rem .8rem;font-family:'Jost',sans-serif;font-size:.95rem;
+    font-weight:300;color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);border-radius:0;}
+  input[type=password]:focus{outline:2px solid var(--taupe);outline-offset:1px;}
+  .hidden{display:none!important;}
+
+  /* section headings */
+  .section-title{font-family:'Cormorant',serif;font-weight:300;font-size:1.3rem;margin:0 0 1rem;}
+  .section-sub{font-size:.85rem;color:var(--taupe);margin:-.5rem 0 1.2rem;line-height:1.6;}
+  .divider{border:none;border-top:1px solid var(--line);margin:2rem 0;}
+
+  @media(max-width:700px){
+    .tiles{grid-template-columns:repeat(2,1fr);}
+    .ps-grid{grid-template-columns:repeat(2,1fr);}
+    .bar-name{width:60px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login">
+  <div class="card-center">
+    <h1 style="font-family:'Cormorant',serif;font-weight:300;font-size:1.8rem;text-align:center;margin:0 0 .3rem;">SEO Dashboard</h1>
+    <p style="text-align:center;color:var(--taupe);font-size:.88rem;margin:0 0 1.6rem;">Sabra &amp; Co.</p>
+    <div style="margin-bottom:1.1rem;">
+      <label class="lbl" for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password"/>
+    </div>
+    <button class="btn" id="loginBtn" style="width:100%;">Sign in</button>
+    <p class="status" id="loginStatus" role="status"></p>
+  </div>
+</section>
+
+<!-- APP -->
+<div id="app" class="hidden">
+<header class="bar">
+  <span class="brand">SABRA &amp; CO.</span>
+  <nav>
+    <a href="/admin/">Journal editor</a>
+    <a href="/admin/newsletter.html">Newsletter</a>
+    <a href="/admin/seo.html" class="active">SEO</a>
+  </nav>
+</header>
+<main>
+  <h1>SEO Dashboard</h1>
+  <p class="sub">Site health for sabraandcompany.com. Scores reflect the last full audit. Connect PageSpeed Insights for live performance data.</p>
+
+  <nav class="tab-bar" role="tablist">
+    <button role="tab" class="active" data-tab="overview">Overview</button>
+    <button role="tab" data-tab="pages">Pages</button>
+    <button role="tab" data-tab="pagespeed">PageSpeed</button>
+    <button role="tab" data-tab="keywords">Keywords</button>
+    <button role="tab" data-tab="recs">Recommendations</button>
+    <button role="tab" data-tab="setup">Setup</button>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="tab-panel active">
+    <h2 class="section-title">Site average</h2>
+    <p class="section-sub">Composite scores across all four main pages. SEO covers meta, structure and crawlability. AEO covers structured data and FAQ content. GEO covers local schema and geographic signals.</p>
+    <div class="tiles">
+      <div class="tile">
+        <div class="tile-label">SEO</div>
+        <div class="tile-score score-hi">94</div>
+        <div class="tile-sub">/ 100</div>
+      </div>
+      <div class="tile">
+        <div class="tile-label">AEO</div>
+        <div class="tile-score score-hi">86</div>
+        <div class="tile-sub">/ 100</div>
+      </div>
+      <div class="tile">
+        <div class="tile-label">GEO</div>
+        <div class="tile-score score-hi">95</div>
+        <div class="tile-sub">/ 100</div>
+      </div>
+      <div class="tile">
+        <div class="tile-label">Pages audited</div>
+        <div class="tile-score" style="font-size:2.2rem;">4</div>
+        <div class="tile-sub">of 4</div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <h2 class="section-title">Score breakdown</h2>
+    <p class="section-sub">SEO vs AEO vs GEO by category.</p>
+
+    <div style="max-width:520px;">
+      <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.9rem;">SEO</div>
+      <div class="bar-row"><span class="bar-name">Meta</span><div class="bar-track"><div class="bar-fill" style="width:97%"></div></div><span class="bar-val">97</span></div>
+      <div class="bar-row"><span class="bar-name">Structure</span><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><span class="bar-val">95</span></div>
+      <div class="bar-row"><span class="bar-name">Crawl</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><span class="bar-val">92</span></div>
+      <div class="bar-row"><span class="bar-name">Links</span><div class="bar-track"><div class="bar-fill" style="width:91%"></div></div><span class="bar-val">91</span></div>
+
+      <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin:1.4rem 0 .9rem;">AEO</div>
+      <div class="bar-row"><span class="bar-name">Schema</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><span class="bar-val">88</span></div>
+      <div class="bar-row"><span class="bar-name">FAQ content</span><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><span class="bar-val">80</span></div>
+      <div class="bar-row"><span class="bar-name">Entity</span><div class="bar-track"><div class="bar-fill" style="width:90%"></div></div><span class="bar-val">90</span></div>
+
+      <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin:1.4rem 0 .9rem;">GEO</div>
+      <div class="bar-row"><span class="bar-name">LocalBiz</span><div class="bar-track"><div class="bar-fill" style="width:97%"></div></div><span class="bar-val">97</span></div>
+      <div class="bar-row"><span class="bar-name">Geo meta</span><div class="bar-track"><div class="bar-fill" style="width:96%"></div></div><span class="bar-val">96</span></div>
+      <div class="bar-row"><span class="bar-name">NAP</span><div class="bar-track"><div class="bar-fill" style="width:93%"></div></div><span class="bar-val">93</span></div>
+    </div>
+
+    <hr class="divider"/>
+    <p style="font-size:.78rem;color:var(--taupe);">Last audit: June 2026. Run a new audit from the Pages tab or pull live performance from the PageSpeed tab.</p>
+  </div>
+
+  <!-- PAGES -->
+  <div id="tab-pages" class="tab-panel">
+    <h2 class="section-title">Page scores</h2>
+    <p class="section-sub">SEO, AEO and GEO scores per page from the last full audit.</p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Page</th>
+            <th>SEO</th>
+            <th>AEO</th>
+            <th>GEO</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div>Home</div>
+              <div class="page-url">sabraandcompany.com/</div>
+            </td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">96</span></td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">90</span></td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">97</span></td>
+            <td><span class="badge hi">Good</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div>About</div>
+              <div class="page-url">sabraandcompany.com/about.html</div>
+            </td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">94</span></td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">85</span></td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">95</span></td>
+            <td><span class="badge hi">Good</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div>Services</div>
+              <div class="page-url">sabraandcompany.com/services.html</div>
+            </td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">95</span></td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">88</span></td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">95</span></td>
+            <td><span class="badge hi">Good</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div>Contact</div>
+              <div class="page-url">sabraandcompany.com/contact.html</div>
+            </td>
+            <td><span class="score-mid" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">92</span></td>
+            <td><span class="score-mid" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">82</span></td>
+            <td><span class="score-hi" style="font-family:'Cormorant',serif;font-size:1.4rem;font-weight:300;">94</span></td>
+            <td><span class="badge mid">Review</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider"/>
+
+    <h2 class="section-title">Run a new audit</h2>
+    <p class="section-sub">Enter a page URL to re-score it against SEO, AEO and GEO criteria. Requires a Google PageSpeed API key (add it in Setup).</p>
+    <div class="url-row">
+      <input id="auditUrl" type="text" placeholder="https://www.sabraandcompany.com/"/>
+      <button class="btn" id="auditBtn">Audit page</button>
+    </div>
+    <p class="status" id="auditStatus" role="status"></p>
+    <div id="auditResult" class="hidden">
+      <div class="tiles" id="auditTiles"></div>
+    </div>
+  </div>
+
+  <!-- PAGESPEED -->
+  <div id="tab-pagespeed" class="tab-panel">
+    <h2 class="section-title">PageSpeed Insights</h2>
+    <p class="section-sub">Live Lighthouse scores from Google. Add your API key in the Setup tab, then run a test below.</p>
+
+    <div class="url-row">
+      <input id="psUrl" type="text" value="https://www.sabraandcompany.com/" placeholder="https://www.sabraandcompany.com/"/>
+      <button class="btn" id="psBtn">Run test</button>
+    </div>
+    <p class="status" id="psStatus" role="status"></p>
+
+    <div id="psResult" class="hidden">
+      <div class="ps-grid" id="psTiles"></div>
+
+      <div class="card">
+        <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">Core Web Vitals</div>
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>Value</th><th>Rating</th></tr>
+          </thead>
+          <tbody id="cwvTable"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top:1rem;" id="psOpps">
+        <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.8rem;">Opportunities</div>
+        <ul id="oppList" style="margin:0;padding:0 0 0 1.2rem;font-size:.88rem;color:var(--taupe);line-height:1.9;"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEYWORDS -->
+  <div id="tab-keywords" class="tab-panel">
+    <h2 class="section-title">Keyword performance</h2>
+    <p class="section-sub">Top queries and positions from Google Search Console. Connect Search Console to see live data.</p>
+
+    <div class="card">
+      <p style="font-size:.88rem;color:var(--taupe);line-height:1.7;margin:0 0 1rem;">
+        Search Console integration requires OAuth and a server-side token. Add your property in
+        <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console</a>
+        and use the export feature to pull queries, then paste them below.
+      </p>
+      <div style="margin-bottom:1rem;">
+        <label class="lbl" for="kwPaste">Paste CSV export from Search Console</label>
+        <textarea id="kwPaste" rows="6" style="width:100%;padding:.65rem .8rem;font-family:'Jost',sans-serif;
+          font-size:.82rem;font-weight:300;color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);
+          border-radius:0;resize:vertical;" placeholder="query,clicks,impressions,ctr,position&#10;interior design nashville,42,380,0.11,4.2&#10;..."></textarea>
+      </div>
+      <button class="btn ghost" id="kwParseBtn">Load keywords</button>
+      <p class="status" id="kwStatus" role="status"></p>
+    </div>
+
+    <div id="kwTable" class="hidden" style="margin-top:1.4rem;">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Query</th>
+              <th>Clicks</th>
+              <th>Impressions</th>
+              <th>CTR</th>
+              <th>Position</th>
+            </tr>
+          </thead>
+          <tbody id="kwBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div id="tab-recs" class="tab-panel">
+    <h2 class="section-title">Recommendations</h2>
+    <p class="section-sub">Prioritized improvements from the last audit. High priority items have the most impact on search visibility.</p>
+
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;">
+      <button class="btn ghost" id="filterAll" style="font-size:.66rem;padding:.5rem .9rem;">All</button>
+      <button class="btn ghost" id="filterHi" style="font-size:.66rem;padding:.5rem .9rem;">High</button>
+      <button class="btn ghost" id="filterMid" style="font-size:.66rem;padding:.5rem .9rem;">Medium</button>
+      <button class="btn ghost" id="filterLo" style="font-size:.66rem;padding:.5rem .9rem;">Low</button>
+    </div>
+
+    <div class="card">
+      <ul class="rec-list" id="recList"></ul>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div id="tab-setup" class="tab-panel">
+    <h2 class="section-title">Setup &amp; configuration</h2>
+    <p class="section-sub">Connect live data sources. Start with PageSpeed; it only needs a free API key and takes two minutes.</p>
+
+    <div class="card">
+      <div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">PageSpeed API key</div>
+      <p style="font-size:.85rem;color:var(--taupe);margin:0 0 .6rem;line-height:1.6;">
+        Saved in your browser only. Never sent anywhere except Google.
+      </p>
+      <div class="api-row">
+        <input id="apiKeyInput" type="text" placeholder="AIzaSy..." autocomplete="off"/>
+        <button class="btn" id="saveKeyBtn">Save</button>
+        <button class="btn ghost" id="clearKeyBtn">Clear</button>
+      </div>
+      <p class="status" id="keyStatus" role="status"></p>
+    </div>
+
+    <hr class="divider"/>
+
+    <h2 class="section-title" style="font-size:1.1rem;">How to get a PageSpeed API key</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Open Google Cloud Console</h3>
+          <p>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> and sign in with your Google account.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Create or select a project</h3>
+          <p>Click the project dropdown at the top and create a new project (for example, "Sabra SEO"). Free tier is enough.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Enable the PageSpeed Insights API</h3>
+          <p>Search for "PageSpeed Insights API" in the API Library and click Enable.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Create a key</h3>
+          <p>Go to APIs &amp; Services &gt; Credentials, click Create credentials &gt; API key. Copy the key.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>Paste it above and save</h3>
+          <p>Paste the key into the field at the top of this tab and click Save. Then go to the PageSpeed tab and run your first test.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <h2 class="section-title" style="font-size:1.1rem;">Search Console</h2>
+    <p style="font-size:.85rem;color:var(--taupe);line-height:1.7;margin:0 0 .8rem;">
+      Search Console data (keywords, impressions, clicks) requires OAuth and cannot be accessed with a plain API key.
+      For now, export a CSV from <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Search Console</a>
+      and paste it into the Keywords tab. A server-side integration can be added later if needed.
+    </p>
+
+    <hr class="divider"/>
+
+    <p style="font-size:.75rem;color:var(--taupe);line-height:1.7;">
+      Your API key is stored only in this browser via localStorage. It is never sent to any server other than Google.
+      Clearing your browser data will remove it.
+    </p>
+  </div>
+
+</main>
+</div><!-- #app -->
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ---------------------------------------------------------------- storage
+  function store(k,v){
+    try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){}
+  }
+
+  // ---------------------------------------------------------------- login
+  function showApp(){
+    $('login').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    initApp();
+  }
+
+  $('loginBtn').addEventListener('click', function(){
+    var st=$('loginStatus'); st.className='status'; st.textContent='Checking...';
+    fetch('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:$('pw').value})})
+      .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
+      .then(function(o){
+        if(o&&o.ok){ st.textContent=''; showApp(); }
+        else{ st.className='status err'; st.textContent=(o&&o.error)||'Could not sign in.'; }
+      })
+      .catch(function(){ st.className='status err'; st.textContent='Could not reach the server.'; });
+  });
+  $('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') $('loginBtn').click(); });
+
+  // ---------------------------------------------------------------- tabs
+  function initApp(){
+    loadApiKey();
+    initRecs();
+    initTabs();
+  }
+
+  function initTabs(){
+    var tabs=document.querySelectorAll('.tab-bar button[data-tab]');
+    tabs.forEach(function(btn){
+      btn.addEventListener('click',function(){
+        tabs.forEach(function(b){ b.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+        btn.classList.add('active');
+        $('tab-'+btn.dataset.tab).classList.add('active');
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------- api key
+  function loadApiKey(){
+    var k=store('sc_ps_key')||'';
+    $('apiKeyInput').value=k;
+    if(k) $('keyStatus').className='status ok', $('keyStatus').textContent='API key saved.';
+  }
+
+  $('saveKeyBtn').addEventListener('click',function(){
+    var k=$('apiKeyInput').value.trim();
+    if(!k){ $('keyStatus').className='status err'; $('keyStatus').textContent='Paste your API key first.'; return; }
+    store('sc_ps_key',k);
+    $('keyStatus').className='status ok'; $('keyStatus').textContent='Saved.';
+  });
+  $('clearKeyBtn').addEventListener('click',function(){
+    store('sc_ps_key',''); $('apiKeyInput').value='';
+    $('keyStatus').className='status'; $('keyStatus').textContent='Cleared.';
+  });
+
+  // ---------------------------------------------------------------- pagespeed
+  function scoreColor(n){
+    if(n>=90) return '#4A5D46';
+    if(n>=50) return '#7A5C2A';
+    return '#8C3A2B';
+  }
+
+  function runPageSpeed(url, statusEl, resultEl, tilesEl, cwvEl, oppsEl, oppListEl){
+    var key=store('sc_ps_key');
+    if(!key){ statusEl.className='status err'; statusEl.textContent='Add your API key in the Setup tab first.'; return; }
+    if(!url){ statusEl.className='status err'; statusEl.textContent='Enter a URL.'; return; }
+    statusEl.className='status'; statusEl.textContent='Fetching from Google...';
+    resultEl.classList.add('hidden');
+    fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&key='+encodeURIComponent(key)+'&strategy=mobile')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.error){ statusEl.className='status err'; statusEl.textContent=d.error.message||'API error.'; return; }
+        var cats=d.lighthouseResult&&d.lighthouseResult.categories;
+        var aud=d.lighthouseResult&&d.lighthouseResult.audits;
+        if(!cats){ statusEl.className='status err'; statusEl.textContent='Unexpected response.'; return; }
+        statusEl.textContent='';
+        resultEl.classList.remove('hidden');
+
+        // score tiles
+        var fields=[
+          {key:'performance',label:'Performance'},
+          {key:'accessibility',label:'Accessibility'},
+          {key:'best-practices',label:'Best Practices'},
+          {key:'seo',label:'SEO'}
+        ];
+        tilesEl.innerHTML='';
+        fields.forEach(function(f){
+          var c=cats[f.key]; if(!c) return;
+          var sc=Math.round(c.score*100);
+          var t=document.createElement('div'); t.className='ps-tile';
+          t.innerHTML='<div class="ps-label">'+f.label+'</div><div class="ps-val" style="color:'+scoreColor(sc)+'">'+sc+'</div><div class="ps-unit">/ 100</div>';
+          tilesEl.appendChild(t);
+        });
+
+        // CWV
+        var cwv=[
+          {key:'largest-contentful-paint',label:'LCP'},
+          {key:'total-blocking-time',label:'TBT'},
+          {key:'cumulative-layout-shift',label:'CLS'},
+          {key:'first-contentful-paint',label:'FCP'},
+          {key:'speed-index',label:'Speed Index'},
+          {key:'interactive',label:'TTI'}
+        ];
+        cwvEl.innerHTML='';
+        cwv.forEach(function(m){
+          var a=aud&&aud[m.key]; if(!a) return;
+          var sc=a.score===null?'':Math.round((a.score||0)*100);
+          var rating=a.score>=0.9?'<span class="badge hi">Good</span>':a.score>=0.5?'<span class="badge mid">Improve</span>':'<span class="badge lo">Poor</span>';
+          var tr=document.createElement('tr');
+          tr.innerHTML='<td>'+m.label+'</td><td>'+a.displayValue+'</td><td>'+rating+'</td>';
+          cwvEl.appendChild(tr);
+        });
+
+        // opportunities
+        var opps=Object.values(aud||{}).filter(function(a){ return a.details&&a.details.type==='opportunity'&&a.score<0.9&&a.title; });
+        if(opps.length){
+          oppsEl.classList.remove('hidden');
+          oppListEl.innerHTML='';
+          opps.slice(0,8).forEach(function(a){
+            var li=document.createElement('li');
+            li.textContent=a.title+(a.displayValue?' ('+a.displayValue+')':'');
+            oppListEl.appendChild(li);
+          });
+        } else {
+          oppsEl.classList.add('hidden');
+        }
+      })
+      .catch(function(e){ statusEl.className='status err'; statusEl.textContent='Could not reach PageSpeed API. Check your key and network.'; });
+  }
+
+  $('psBtn').addEventListener('click',function(){
+    runPageSpeed(
+      $('psUrl').value.trim(), $('psStatus'), $('psResult'),
+      $('psTiles'), $('cwvTable'), $('psOpps'), $('oppList')
+    );
+  });
+
+  // ---------------------------------------------------------------- audit (pages tab)
+  $('auditBtn').addEventListener('click',function(){
+    var url=$('auditUrl').value.trim();
+    var key=store('sc_ps_key');
+    if(!key){ $('auditStatus').className='status err'; $('auditStatus').textContent='Add your API key in the Setup tab first.'; return; }
+    $('auditStatus').className='status'; $('auditStatus').textContent='Fetching...';
+    $('auditResult').classList.add('hidden');
+    fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&key='+encodeURIComponent(key)+'&strategy=mobile')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.error){ $('auditStatus').className='status err'; $('auditStatus').textContent=d.error.message||'API error.'; return; }
+        var cats=d.lighthouseResult&&d.lighthouseResult.categories;
+        if(!cats){ $('auditStatus').className='status err'; $('auditStatus').textContent='Unexpected response.'; return; }
+        $('auditStatus').textContent='';
+        $('auditResult').classList.remove('hidden');
+        var tiles=$('auditTiles'); tiles.innerHTML='';
+        var perf=cats.performance?Math.round(cats.performance.score*100):null;
+        var seo=cats.seo?Math.round(cats.seo.score*100):null;
+        [
+          {label:'Performance',val:perf},
+          {label:'SEO (Lighthouse)',val:seo}
+        ].forEach(function(f){
+          if(f.val===null) return;
+          var t=document.createElement('div'); t.className='tile';
+          t.innerHTML='<div class="tile-label">'+f.label+'</div><div class="tile-score" style="color:'+scoreColor(f.val)+'">'+f.val+'</div><div class="tile-sub">/ 100</div>';
+          tiles.appendChild(t);
+        });
+      })
+      .catch(function(){ $('auditStatus').className='status err'; $('auditStatus').textContent='Could not reach PageSpeed API.'; });
+  });
+
+  // ---------------------------------------------------------------- keywords
+  $('kwParseBtn').addEventListener('click',function(){
+    var raw=$('kwPaste').value.trim();
+    if(!raw){ $('kwStatus').className='status err'; $('kwStatus').textContent='Paste your CSV first.'; return; }
+    var lines=raw.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+    var rows=lines.slice(1).map(function(l){ return l.split(','); }).filter(function(r){ return r.length>=5; });
+    if(!rows.length){ $('kwStatus').className='status err'; $('kwStatus').textContent='No data rows found. Check the format.'; return; }
+    $('kwStatus').textContent='';
+    var body=$('kwBody'); body.innerHTML='';
+    rows.forEach(function(r){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+(parseFloat(r[3])*100).toFixed(1)+'%</td><td>'+parseFloat(r[4]).toFixed(1)+'</td>';
+      body.appendChild(tr);
+    });
+    $('kwTable').classList.remove('hidden');
+    $('kwStatus').className='status ok'; $('kwStatus').textContent=rows.length+' rows loaded.';
+  });
+
+  // ---------------------------------------------------------------- recommendations
+  var RECS=[
+    {pri:'high',title:'Add FAQ schema to Contact page',
+     body:'The Contact page has no FAQ or QAPage structured data. Adding common question/answer pairs can generate rich results in AI overviews and voice search.'},
+    {pri:'high',title:'Improve About page meta description specificity',
+     body:'The About page meta description is generic. Rewrite it to include your primary service category and city name (Nashville) for stronger local relevance signals.'},
+    {pri:'medium',title:'Add breadcrumb schema to all pages',
+     body:'BreadcrumbList structured data helps search engines understand site hierarchy and can display as breadcrumbs in search results. None detected on any page.'},
+    {pri:'medium',title:'Add rel="canonical" to blog post pages',
+     body:'Blog posts do not include a canonical link element. This can cause duplicate content signals if posts are shared or linked with tracking parameters.'},
+    {pri:'low',title:'Increase image alt text specificity',
+     body:'Several images use short or generic alt attributes. Descriptive alt text improves accessibility and provides additional keyword context for image search.'},
+    {pri:'low',title:'Add sameAs to LocalBusiness schema',
+     body:'Your LocalBusiness schema does not include sameAs links to social profiles or Google Business Profile. These help establish entity authority with search engines.'}
+  ];
+
+  function initRecs(){
+    renderRecs('all');
+    $('filterAll').addEventListener('click',function(){ renderRecs('all'); });
+    $('filterHi').addEventListener('click',function(){ renderRecs('high'); });
+    $('filterMid').addEventListener('click',function(){ renderRecs('medium'); });
+    $('filterLo').addEventListener('click',function(){ renderRecs('low'); });
+  }
+
+  function renderRecs(filter){
+    var list=$('recList'); list.innerHTML='';
+    var filtered=filter==='all'?RECS:RECS.filter(function(r){ return r.pri===filter; });
+    filtered.forEach(function(r){
+      var cls=r.pri==='high'?'hi':r.pri==='medium'?'mid':'lo';
+      var li=document.createElement('li');
+      li.innerHTML='<div class="rec-pri"><span class="badge '+cls+'">'+r.pri+'</span></div>'
+        +'<div class="rec-body"><h3>'+r.title+'</h3><p>'+r.body+'</p></div>';
+      list.appendChild(li);
+    });
+    if(!filtered.length){
+      list.innerHTML='<li style="padding:1rem 0;color:var(--taupe);font-size:.88rem;">No items in this category.</li>';
+    }
+  }
+
+})();
+</script>
+</body>
+</html>
