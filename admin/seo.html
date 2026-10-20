@@ -653,36 +653,7 @@
     );
   });
 
-  // ---------------------------------------------------------------- audit (pages tab)
-  $('auditBtn').addEventListener('click',function(){
-    var url=$('auditUrl').value.trim();
-    var key=store('sc_ps_key');
-    if(!key){ $('auditStatus').className='status err'; $('auditStatus').textContent='Add your API key in the Setup tab first.'; return; }
-    $('auditStatus').className='status'; $('auditStatus').textContent='Fetching...';
-    $('auditResult').classList.add('hidden');
-    fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&key='+encodeURIComponent(key)+'&strategy=mobile')
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d.error){ $('auditStatus').className='status err'; $('auditStatus').textContent=d.error.message||'API error.'; return; }
-        var cats=d.lighthouseResult&&d.lighthouseResult.categories;
-        if(!cats){ $('auditStatus').className='status err'; $('auditStatus').textContent='Unexpected response.'; return; }
-        $('auditStatus').textContent='';
-        $('auditResult').classList.remove('hidden');
-        var tiles=$('auditTiles'); tiles.innerHTML='';
-        var perf=cats.performance?Math.round(cats.performance.score*100):null;
-        var seo=cats.seo?Math.round(cats.seo.score*100):null;
-        [
-          {label:'Performance',val:perf},
-          {label:'SEO (Lighthouse)',val:seo}
-        ].forEach(function(f){
-          if(f.val===null) return;
-          var t=document.createElement('div'); t.className='tile';
-          t.innerHTML='<div class="tile-label">'+f.label+'</div><div class="tile-score" style="color:'+scoreColor(f.val)+'">'+f.val+'</div><div class="tile-sub">/ 100</div>';
-          tiles.appendChild(t);
-        });
-      })
-      .catch(function(){ $('auditStatus').className='status err'; $('auditStatus').textContent='Could not reach PageSpeed API.'; });
-  });
+  // audit removed (merged into pages table via Request Indexing + PageSpeed tab)
 
   // ---------------------------------------------------------------- keywords
   $('kwParseBtn').addEventListener('click',function(){
