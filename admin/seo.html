@@ -195,7 +195,7 @@
 </header>
 <main>
   <h1>SEO Dashboard</h1>
-  <p class="sub">Site health for sabraandcompany.com. Scores reflect the last full audit. Connect PageSpeed Insights for live performance data.</p>
+  <p class="sub">Site health for sabraandcompany.com. Scores reflect the last full audit. <span id="googleStatusBadge"></span></p>
 
   <nav class="tab-bar" role="tablist">
     <button role="tab" class="active" data-tab="overview">Overview</button>
@@ -257,7 +257,15 @@
     </div>
 
     <hr class="divider"/>
-    <p style="font-size:.78rem;color:var(--taupe);">Last audit: June 2026. Run a new audit from the Pages tab or pull live performance from the PageSpeed tab.</p>
+
+    <div id="analyticsSection" class="hidden">
+      <h2 class="section-title">Traffic (last 28 days)</h2>
+      <p class="section-sub">Live from Google Analytics.</p>
+      <div class="tiles" id="analyticsTiles"></div>
+      <hr class="divider"/>
+    </div>
+
+    <p style="font-size:.78rem;color:var(--taupe);">Last audit: June 2026. Connect Google in the Setup tab to see live traffic and keyword data.</p>
   </div>
 
   <!-- PAGES -->
@@ -289,21 +297,28 @@
   <!-- PAGESPEED -->
   <div id="tab-pagespeed" class="tab-panel">
     <h2 class="section-title">PageSpeed Insights</h2>
-    <p class="section-sub">Live Lighthouse scores from Google. Opens Google's PageSpeed tool with the URL pre-filled — no key, no quota.</p>
+    <p class="section-sub">Live Lighthouse scores from Google. Uses your API key for in-page results.</p>
 
     <div class="url-row">
       <input id="psUrl" type="text" value="https://www.sabraandcompany.com/" placeholder="https://www.sabraandcompany.com/"/>
-      <button class="btn" id="psBtn">Open in PageSpeed</button>
+      <button class="btn" id="psBtn">Run test</button>
     </div>
-    <p style="font-size:.82rem;color:var(--taupe);margin:.2rem 0 0;line-height:1.6;">The Google PageSpeed Insights site opens with your URL already loaded. No sign-in required.</p>
+    <p class="status" id="psStatus" role="status"></p>
 
-    <div style="margin-top:2rem;">
-      <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">What to look for</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;font-size:.85rem;color:var(--taupe);line-height:1.7;">
-        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">Performance</strong>Aim for 90+. Under 70 means the page loads slowly for visitors and Google may rank it lower.</div>
-        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">LCP</strong>Largest Contentful Paint. Under 2.5s is good. This is the biggest image or text block loading.</div>
-        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">CLS</strong>Cumulative Layout Shift. Under 0.1 is good. Measures whether the page jumps around while loading.</div>
-        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">Accessibility</strong>Aim for 90+. Covers contrast, labels, and screen-reader support.</div>
+    <div id="psResult" class="hidden">
+      <div class="ps-grid" id="psTiles"></div>
+
+      <div class="card">
+        <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">Core Web Vitals</div>
+        <table>
+          <thead><tr><th>Metric</th><th>Value</th><th>Rating</th></tr></thead>
+          <tbody id="cwvTable"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top:1rem;" id="psOpps">
+        <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.8rem;">Opportunities</div>
+        <ul id="oppList" style="margin:0;padding:0 0 0 1.2rem;font-size:.88rem;color:var(--taupe);line-height:1.9;"></ul>
       </div>
     </div>
   </div>
@@ -311,39 +326,38 @@
   <!-- KEYWORDS -->
   <div id="tab-keywords" class="tab-panel">
     <h2 class="section-title">Keyword performance</h2>
-    <p class="section-sub">Top queries and positions from Google Search Console. Connect Search Console to see live data.</p>
+    <p class="section-sub">Top queries from Google Search Console, last 28 days.</p>
 
-    <div class="card">
-      <p style="font-size:.88rem;color:var(--taupe);line-height:1.7;margin:0 0 1rem;">
-        Search Console integration requires OAuth and a server-side token. Add your property in
-        <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Google Search Console</a>
-        and use the export feature to pull queries, then paste them below.
-      </p>
-      <div style="margin-bottom:1rem;">
-        <label class="lbl" for="kwPaste">Paste CSV export from Search Console</label>
-        <textarea id="kwPaste" rows="6" style="width:100%;padding:.65rem .8rem;font-family:'Jost',sans-serif;
-          font-size:.82rem;font-weight:300;color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);
-          border-radius:0;resize:vertical;" placeholder="query,clicks,impressions,ctr,position&#10;interior design nashville,42,380,0.11,4.2&#10;..."></textarea>
-      </div>
-      <button class="btn ghost" id="kwParseBtn">Load keywords</button>
-      <p class="status" id="kwStatus" role="status"></p>
+    <div id="kwConnect" class="card" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <p style="font-size:.88rem;color:var(--taupe);margin:0;line-height:1.6;">Connect Google to load live keyword data automatically.</p>
+      <button class="btn" id="kwConnectBtn">Connect Google</button>
     </div>
 
-    <div id="kwTable" class="hidden" style="margin-top:1.4rem;">
+    <div id="kwLive" class="hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.6rem;">
+        <p style="margin:0;font-size:.82rem;color:var(--taupe);" id="kwLiveNote">Last 28 days from Search Console.</p>
+        <button class="btn ghost" id="kwRefreshBtn" style="font-size:.66rem;padding:.5rem .9rem;">Refresh</button>
+      </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <table>
           <thead>
-            <tr>
-              <th>Query</th>
-              <th>Clicks</th>
-              <th>Impressions</th>
-              <th>CTR</th>
-              <th>Position</th>
-            </tr>
+            <tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr>
           </thead>
           <tbody id="kwBody"></tbody>
         </table>
       </div>
+    </div>
+
+    <hr class="divider"/>
+    <div>
+      <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.6rem;">Or paste a CSV export</div>
+      <div style="margin-bottom:.8rem;">
+        <textarea id="kwPaste" rows="4" style="width:100%;padding:.65rem .8rem;font-family:'Jost',sans-serif;
+          font-size:.82rem;font-weight:300;color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);
+          border-radius:0;resize:vertical;" placeholder="query,clicks,impressions,ctr,position&#10;interior designer colorado springs,42,380,0.11,4.2"></textarea>
+      </div>
+      <button class="btn ghost" id="kwParseBtn">Load CSV</button>
+      <p class="status" id="kwStatus" role="status"></p>
     </div>
   </div>
 
@@ -367,12 +381,34 @@
   <!-- SETUP -->
   <div id="tab-setup" class="tab-panel">
     <h2 class="section-title">Setup &amp; configuration</h2>
-    <p class="section-sub">Connect live data sources. Start with PageSpeed; it only needs a free API key and takes two minutes.</p>
+    <p class="section-sub">Connect Google to unlock live keyword data, traffic analytics, and PageSpeed scores.</p>
 
+    <!-- Google connection -->
+    <div class="card" id="googleConnectCard">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.5rem;">Google Account</div>
+          <p style="font-size:.88rem;color:var(--taupe);margin:0 0 .7rem;line-height:1.6;" id="googleConnectDesc">
+            Connects Search Console (keywords, clicks, impressions) and Analytics (sessions, users, pageviews).
+          </p>
+          <div id="googleConnectActions">
+            <button class="btn" id="connectGoogleBtn">Connect with Google</button>
+          </div>
+          <div id="googleConnectedActions" class="hidden" style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:.82rem;color:var(--ok);">&#10003; Connected</span>
+            <button class="btn ghost" id="disconnectGoogleBtn" style="font-size:.66rem;padding:.45rem .8rem;">Disconnect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- PageSpeed API key -->
     <div class="card">
-      <div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">PageSpeed API key <span style="font-size:.68rem;letter-spacing:0;text-transform:none;color:var(--taupe);">(optional)</span></div>
-      <p style="font-size:.85rem;color:var(--taupe);margin:0 0 .6rem;line-height:1.6;">
-        PageSpeed works without a key. If you run many tests per day and start hitting rate limits, add a free key here to remove them. Saved in your browser only.
+      <div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.5rem;">PageSpeed API Key</div>
+      <p style="font-size:.85rem;color:var(--taupe);margin:0 0 .7rem;line-height:1.6;">
+        Enables in-page PageSpeed test results. Paste the API key from Google Cloud Console (the same project where you enabled PageSpeed Insights API). Stored in your browser only.
       </p>
       <div class="api-row">
         <input id="apiKeyInput" type="text" placeholder="AIzaSy..." autocomplete="off"/>
@@ -384,59 +420,60 @@
 
     <hr class="divider"/>
 
-    <h2 class="section-title" style="font-size:1.1rem;">How to get a PageSpeed API key</h2>
+    <!-- GA4 property ID -->
+    <div class="card">
+      <div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.5rem;">GA4 Property ID</div>
+      <p style="font-size:.85rem;color:var(--taupe);margin:0 0 .7rem;line-height:1.6;">
+        Your Google Analytics 4 property ID (numbers only, e.g. <code style="font-size:.8rem;background:var(--linen);padding:.1rem .3rem;">123456789</code>). Find it in Google Analytics under Admin &gt; Property Settings. Add it to Vercel as the environment variable <code style="font-size:.8rem;background:var(--linen);padding:.1rem .3rem;">GA4_PROPERTY_ID</code>.
+      </p>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- OAuth setup steps -->
+    <h2 class="section-title" style="font-size:1.1rem;">One-time setup: OAuth credentials</h2>
+    <p style="font-size:.85rem;color:var(--taupe);line-height:1.7;margin:0 0 1rem;">You only need to do this once. These steps create the OAuth client that lets the Connect button work.</p>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Open Google Cloud Console</h3>
-          <p>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> and sign in with your Google account.</p>
+          <p>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a>, open your project, then go to APIs &amp; Services &gt; Credentials.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
-          <h3>Create or select a project</h3>
-          <p>Click the project dropdown at the top and create a new project (for example, "Sabra SEO"). Free tier is enough.</p>
+          <h3>Create an OAuth client</h3>
+          <p>Click Create credentials &gt; OAuth client ID. Choose "Web application." Under Authorized redirect URIs, add exactly: <code>https://www.sabraandcompany.com/api/google-callback</code></p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h3>Enable the PageSpeed Insights API</h3>
-          <p>Search for "PageSpeed Insights API" in the API Library and click Enable.</p>
+          <h3>Copy the Client ID and Secret</h3>
+          <p>After creating, copy the Client ID and Client Secret. You'll add these to Vercel in the next step.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-body">
-          <h3>Create a key</h3>
-          <p>Go to APIs &amp; Services &gt; Credentials, click Create credentials &gt; API key. Copy the key.</p>
+          <h3>Add to Vercel environment variables</h3>
+          <p>In your Vercel project settings under Environment Variables, add: <code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>, and <code>GA4_PROPERTY_ID</code>. Redeploy after saving.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-body">
-          <h3>Paste it above and save</h3>
-          <p>Paste the key into the field at the top of this tab and click Save. Then go to the PageSpeed tab and run your first test.</p>
+          <h3>Click Connect with Google above</h3>
+          <p>Once the env vars are deployed, click the Connect button at the top of this tab. You'll sign in with Google and grant access. You're done.</p>
         </div>
       </div>
     </div>
 
     <hr class="divider"/>
-
-    <h2 class="section-title" style="font-size:1.1rem;">Search Console</h2>
-    <p style="font-size:.85rem;color:var(--taupe);line-height:1.7;margin:0 0 .8rem;">
-      Search Console data (keywords, impressions, clicks) requires OAuth and cannot be accessed with a plain API key.
-      For now, export a CSV from <a href="https://search.google.com/search-console" target="_blank" rel="noopener">Search Console</a>
-      and paste it into the Keywords tab. A server-side integration can be added later if needed.
-    </p>
-
-    <hr class="divider"/>
-
     <p style="font-size:.75rem;color:var(--taupe);line-height:1.7;">
-      Your API key is stored only in this browser via localStorage. It is never sent to any server other than Google.
-      Clearing your browser data will remove it.
+      Your PageSpeed API key is stored only in your browser. Google OAuth tokens are stored in secure httpOnly cookies on the server and never touch your browser's localStorage. Disconnecting clears all tokens immediately.
     </p>
   </div>
 
@@ -616,6 +653,7 @@
     initRecs();
     initTabs();
     buildPagesTable();
+    initGoogle();
   }
 
   function initTabs(){
@@ -648,14 +686,182 @@
     $('keyStatus').className='status'; $('keyStatus').textContent='Cleared.';
   });
 
-  // ---------------------------------------------------------------- pagespeed (opens pagespeed.web.dev — no API call, no quota)
+  // ---------------------------------------------------------------- pagespeed
   $('psBtn').addEventListener('click',function(){
     var url=($('psUrl').value||'').trim();
     if(!url){ return; }
-    window.open('https://pagespeed.web.dev/report?url='+encodeURIComponent(url),'_blank','noopener');
+    var key=store('sc_ps_key')||'';
+    if(!key){
+      // No key — open pagespeed.web.dev
+      window.open('https://pagespeed.web.dev/report?url='+encodeURIComponent(url),'_blank','noopener');
+      return;
+    }
+    // Have API key — run in-page
+    var btn=$('psBtn'); var st=$('psStatus'); var res=$('psResult');
+    btn.disabled=true; st.className='status'; st.textContent='Running test...'; res.classList.add('hidden');
+    fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&strategy=mobile&key='+encodeURIComponent(key))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.error){ throw new Error(d.error.message||'PageSpeed error'); }
+        var cats=d.lighthouseResult&&d.lighthouseResult.categories||{};
+        var audits=d.lighthouseResult&&d.lighthouseResult.audits||{};
+        // score tiles
+        var tilesEl=$('psTiles'); tilesEl.innerHTML='';
+        [['Performance',cats.performance],['Accessibility',cats.accessibility],['Best Practices',cats['best-practices']],['SEO',cats.seo]].forEach(function(c){
+          var val=c[1]?Math.round(c[1].score*100):0;
+          var cls=val>=90?'score-hi':val>=50?'score-mid':'score-lo';
+          tilesEl.innerHTML+='<div class="ps-tile"><div class="ps-label">'+c[0]+'</div><div class="ps-val '+cls+'">'+val+'</div></div>';
+        });
+        // core web vitals
+        var cwv=$('cwvTable'); cwv.innerHTML='';
+        [['First Contentful Paint','first-contentful-paint'],['Largest Contentful Paint','largest-contentful-paint'],['Total Blocking Time','total-blocking-time'],['Cumulative Layout Shift','cumulative-layout-shift'],['Speed Index','speed-index']].forEach(function(m){
+          var a=audits[m[1]]; if(!a) return;
+          var cls=a.score===null?'':a.score>=0.9?'index-ok':a.score>=0.5?'index-na':'';
+          cwv.innerHTML+='<tr><td>'+m[0]+'</td><td>'+a.displayValue+'</td><td class="'+cls+'">'+a.scoreDisplayMode+'</td></tr>';
+        });
+        // opportunities
+        var opp=$('oppList'); opp.innerHTML='';
+        var oppAudits=d.lighthouseResult&&d.lighthouseResult.audits||{};
+        Object.values(oppAudits).filter(function(a){ return a.details&&a.details.type==='opportunity'&&a.score<0.9; })
+          .slice(0,6).forEach(function(a){
+            opp.innerHTML+='<li>'+a.title+'</li>';
+          });
+        if(!opp.children.length) opp.innerHTML='<li style="color:var(--ok)">No significant opportunities found.</li>';
+        res.classList.remove('hidden');
+        st.textContent='';
+        // cache speed score for pages table
+        var perf=cats.performance?Math.round(cats.performance.score*100):null;
+        if(perf!==null){ speedCache[url]=perf; buildPagesTable(); }
+      })
+      .catch(function(e){
+        st.className='status err'; st.textContent=e.message||'Test failed.';
+      })
+      .finally(function(){ btn.disabled=false; });
   });
 
-  // audit removed (merged into pages table via Request Indexing + PageSpeed tab)
+  // ---------------------------------------------------------------- Google OAuth + live data
+  var googleConnected=false;
+
+  function setGoogleConnected(connected){
+    googleConnected=connected;
+    // badge in subtitle
+    var badge=$('googleStatusBadge');
+    if(connected){
+      badge.innerHTML='<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;color:var(--ok);vertical-align:middle;">&#10003; Google connected</span>';
+    } else {
+      badge.innerHTML='<span style="font-size:.78rem;color:var(--taupe);vertical-align:middle;"><a href="#" id="badgeConnectLink" style="color:var(--taupe);">Connect Google</a></span>';
+      var lnk=$('badgeConnectLink');
+      if(lnk) lnk.addEventListener('click',function(e){
+        e.preventDefault();
+        document.querySelector('.tab-bar button[data-tab="setup"]').click();
+      });
+    }
+    // setup tab buttons
+    if(connected){
+      $('googleConnectActions').classList.add('hidden');
+      $('googleConnectedActions').classList.remove('hidden');
+    } else {
+      $('googleConnectActions').classList.remove('hidden');
+      $('googleConnectedActions').classList.add('hidden');
+    }
+    // keywords tab
+    if(connected){
+      $('kwConnect').classList.add('hidden');
+      loadSearchConsole();
+    } else {
+      $('kwConnect').classList.remove('hidden');
+      $('kwLive').classList.add('hidden');
+    }
+    // analytics section on overview
+    if(connected) loadAnalytics();
+    else $('analyticsSection').classList.add('hidden');
+  }
+
+  function initGoogle(){
+    // Check URL params first (callback redirect)
+    var params=new URLSearchParams(window.location.search);
+    if(params.get('google')==='connected'){
+      // Clean URL
+      history.replaceState(null,'',window.location.pathname);
+      setGoogleConnected(true);
+      return;
+    }
+    if(params.get('google')==='denied'){
+      history.replaceState(null,'',window.location.pathname);
+      setGoogleConnected(false);
+      return;
+    }
+    // Probe whether we already have a valid token (call analytics with a tiny request)
+    fetch('/api/analytics').then(function(r){ return r.json(); }).then(function(d){
+      setGoogleConnected(!!(d&&d.ok));
+    }).catch(function(){
+      setGoogleConnected(false);
+    });
+  }
+
+  function loadAnalytics(){
+    fetch('/api/analytics').then(function(r){ return r.json(); }).then(function(d){
+      if(!d||!d.ok) return;
+      var s=d.summary||{};
+      var tiles=$('analyticsTiles');
+      function fmt(n){ return n>=10000?(n/1000).toFixed(1)+'k':n.toLocaleString(); }
+      function dur(sec){ var m=Math.floor(sec/60); var s2=Math.round(sec%60); return m+'m '+s2+'s'; }
+      tiles.innerHTML=
+        '<div class="tile"><div class="tile-label">Sessions</div><div class="tile-score">'+fmt(s.sessions||0)+'</div><div class="tile-sub">28 days</div></div>'+
+        '<div class="tile"><div class="tile-label">Users</div><div class="tile-score">'+fmt(s.users||0)+'</div><div class="tile-sub">active</div></div>'+
+        '<div class="tile"><div class="tile-label">Pageviews</div><div class="tile-score">'+fmt(s.pageviews||0)+'</div><div class="tile-sub">28 days</div></div>'+
+        '<div class="tile"><div class="tile-label">Bounce rate</div><div class="tile-score">'+((s.bounceRate||0)*100).toFixed(0)+'%</div><div class="tile-sub"> </div></div>'+
+        '<div class="tile"><div class="tile-label">Avg. session</div><div class="tile-score" style="font-size:1.8rem;">'+dur(s.avgDuration||0)+'</div><div class="tile-sub"> </div></div>';
+      $('analyticsSection').classList.remove('hidden');
+    }).catch(function(){});
+  }
+
+  function loadSearchConsole(){
+    var note=$('kwLiveNote');
+    if(note) note.textContent='Loading from Search Console...';
+    fetch('/api/search-console').then(function(r){ return r.json(); }).then(function(d){
+      if(!d||!d.ok){
+        if(note) note.textContent='Could not load Search Console data.';
+        return;
+      }
+      var body=$('kwBody'); body.innerHTML='';
+      (d.queries||[]).forEach(function(q){
+        var tr=document.createElement('tr');
+        tr.innerHTML='<td>'+q.query+'</td><td>'+q.clicks+'</td><td>'+q.impressions+'</td><td>'+(q.ctr*100).toFixed(1)+'%</td><td>'+q.position.toFixed(1)+'</td>';
+        body.appendChild(tr);
+      });
+      $('kwLive').classList.remove('hidden');
+      if(note) note.textContent='Last 28 days from Search Console.';
+      // update kwCache for pages table
+      (d.pages||[]).forEach(function(p){
+        var slug=p.page.replace('https://www.sabraandcompany.com','');
+        kwCache[slug]={clicks:p.clicks,impr:p.impressions};
+      });
+      buildPagesTable();
+    }).catch(function(){
+      if(note) note.textContent='Could not load Search Console data.';
+    });
+  }
+
+  $('connectGoogleBtn').addEventListener('click',function(){
+    window.location.href='/api/google-oauth';
+  });
+
+  $('kwConnectBtn').addEventListener('click',function(){
+    document.querySelector('.tab-bar button[data-tab="setup"]').click();
+  });
+
+  $('kwRefreshBtn').addEventListener('click',function(){
+    loadSearchConsole();
+  });
+
+  $('disconnectGoogleBtn').addEventListener('click',function(){
+    fetch('/api/google-disconnect',{method:'POST'}).then(function(){
+      setGoogleConnected(false);
+    }).catch(function(){
+      setGoogleConnected(false);
+    });
+  });
 
   // ---------------------------------------------------------------- keywords
   $('kwParseBtn').addEventListener('click',function(){
@@ -671,9 +877,8 @@
       tr.innerHTML='<td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+(parseFloat(r[3])*100).toFixed(1)+'%</td><td>'+parseFloat(r[4]).toFixed(1)+'</td>';
       body.appendChild(tr);
     });
-    $('kwTable').classList.remove('hidden');
+    $('kwLive').classList.remove('hidden');
     $('kwStatus').className='status ok'; $('kwStatus').textContent=rows.length+' rows loaded.';
-    // not directly mapped to pages, but refresh table in case slug col present
     buildPagesTable();
   });
 
