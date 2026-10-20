@@ -74,6 +74,26 @@
   .ri-btn.copied{color:var(--ok);border-color:var(--ok);}
   .tbl-wrap{overflow-x:auto;}
 
+  /* expandable row detail */
+  .pg-row{cursor:pointer;}
+  .pg-row:hover td{background:rgba(240,234,224,.45);}
+  .pg-row td:first-child::before{content:'▸';display:inline-block;font-size:.6rem;color:var(--taupe);
+    margin-right:.35rem;transition:transform .15s;vertical-align:.05em;}
+  .pg-row.open td:first-child::before{transform:rotate(90deg);}
+  .detail-row td{background:#FBF8F3;padding:0;}
+  .detail-row.hidden{display:none;}
+  .detail-inner{padding:1.1rem 1.2rem 1.4rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;}
+  @media(max-width:700px){.detail-inner{grid-template-columns:1fr;}}
+  .detail-col-title{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);
+    margin-bottom:.7rem;font-weight:400;}
+  .check-list{list-style:none;margin:0;padding:0;}
+  .check-list li{font-size:.8rem;line-height:1.6;display:flex;gap:.45rem;align-items:flex-start;padding:.1rem 0;}
+  .check-list li .ck{flex-shrink:0;margin-top:.15rem;font-size:.75rem;}
+  .ck-pass{color:var(--ok);}
+  .ck-fail{color:var(--err);}
+  .ck-na{color:var(--taupe);}
+  .detail-footer{border-top:1px solid var(--line);padding:.85rem 1.2rem;display:flex;gap:.7rem;align-items:center;}
+
   /* bar charts */
   .bar-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;}
   .bar-name{width:80px;font-size:.78rem;color:var(--taupe);flex-shrink:0;text-align:right;}
@@ -269,30 +289,21 @@
   <!-- PAGESPEED -->
   <div id="tab-pagespeed" class="tab-panel">
     <h2 class="section-title">PageSpeed Insights</h2>
-    <p class="section-sub">Live Lighthouse scores from Google. No API key needed — just enter a URL and run the test.</p>
+    <p class="section-sub">Live Lighthouse scores from Google. Opens Google's PageSpeed tool with the URL pre-filled — no key, no quota.</p>
 
     <div class="url-row">
       <input id="psUrl" type="text" value="https://www.sabraandcompany.com/" placeholder="https://www.sabraandcompany.com/"/>
-      <button class="btn" id="psBtn">Run test</button>
+      <button class="btn" id="psBtn">Open in PageSpeed</button>
     </div>
-    <p class="status" id="psStatus" role="status"></p>
+    <p style="font-size:.82rem;color:var(--taupe);margin:.2rem 0 0;line-height:1.6;">The Google PageSpeed Insights site opens with your URL already loaded. No sign-in required.</p>
 
-    <div id="psResult" class="hidden">
-      <div class="ps-grid" id="psTiles"></div>
-
-      <div class="card">
-        <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">Core Web Vitals</div>
-        <table>
-          <thead>
-            <tr><th>Metric</th><th>Value</th><th>Rating</th></tr>
-          </thead>
-          <tbody id="cwvTable"></tbody>
-        </table>
-      </div>
-
-      <div class="card" style="margin-top:1rem;" id="psOpps">
-        <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.8rem;">Opportunities</div>
-        <ul id="oppList" style="margin:0;padding:0 0 0 1.2rem;font-size:.88rem;color:var(--taupe);line-height:1.9;"></ul>
+    <div style="margin-top:2rem;">
+      <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">What to look for</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;font-size:.85rem;color:var(--taupe);line-height:1.7;">
+        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">Performance</strong>Aim for 90+. Under 70 means the page loads slowly for visitors and Google may rank it lower.</div>
+        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">LCP</strong>Largest Contentful Paint. Under 2.5s is good. This is the biggest image or text block loading.</div>
+        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">CLS</strong>Cumulative Layout Shift. Under 0.1 is good. Measures whether the page jumps around while loading.</div>
+        <div class="card"><strong style="color:var(--charcoal);display:block;margin-bottom:.3rem;">Accessibility</strong>Aim for 90+. Covers contrast, labels, and screen-reader support.</div>
       </div>
     </div>
   </div>
@@ -462,16 +473,52 @@
   $('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') $('loginBtn').click(); });
 
   // ---------------------------------------------------------------- pages data
+  // checks: [label, pass|fail|na]
   var PAGES=[
-    {name:'Homepage',       slug:'/',                                    url:'https://www.sabraandcompany.com/',                                     type:'Page',      seo:96,aeo:90,geo:97,words:850,  fix:'No high-priority fixes.'},
-    {name:'About',          slug:'/about.html',                          url:'https://www.sabraandcompany.com/about.html',                           type:'Page',      seo:94,aeo:85,geo:95,words:580,  fix:'No high-priority fixes.'},
-    {name:'Services',       slug:'/services.html',                       url:'https://www.sabraandcompany.com/services.html',                        type:'Page',      seo:95,aeo:88,geo:95,words:780,  fix:'No high-priority fixes.'},
-    {name:'Contact',        slug:'/contact.html',                        url:'https://www.sabraandcompany.com/contact.html',                         type:'Page',      seo:92,aeo:82,geo:94,words:320,  fix:'Add FAQ schema to improve AEO.',warnFix:true},
-    {name:'Gallery',        slug:'/gallery.html',                        url:'https://www.sabraandcompany.com/gallery.html',                         type:'Page',      seo:95,aeo:88,geo:94,words:280,  fix:'No high-priority fixes.'},
-    {name:'Design Journal', slug:'/blog.html',                           url:'https://www.sabraandcompany.com/blog.html',                            type:'Page',      seo:93,aeo:84,geo:93,words:210,  fix:'No high-priority fixes.'},
-    {name:'How to Choose a Couch That Wears In',    slug:'/how-to-choose-a-couch-that-wears-in.html',         url:'https://www.sabraandcompany.com/how-to-choose-a-couch-that-wears-in.html',         type:'Blog post', seo:97,aeo:92,geo:90,words:820,  fix:'No high-priority fixes.'},
-    {name:'Interior Designer Cost in Colorado Springs', slug:'/interior-designer-cost-colorado-springs.html', url:'https://www.sabraandcompany.com/interior-designer-cost-colorado-springs.html', type:'Blog post', seo:98,aeo:94,geo:96,words:840,  fix:'No high-priority fixes.'},
-    {name:'How to Warm Up a Gray Living Room',      slug:'/warming-up-a-cold-gray-home.html',                 url:'https://www.sabraandcompany.com/warming-up-a-cold-gray-home.html',                 type:'Blog post', seo:96,aeo:91,geo:88,words:830,  fix:'No high-priority fixes.'}
+    {name:'Homepage', slug:'/', url:'https://www.sabraandcompany.com/', type:'Page', seo:96,aeo:90,geo:97,words:850, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',1],['FAQ data matches visible text',1],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',1],['Listed in llms.txt',1],['600+ words',1],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'About', slug:'/about.html', url:'https://www.sabraandcompany.com/about.html', type:'Page', seo:94,aeo:85,geo:95,words:580, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',0],['FAQ data matches visible text',0],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',1],['Listed in llms.txt',1],['600+ words',0],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'Services', slug:'/services.html', url:'https://www.sabraandcompany.com/services.html', type:'Page', seo:95,aeo:88,geo:95,words:780, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',1],['FAQ data matches visible text',1],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',1],['Listed in llms.txt',1],['600+ words',1],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'Contact', slug:'/contact.html', url:'https://www.sabraandcompany.com/contact.html', type:'Page', seo:92,aeo:82,geo:94,words:320, fix:'Add FAQ schema to improve AEO.',warnFix:true,
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',0],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',0],['FAQ data matches visible text',0],['3+ question-phrased headings',0],['Short summary near top',1],['Lists or tables',0],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',0],['Listed in llms.txt',1],['600+ words',0],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'Gallery', slug:'/gallery.html', url:'https://www.sabraandcompany.com/gallery.html', type:'Page', seo:95,aeo:88,geo:94,words:280, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',0],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',0],['FAQ data matches visible text',0],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',0],['Listed in llms.txt',1],['600+ words',0],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'Design Journal', slug:'/blog.html', url:'https://www.sabraandcompany.com/blog.html', type:'Page', seo:93,aeo:84,geo:93,words:210, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',0],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',0],['FAQ data matches visible text',0],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',0],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',0],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',1],['Listed in llms.txt',1],['600+ words',0],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'How to Choose a Couch That Wears In', slug:'/how-to-choose-a-couch-that-wears-in.html', url:'https://www.sabraandcompany.com/how-to-choose-a-couch-that-wears-in.html', type:'Blog post', seo:97,aeo:92,geo:90,words:820, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',1],['FAQ data matches visible text',1],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',1],['Listed in llms.txt',1],['600+ words',1],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'Interior Designer Cost in Colorado Springs', slug:'/interior-designer-cost-colorado-springs.html', url:'https://www.sabraandcompany.com/interior-designer-cost-colorado-springs.html', type:'Blog post', seo:98,aeo:94,geo:96,words:840, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',1],['FAQ data matches visible text',1],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',1],['Listed in llms.txt',1],['600+ words',1],['Phone number on page',1],['AI crawlers allowed',1]]},
+
+    {name:'How to Warm Up a Gray Living Room', slug:'/warming-up-a-cold-gray-home.html', url:'https://www.sabraandcompany.com/warming-up-a-cold-gray-home.html', type:'Blog post', seo:96,aeo:91,geo:88,words:830, fix:'No high-priority fixes.',
+     seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',1],['FAQ data matches visible text',1],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',0],['Listed in llms.txt',1],['600+ words',1],['Phone number on page',1],['AI crawlers allowed',1]]}
   ];
 
   // live speed scores keyed by url, populated from PageSpeed results
@@ -482,20 +529,31 @@
   function scoreClass(n){ return n>=90?'score-hi':n>=70?'score-mid':'score-lo'; }
   function scoreColorStr(n){ return n>=90?'var(--ok)':n>=70?'var(--warn)':'var(--err)'; }
 
+  function checkList(checks){
+    return '<ul class="check-list">'+checks.map(function(c){
+      var icon=c[1]===1?'<span class="ck ck-pass">&#10003;</span>':c[1]===0?'<span class="ck ck-fail">&#10007;</span>':'<span class="ck ck-na">&#8211;</span>';
+      return '<li>'+icon+'<span>'+c[0]+'</span></li>';
+    }).join('')+'</ul>';
+  }
+
   function buildPagesTable(){
     var tbody=$('pagesTbody'); tbody.innerHTML='';
-    PAGES.forEach(function(p){
+    PAGES.forEach(function(p,i){
       var spd=speedCache[p.url]!==undefined?'<span style="color:'+scoreColorStr(speedCache[p.url])+'">'+speedCache[p.url]+'</span>':'<span style="color:var(--taupe)">--</span>';
       var kw=kwCache[p.slug]||{};
       var clicks=kw.clicks!==undefined?kw.clicks:'<span style="color:var(--taupe)">--</span>';
       var impr=kw.impr!==undefined?kw.impr:'<span style="color:var(--taupe)">--</span>';
+      var colCount=8;
+
+      // main row
       var tr=document.createElement('tr');
+      tr.className='pg-row';
+      tr.dataset.idx=i;
       tr.innerHTML=
         '<td>'+
           '<div class="pg-name">'+p.name+'</div>'+
-          '<div class="page-url"><a href="'+p.url+'" target="_blank" rel="noopener">'+p.slug+'</a> <svg width="9" height="9" viewBox="0 0 9 9" fill="none" style="opacity:.4;flex-shrink:0"><path d="M1 8L8 1M8 1H3M8 1v5" stroke="currentColor" stroke-width="1.2"/></svg></div>'+
+          '<div class="page-url"><a href="'+p.url+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+p.slug+'</a> <svg width="9" height="9" viewBox="0 0 9 9" fill="none" style="opacity:.4;flex-shrink:0"><path d="M1 8L8 1M8 1H3M8 1v5" stroke="currentColor" stroke-width="1.2"/></svg></div>'+
           '<div class="page-fix'+(p.warnFix?' warn':'')+'">'+p.fix+'</div>'+
-          '<button class="ri-btn" data-url="'+p.url+'">Request indexing</button>'+
         '</td>'+
         '<td style="color:var(--taupe);font-size:.8rem;">'+p.type+'</td>'+
         '<td class="scores-cell">'+
@@ -511,19 +569,40 @@
         '<td class="index-cell"><span class="index-ok">Submitted and indexed</span></td>'+
         '<td style="color:var(--charcoal);">'+p.words.toLocaleString()+'</td>';
       tbody.appendChild(tr);
-    });
 
-    // request indexing buttons
-    tbody.querySelectorAll('.ri-btn').forEach(function(btn){
-      btn.addEventListener('click',function(){
-        var url=btn.dataset.url;
-        // copy to clipboard
-        try{
-          navigator.clipboard.writeText(url).catch(function(){});
-        }catch(e){}
-        btn.textContent='Copied!';
-        btn.classList.add('copied');
-        // open GSC URL inspection
+      // detail row (hidden by default)
+      var dr=document.createElement('tr');
+      dr.className='detail-row hidden';
+      dr.dataset.idx=i;
+      var dtd=document.createElement('td');
+      dtd.colSpan=colCount;
+      dtd.innerHTML=
+        '<div class="detail-inner">'+
+          '<div><div class="detail-col-title">SEO</div>'+checkList(p.seoChecks)+'</div>'+
+          '<div><div class="detail-col-title">AEO</div>'+checkList(p.aeoChecks)+'</div>'+
+          '<div><div class="detail-col-title">GEO</div>'+checkList(p.geoChecks)+'</div>'+
+        '</div>'+
+        '<div class="detail-footer">'+
+          '<button class="ri-btn" data-url="'+p.url+'" style="margin-top:0;">Request indexing</button>'+
+          '<a href="'+p.url+'" target="_blank" rel="noopener" style="font-size:.76rem;color:var(--taupe);text-decoration:none;">Open page &#8599;</a>'+
+        '</div>';
+      dr.appendChild(dtd);
+      tbody.appendChild(dr);
+
+      // toggle on main row click
+      tr.addEventListener('click',function(){
+        var isOpen=tr.classList.contains('open');
+        tr.classList.toggle('open',!isOpen);
+        dr.classList.toggle('hidden',isOpen);
+      });
+
+      // request indexing button
+      dtd.querySelector('.ri-btn').addEventListener('click',function(e){
+        e.stopPropagation();
+        var url=p.url;
+        try{ navigator.clipboard.writeText(url).catch(function(){}); }catch(ex){}
+        var btn=e.currentTarget;
+        btn.textContent='Copied!'; btn.classList.add('copied');
         var gscUrl='https://search.google.com/search-console/inspect?resource_id=https://www.sabraandcompany.com/&id='+encodeURIComponent(url);
         window.open(gscUrl,'_blank','noopener');
         setTimeout(function(){ btn.textContent='Request indexing'; btn.classList.remove('copied'); },3000);
@@ -569,88 +648,11 @@
     $('keyStatus').className='status'; $('keyStatus').textContent='Cleared.';
   });
 
-  // ---------------------------------------------------------------- pagespeed
-  function scoreColor(n){
-    if(n>=90) return '#4A5D46';
-    if(n>=50) return '#7A5C2A';
-    return '#8C3A2B';
-  }
-
-  function runPageSpeed(url, statusEl, resultEl, tilesEl, cwvEl, oppsEl, oppListEl){
-    var key=store('sc_ps_key')||'';
-    if(!url){ statusEl.className='status err'; statusEl.textContent='Enter a URL.'; return; }
-    statusEl.className='status'; statusEl.textContent='Fetching from Google...';
-    resultEl.classList.add('hidden');
-    var psEndpoint='https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&strategy=mobile'+(key?'&key='+encodeURIComponent(key):'');
-    fetch(psEndpoint)
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d.error){ statusEl.className='status err'; statusEl.textContent=d.error.message||'API error.'; return; }
-        var cats=d.lighthouseResult&&d.lighthouseResult.categories;
-        var aud=d.lighthouseResult&&d.lighthouseResult.audits;
-        if(!cats){ statusEl.className='status err'; statusEl.textContent='Unexpected response.'; return; }
-        statusEl.textContent='';
-        resultEl.classList.remove('hidden');
-        // cache speed score for pages table
-        if(cats.performance){ speedCache[url]=Math.round(cats.performance.score*100); buildPagesTable(); }
-
-        // score tiles
-        var fields=[
-          {key:'performance',label:'Performance'},
-          {key:'accessibility',label:'Accessibility'},
-          {key:'best-practices',label:'Best Practices'},
-          {key:'seo',label:'SEO'}
-        ];
-        tilesEl.innerHTML='';
-        fields.forEach(function(f){
-          var c=cats[f.key]; if(!c) return;
-          var sc=Math.round(c.score*100);
-          var t=document.createElement('div'); t.className='ps-tile';
-          t.innerHTML='<div class="ps-label">'+f.label+'</div><div class="ps-val" style="color:'+scoreColor(sc)+'">'+sc+'</div><div class="ps-unit">/ 100</div>';
-          tilesEl.appendChild(t);
-        });
-
-        // CWV
-        var cwv=[
-          {key:'largest-contentful-paint',label:'LCP'},
-          {key:'total-blocking-time',label:'TBT'},
-          {key:'cumulative-layout-shift',label:'CLS'},
-          {key:'first-contentful-paint',label:'FCP'},
-          {key:'speed-index',label:'Speed Index'},
-          {key:'interactive',label:'TTI'}
-        ];
-        cwvEl.innerHTML='';
-        cwv.forEach(function(m){
-          var a=aud&&aud[m.key]; if(!a) return;
-          var sc=a.score===null?'':Math.round((a.score||0)*100);
-          var rating=a.score>=0.9?'<span class="badge hi">Good</span>':a.score>=0.5?'<span class="badge mid">Improve</span>':'<span class="badge lo">Poor</span>';
-          var tr=document.createElement('tr');
-          tr.innerHTML='<td>'+m.label+'</td><td>'+a.displayValue+'</td><td>'+rating+'</td>';
-          cwvEl.appendChild(tr);
-        });
-
-        // opportunities
-        var opps=Object.values(aud||{}).filter(function(a){ return a.details&&a.details.type==='opportunity'&&a.score<0.9&&a.title; });
-        if(opps.length){
-          oppsEl.classList.remove('hidden');
-          oppListEl.innerHTML='';
-          opps.slice(0,8).forEach(function(a){
-            var li=document.createElement('li');
-            li.textContent=a.title+(a.displayValue?' ('+a.displayValue+')':'');
-            oppListEl.appendChild(li);
-          });
-        } else {
-          oppsEl.classList.add('hidden');
-        }
-      })
-      .catch(function(e){ statusEl.className='status err'; statusEl.textContent='Could not reach PageSpeed API. Check your key and network.'; });
-  }
-
+  // ---------------------------------------------------------------- pagespeed (opens pagespeed.web.dev — no API call, no quota)
   $('psBtn').addEventListener('click',function(){
-    runPageSpeed(
-      $('psUrl').value.trim(), $('psStatus'), $('psResult'),
-      $('psTiles'), $('cwvTable'), $('psOpps'), $('oppList')
-    );
+    var url=($('psUrl').value||'').trim();
+    if(!url){ return; }
+    window.open('https://pagespeed.web.dev/report?url='+encodeURIComponent(url),'_blank','noopener');
   });
 
   // audit removed (merged into pages table via Request Indexing + PageSpeed tab)
