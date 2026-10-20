@@ -269,7 +269,7 @@
   <!-- PAGESPEED -->
   <div id="tab-pagespeed" class="tab-panel">
     <h2 class="section-title">PageSpeed Insights</h2>
-    <p class="section-sub">Live Lighthouse scores from Google. Add your API key in the Setup tab, then run a test below.</p>
+    <p class="section-sub">Live Lighthouse scores from Google. No API key needed — just enter a URL and run the test.</p>
 
     <div class="url-row">
       <input id="psUrl" type="text" value="https://www.sabraandcompany.com/" placeholder="https://www.sabraandcompany.com/"/>
@@ -359,9 +359,9 @@
     <p class="section-sub">Connect live data sources. Start with PageSpeed; it only needs a free API key and takes two minutes.</p>
 
     <div class="card">
-      <div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">PageSpeed API key</div>
+      <div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;">PageSpeed API key <span style="font-size:.68rem;letter-spacing:0;text-transform:none;color:var(--taupe);">(optional)</span></div>
       <p style="font-size:.85rem;color:var(--taupe);margin:0 0 .6rem;line-height:1.6;">
-        Saved in your browser only. Never sent anywhere except Google.
+        PageSpeed works without a key. If you run many tests per day and start hitting rate limits, add a free key here to remove them. Saved in your browser only.
       </p>
       <div class="api-row">
         <input id="apiKeyInput" type="text" placeholder="AIzaSy..." autocomplete="off"/>
@@ -577,12 +577,12 @@
   }
 
   function runPageSpeed(url, statusEl, resultEl, tilesEl, cwvEl, oppsEl, oppListEl){
-    var key=store('sc_ps_key');
-    if(!key){ statusEl.className='status err'; statusEl.textContent='Add your API key in the Setup tab first.'; return; }
+    var key=store('sc_ps_key')||'';
     if(!url){ statusEl.className='status err'; statusEl.textContent='Enter a URL.'; return; }
     statusEl.className='status'; statusEl.textContent='Fetching from Google...';
     resultEl.classList.add('hidden');
-    fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&key='+encodeURIComponent(key)+'&strategy=mobile')
+    var psEndpoint='https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&strategy=mobile'+(key?'&key='+encodeURIComponent(key):'');
+    fetch(psEndpoint)
       .then(function(r){ return r.json(); })
       .then(function(d){
         if(d.error){ statusEl.className='status err'; statusEl.textContent=d.error.message||'API error.'; return; }
