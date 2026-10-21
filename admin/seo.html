@@ -571,8 +571,23 @@
      geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',0],['Listed in llms.txt',1],['600+ words',1],['Phone number on page',1],['AI crawlers allowed',1]]}
   ];
 
-  // live speed scores keyed by url, populated from PageSpeed results
-  var speedCache={};
+  // live speed scores + timestamps, persisted to localStorage
+  // shape: { [url]: { score: 72, ts: 1729000000000 } }
+  var speedCache=(function(){
+    try{ return JSON.parse(localStorage.getItem('sc_speed_cache')||'{}'); }catch(e){ return {}; }
+  })();
+  function saveSpeedCache(){ try{ localStorage.setItem('sc_speed_cache', JSON.stringify(speedCache)); }catch(e){} }
+  function relativeTime(ts){
+    if(!ts) return '';
+    var diff=Date.now()-ts;
+    var mins=Math.floor(diff/60000);
+    if(mins<2) return 'just now';
+    if(mins<60) return mins+' min ago';
+    var hrs=Math.floor(mins/60);
+    if(hrs<24) return hrs+'h ago';
+    var days=Math.floor(hrs/24);
+    return days===1?'yesterday':days+' days ago';
+  }
   // live clicks/impr keyed by query slug, populated from SC CSV
   var kwCache={};
 
@@ -589,7 +604,11 @@
   function buildPagesTable(){
     var tbody=$('pagesTbody'); tbody.innerHTML='';
     PAGES.forEach(function(p,i){
-      var spd=speedCache[p.url]!==undefined?'<span style="color:'+scoreColorStr(speedCache[p.url])+'">'+speedCache[p.url]+'</span>':'<span style="color:var(--taupe)">--</span>';
+      var spdEntry=speedCache[p.url];
+      var spd=spdEntry!==undefined
+        ?'<span style="color:'+scoreColorStr(spdEntry.score)+'">'+spdEntry.score+'</span>'
+         +(spdEntry.ts?'<br><span style="font-size:.68rem;color:var(--taupe);font-family:\'Jost\',sans-serif;">'+relativeTime(spdEntry.ts)+'</span>':'')
+        :'<span style="color:var(--taupe)">--</span>';
       var kw=kwCache[p.slug]||{};
       var clicks=kw.clicks!==undefined?kw.clicks:'<span style="color:var(--taupe)">--</span>';
       var impr=kw.impr!==undefined?kw.impr:'<span style="color:var(--taupe)">--</span>';
@@ -745,7 +764,7 @@
         st.textContent='';
         // cache speed score for pages table
         var perf=cats.performance?Math.round(cats.performance.score*100):null;
-        if(perf!==null){ speedCache[url]=perf; buildPagesTable(); }
+        if(perf!==null){ speedCache[url]={score:perf,ts:Date.now()}; saveSpeedCache(); buildPagesTable(); }
       })
       .catch(function(e){
         st.className='status err'; st.textContent=e.message||'Test failed.';
@@ -761,7 +780,7 @@
         if(d.error) throw new Error(d.error.message);
         var cats=d.lighthouseResult&&d.lighthouseResult.categories||{};
         var perf=cats.performance?Math.round(cats.performance.score*100):null;
-        if(perf!==null){ speedCache[url]=perf; buildPagesTable(); }
+        if(perf!==null){ speedCache[url]={score:perf,ts:Date.now()}; saveSpeedCache(); buildPagesTable(); }
       });
   }
 
@@ -798,9 +817,11 @@
 
   $('measure3Btn').addEventListener('click',function(){
     // "oldest" = pages not yet in speedCache, or lowest scores — pick first 3 without a cache entry
-    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); return !(u in speedCache); });
-    if(uncached.length===0){ uncached=PAGES.slice(); } // all cached — re-measure first 3
-    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
+    var urls=PAGES.slice().sort(function(a,b){
+      var ta=(speedCache['https://www.sabraandcompany.com'+(a.slug==='/'?'/':a.slug)]||{ts:0}).ts;
+      var tb=(speedCache['https://www.sabraandcompany.com'+(b.slug==='/'?'/':b.slug)]||{ts:0}).ts;
+      return ta-tb; // oldest (lowest ts) first
+    }).slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
     runBulkPS(urls);
   });
 
@@ -810,9 +831,11 @@
     runBulkPS(urls);
   });
   $('measure3Btn2').addEventListener('click',function(){
-    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); return !(u in speedCache); });
-    if(uncached.length===0){ uncached=PAGES.slice(); }
-    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
+    var urls=PAGES.slice().sort(function(a,b){
+      var ta=(speedCache['https://www.sabraandcompany.com'+(a.slug==='/'?'/':a.slug)]||{ts:0}).ts;
+      var tb=(speedCache['https://www.sabraandcompany.com'+(b.slug==='/'?'/':b.slug)]||{ts:0}).ts;
+      return ta-tb;
+    }).slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
     runBulkPS(urls);
   });
 
