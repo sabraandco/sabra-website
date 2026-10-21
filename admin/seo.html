@@ -699,7 +699,7 @@
     // Have API key — run in-page
     var btn=$('psBtn'); var st=$('psStatus'); var res=$('psResult');
     btn.disabled=true; st.className='status'; st.textContent='Running test...'; res.classList.add('hidden');
-    fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&strategy=mobile&key='+encodeURIComponent(key))
+    fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo&key='+encodeURIComponent(key))
       .then(function(r){ return r.json(); })
       .then(function(d){
         if(d.error){ throw new Error(d.error.message||'PageSpeed error'); }
@@ -708,16 +708,17 @@
         // score tiles
         var tilesEl=$('psTiles'); tilesEl.innerHTML='';
         [['Performance',cats.performance],['Accessibility',cats.accessibility],['Best Practices',cats['best-practices']],['SEO',cats.seo]].forEach(function(c){
-          var val=c[1]?Math.round(c[1].score*100):0;
-          var cls=val>=90?'score-hi':val>=50?'score-mid':'score-lo';
-          tilesEl.innerHTML+='<div class="ps-tile"><div class="ps-label">'+c[0]+'</div><div class="ps-val '+cls+'">'+val+'</div></div>';
+          var val=(c[1]&&c[1].score!=null)?Math.round(c[1].score*100):null;
+          var cls=val===null?'score-mid':val>=90?'score-hi':val>=50?'score-mid':'score-lo';
+          tilesEl.innerHTML+='<div class="ps-tile"><div class="ps-label">'+c[0]+'</div><div class="ps-val '+cls+'">'+(val===null?'--':val)+'</div></div>';
         });
         // core web vitals
         var cwv=$('cwvTable'); cwv.innerHTML='';
         [['First Contentful Paint','first-contentful-paint'],['Largest Contentful Paint','largest-contentful-paint'],['Total Blocking Time','total-blocking-time'],['Cumulative Layout Shift','cumulative-layout-shift'],['Speed Index','speed-index']].forEach(function(m){
           var a=audits[m[1]]; if(!a) return;
-          var cls=a.score===null?'':a.score>=0.9?'index-ok':a.score>=0.5?'index-na':'';
-          cwv.innerHTML+='<tr><td>'+m[0]+'</td><td>'+a.displayValue+'</td><td class="'+cls+'">'+a.scoreDisplayMode+'</td></tr>';
+          var rating=a.score===null?'N/A':a.score>=0.9?'Good':a.score>=0.5?'Needs work':'Poor';
+          var cls=a.score===null?'index-na':a.score>=0.9?'index-ok':a.score>=0.5?'index-na':'';
+          cwv.innerHTML+='<tr><td>'+m[0]+'</td><td>'+(a.displayValue||'--')+'</td><td class="'+cls+'">'+rating+'</td></tr>';
         });
         // opportunities
         var opp=$('oppList'); opp.innerHTML='';
