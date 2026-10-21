@@ -10,6 +10,18 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
   }
 
+  // ?status=1 — lightweight token-only check used by the SEO dashboard
+  // to determine whether Google is connected, without requiring GA4_PROPERTY_ID.
+  if (req.query.status === '1') {
+    res.setHeader('Cache-Control', 'no-store');
+    try {
+      await getToken(req);
+      return res.status(200).json({ connected: true });
+    } catch (e) {
+      return res.status(200).json({ connected: false });
+    }
+  }
+
   const propertyId = process.env.GA4_PROPERTY_ID;
   if (!propertyId) {
     return res.status(500).json({ ok: false, error: 'GA4_PROPERTY_ID not configured in Vercel environment variables.' });

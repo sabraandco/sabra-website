@@ -847,7 +847,7 @@
     }
     // Probe whether we have a valid token — use dedicated status endpoint
     // (avoids false-negative when GA4 property is not yet configured)
-    fetch('/api/google-status').then(function(r){ return r.json(); }).then(function(d){
+    fetch('/api/analytics?status=1').then(function(r){ return r.json(); }).then(function(d){
       setGoogleConnected(!!(d&&d.connected));
     }).catch(function(){
       setGoogleConnected(false);
