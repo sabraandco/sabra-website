@@ -273,8 +273,8 @@
     <p class="section-sub" style="margin-bottom:1rem;">SEO, AEO and GEO scores per page. Click any row to see the full checklist. Speed populates after a PageSpeed test. Clicks and impressions pull from Search Console once the site has accumulated search data (usually a few weeks after launch).</p>
     <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem;">
       <span style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);">Speed</span>
-      <button class="btn" id="measureAllBtn2" style="background:var(--ink);color:var(--cream);border:none;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure all</button>
-      <button class="btn" id="measure3Btn2" style="background:transparent;color:var(--ink);border:1px solid var(--line);padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure the 3 oldest</button>
+      <button class="btn" id="measureAllBtn2" style="background:#1E1A16;color:#F6F3F0;border:none;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure all</button>
+      <button class="btn" id="measure3Btn2" style="background:transparent;color:#1E1A16;border:1px solid #C8BDB0;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure the 3 oldest</button>
       <span id="bulkStatus2" style="font-size:.8rem;color:var(--taupe);"></span>
     </div>
     <div style="background:#FBF8F3;border:1px solid var(--line);">
@@ -307,8 +307,8 @@
 
     <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem;">
       <span style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);">Speed</span>
-      <button class="btn" id="measureAllBtn" style="background:var(--ink);color:var(--cream);border:none;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure all</button>
-      <button class="btn" id="measure3Btn" style="background:transparent;color:var(--ink);border:1px solid var(--line);padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure the 3 oldest</button>
+      <button class="btn" id="measureAllBtn" style="background:#1E1A16;color:#F6F3F0;border:none;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure all</button>
+      <button class="btn" id="measure3Btn" style="background:transparent;color:#1E1A16;border:1px solid #C8BDB0;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure the 3 oldest</button>
       <span id="bulkStatus" style="font-size:.8rem;color:var(--taupe);"></span>
     </div>
 
@@ -792,27 +792,27 @@
   }
 
   $('measureAllBtn').addEventListener('click',function(){
-    var urls=PAGES.map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    var urls=PAGES.map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
     runBulkPS(urls);
   });
 
   $('measure3Btn').addEventListener('click',function(){
     // "oldest" = pages not yet in speedCache, or lowest scores — pick first 3 without a cache entry
-    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); return !(u in speedCache); });
+    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); return !(u in speedCache); });
     if(uncached.length===0){ uncached=PAGES.slice(); } // all cached — re-measure first 3
-    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
     runBulkPS(urls);
   });
 
   // Pages-tab buttons mirror the PageSpeed-tab buttons exactly
   $('measureAllBtn2').addEventListener('click',function(){
-    var urls=PAGES.map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    var urls=PAGES.map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
     runBulkPS(urls);
   });
   $('measure3Btn2').addEventListener('click',function(){
-    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); return !(u in speedCache); });
+    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); return !(u in speedCache); });
     if(uncached.length===0){ uncached=PAGES.slice(); }
-    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.slug==='/'?'/':p.slug); });
     runBulkPS(urls);
   });
 
