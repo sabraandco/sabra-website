@@ -50,10 +50,15 @@ module.exports = async function handler(req, res) {
 
   const range28 = { startDate: '28daysAgo', endDate: 'today' };
 
+  // Wrap each call so one failure doesn't kill the whole response
+  async function ga4safe(token, propertyId, body) {
+    try { return await ga4(token, propertyId, body); } catch (e) { return {}; }
+  }
+
   try {
     const [summaryData, dailyData, sourcesData, pagesData, eventsData] = await Promise.all([
       // Overall summary
-      ga4(token, propertyId, {
+      ga4safe(token, propertyId, {
         dateRanges: [range28],
         metrics: [
           { name: 'sessions' },
@@ -64,7 +69,7 @@ module.exports = async function handler(req, res) {
         ],
       }),
       // Daily breakdown for chart
-      ga4(token, propertyId, {
+      ga4safe(token, propertyId, {
         dateRanges: [range28],
         dimensions: [{ name: 'date' }],
         metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
@@ -72,7 +77,7 @@ module.exports = async function handler(req, res) {
         limit: 30,
       }),
       // Traffic sources
-      ga4(token, propertyId, {
+      ga4safe(token, propertyId, {
         dateRanges: [range28],
         dimensions: [{ name: 'sessionDefaultChannelGroup' }],
         metrics: [{ name: 'sessions' }],
@@ -80,7 +85,7 @@ module.exports = async function handler(req, res) {
         limit: 8,
       }),
       // Top pages with avg time
-      ga4(token, propertyId, {
+      ga4safe(token, propertyId, {
         dateRanges: [range28],
         dimensions: [{ name: 'pagePath' }],
         metrics: [
@@ -91,15 +96,19 @@ module.exports = async function handler(req, res) {
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
         limit: 10,
       }),
-      // Conversion events
-      ga4(token, propertyId, {
+      // Conversion events (use orFilter for compatibility)
+      ga4safe(token, propertyId, {
         dateRanges: [range28],
         dimensions: [{ name: 'eventName' }],
         metrics: [{ name: 'eventCount' }],
         dimensionFilter: {
-          filter: {
-            fieldName: 'eventName',
-            inListFilter: { values: ['quote_request', 'phone_tap', 'generate_lead', 'contact'] },
+          orGroup: {
+            expressions: [
+              { filter: { fieldName: 'eventName', stringFilter: { value: 'quote_request' } } },
+              { filter: { fieldName: 'eventName', stringFilter: { value: 'phone_tap' } } },
+              { filter: { fieldName: 'eventName', stringFilter: { value: 'generate_lead' } } },
+              { filter: { fieldName: 'eventName', stringFilter: { value: 'contact' } } },
+            ],
           },
         },
         limit: 20,

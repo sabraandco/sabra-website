@@ -474,6 +474,7 @@
     </div>
 
     <div id="anLive" class="hidden">
+      <p id="anError" style="display:none;color:var(--err);font-size:.84rem;padding:.6rem 0;"></p>
       <!-- Stat tiles -->
       <div class="an-tiles" id="anTiles"></div>
 
@@ -1034,6 +1035,11 @@
     // rankings tab state
     renderRankings();
     if(connected && !Object.keys(rankData).length) loadRankingsFromGSC();
+    // analytics tab: auto-load if currently visible
+    if(connected){
+      var anPanel=$('tab-analytics');
+      if(anPanel&&anPanel.classList.contains('active')) initAnalyticsTab();
+    }
   }
 
   function initGoogle(){
@@ -1252,17 +1258,13 @@
     if(!body) return;
     body.innerHTML='';
 
-    if(!googleConnected){
-      $('rankConnect').style.display='';
-      $('rankLive').style.display='none';
-      return;
-    }
-    $('rankConnect').style.display='none';
+    // Always show the table; show connect prompt inline only when not connected
+    $('rankConnect').style.display=googleConnected?'none':'';
     $('rankLive').style.display='';
 
     // Merge: show tracked keywords; if no tracked kws, show all from GSC
     var display=kws.length?kws:Object.keys(rankData);
-    label.textContent=(kws.length?kws.length+' keyword'+(kws.length!==1?'s':''):display.length+' keyword'+(display.length!==1?'s':''))+' tracked this week';
+    if(label) label.textContent=(kws.length?kws.length+' keyword'+(kws.length!==1?'s':''):display.length+' keyword'+(display.length!==1?'s':''))+' tracked'+(googleConnected?' this week':'');
 
     if(!display.length){
       body.innerHTML='<tr><td colspan="8" style="color:var(--taupe);font-size:.85rem;padding:1.2rem .75rem;">No keywords tracked yet. Add keywords above or connect Google Search Console to import them.</td></tr>';
@@ -1433,7 +1435,13 @@
 
   function loadAnalyticsTab(){
     fetch('/api/analytics').then(function(r){ return r.json(); }).then(function(d){
-      if(!d||!d.ok) return;
+      if(!d||!d.ok){
+        var errEl=$('anError');
+        if(errEl){ errEl.style.display=''; errEl.textContent='Could not load analytics'+(d&&d.error?': '+d.error:'. Check that GA4 Property ID is set in Vercel environment variables.'); }
+        $('anLive').classList.remove('hidden');
+        return;
+      }
+      var errEl=$('anError'); if(errEl) errEl.style.display='none';
       var s=d.summary||{};
       var c=d.conversions||{};
 
@@ -1455,7 +1463,11 @@
 
       $('anLive').classList.remove('hidden');
       anLoaded=true;
-    }).catch(function(){});
+    }).catch(function(err){
+      var errEl=$('anError');
+      if(errEl){ errEl.style.display=''; errEl.textContent='Analytics request failed. Check browser console for details.'; }
+      $('anLive').classList.remove('hidden');
+    });
   }
 
   function initAnalyticsTab(){
