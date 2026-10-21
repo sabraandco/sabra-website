@@ -299,7 +299,14 @@
     <h2 class="section-title">PageSpeed Insights</h2>
     <p class="section-sub">Live Lighthouse scores from Google. Uses your API key for in-page results.</p>
 
-    <div class="url-row">
+    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem;">
+      <span style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);">Speed</span>
+      <button class="btn" id="measureAllBtn" style="background:var(--ink);color:var(--cream);border:none;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure all</button>
+      <button class="btn" id="measure3Btn" style="background:transparent;color:var(--ink);border:1px solid var(--line);padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure the 3 oldest</button>
+      <span id="bulkStatus" style="font-size:.8rem;color:var(--taupe);"></span>
+    </div>
+
+    <div class="url-row" style="margin-top:.8rem;">
       <input id="psUrl" type="text" value="https://www.sabraandcompany.com/" placeholder="https://www.sabraandcompany.com/"/>
       <button class="btn" id="psBtn">Run test</button>
     </div>
@@ -738,6 +745,52 @@
         st.className='status err'; st.textContent=e.message||'Test failed.';
       })
       .finally(function(){ btn.disabled=false; });
+  });
+
+  // ---------------------------------------------------------------- bulk pagespeed
+  function runPSForUrl(url,key){
+    return fetch('https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url='+encodeURIComponent(url)+'&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo&key='+encodeURIComponent(key))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d.error) throw new Error(d.error.message);
+        var cats=d.lighthouseResult&&d.lighthouseResult.categories||{};
+        var perf=cats.performance?Math.round(cats.performance.score*100):null;
+        if(perf!==null){ speedCache[url]=perf; buildPagesTable(); }
+      });
+  }
+
+  function runBulkPS(urls){
+    var key=store('sc_ps_key')||'';
+    if(!key){
+      $('bulkStatus').textContent='Save a PageSpeed API key in Setup first.';
+      return;
+    }
+    var btn1=$('measureAllBtn'),btn2=$('measure3Btn'),st=$('bulkStatus');
+    btn1.disabled=true; btn2.disabled=true;
+    var total=urls.length, done=0;
+    st.textContent='Testing '+total+' pages...';
+    function next(){
+      if(!urls.length){ btn1.disabled=false; btn2.disabled=false; st.textContent='Done. All '+total+' pages measured.'; return; }
+      var url=urls.shift(); done++;
+      st.textContent='Testing '+done+' of '+total+': '+url.replace('https://www.sabraandcompany.com','');
+      runPSForUrl(url,key)
+        .catch(function(e){ console.warn('PS failed for '+url,e); })
+        .then(function(){ setTimeout(next,800); }); // small delay to avoid rate limits
+    }
+    next();
+  }
+
+  $('measureAllBtn').addEventListener('click',function(){
+    var urls=PAGES.map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    runBulkPS(urls);
+  });
+
+  $('measure3Btn').addEventListener('click',function(){
+    // "oldest" = pages not yet in speedCache, or lowest scores — pick first 3 without a cache entry
+    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); return !(u in speedCache); });
+    if(uncached.length===0){ uncached=PAGES.slice(); } // all cached — re-measure first 3
+    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    runBulkPS(urls);
   });
 
   // ---------------------------------------------------------------- Google OAuth + live data
