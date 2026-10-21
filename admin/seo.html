@@ -270,7 +270,13 @@
 
   <!-- PAGES -->
   <div id="tab-pages" class="tab-panel">
-    <p class="section-sub" style="margin-bottom:1.4rem;">SEO, AEO and GEO scores per page. Click any row to see the full checklist. Speed populates after a PageSpeed test. Clicks and impressions pull from Search Console once the site has accumulated search data (usually a few weeks after launch).</p>
+    <p class="section-sub" style="margin-bottom:1rem;">SEO, AEO and GEO scores per page. Click any row to see the full checklist. Speed populates after a PageSpeed test. Clicks and impressions pull from Search Console once the site has accumulated search data (usually a few weeks after launch).</p>
+    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem;">
+      <span style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);">Speed</span>
+      <button class="btn" id="measureAllBtn2" style="background:var(--ink);color:var(--cream);border:none;padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure all</button>
+      <button class="btn" id="measure3Btn2" style="background:transparent;color:var(--ink);border:1px solid var(--line);padding:.35rem .9rem;font-size:.78rem;cursor:pointer;">Measure the 3 oldest</button>
+      <span id="bulkStatus2" style="font-size:.8rem;color:var(--taupe);"></span>
+    </div>
     <div style="background:#FBF8F3;border:1px solid var(--line);">
       <div class="tbl-wrap">
       <table id="pagesTable">
@@ -759,20 +765,25 @@
       });
   }
 
+  function setBulkStatus(msg){
+    if($('bulkStatus')) $('bulkStatus').textContent=msg;
+    if($('bulkStatus2')) $('bulkStatus2').textContent=msg;
+  }
+
   function runBulkPS(urls){
     var key=store('sc_ps_key')||'';
     if(!key){
-      $('bulkStatus').textContent='Save a PageSpeed API key in Setup first.';
+      setBulkStatus('Save a PageSpeed API key in Setup first.');
       return;
     }
-    var btn1=$('measureAllBtn'),btn2=$('measure3Btn'),st=$('bulkStatus');
-    btn1.disabled=true; btn2.disabled=true;
+    var allBtns=[$('measureAllBtn'),$('measure3Btn'),$('measureAllBtn2'),$('measure3Btn2')].filter(Boolean);
+    allBtns.forEach(function(b){b.disabled=true;});
     var total=urls.length, done=0;
-    st.textContent='Testing '+total+' pages...';
+    setBulkStatus('Testing '+total+' pages...');
     function next(){
-      if(!urls.length){ btn1.disabled=false; btn2.disabled=false; st.textContent='Done. All '+total+' pages measured.'; return; }
+      if(!urls.length){ allBtns.forEach(function(b){b.disabled=false;}); setBulkStatus('Done. All '+total+' pages measured.'); return; }
       var url=urls.shift(); done++;
-      st.textContent='Testing '+done+' of '+total+': '+url.replace('https://www.sabraandcompany.com','');
+      setBulkStatus('Testing '+done+' of '+total+': '+url.replace('https://www.sabraandcompany.com',''));
       runPSForUrl(url,key)
         .catch(function(e){ console.warn('PS failed for '+url,e); })
         .then(function(){ setTimeout(next,800); }); // small delay to avoid rate limits
@@ -789,6 +800,18 @@
     // "oldest" = pages not yet in speedCache, or lowest scores — pick first 3 without a cache entry
     var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); return !(u in speedCache); });
     if(uncached.length===0){ uncached=PAGES.slice(); } // all cached — re-measure first 3
+    var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    runBulkPS(urls);
+  });
+
+  // Pages-tab buttons mirror the PageSpeed-tab buttons exactly
+  $('measureAllBtn2').addEventListener('click',function(){
+    var urls=PAGES.map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
+    runBulkPS(urls);
+  });
+  $('measure3Btn2').addEventListener('click',function(){
+    var uncached=PAGES.filter(function(p){ var u='https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); return !(u in speedCache); });
+    if(uncached.length===0){ uncached=PAGES.slice(); }
     var urls=uncached.slice(0,3).map(function(p){ return 'https://www.sabraandcompany.com'+(p.path==='/'?'/':p.path); });
     runBulkPS(urls);
   });
