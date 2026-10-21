@@ -509,10 +509,16 @@
     initApp();
   }
 
+  // On load, check if the session cookie is still valid — skip the login screen if so.
+  fetch('/api/admin-login',{method:'GET',credentials:'same-origin'})
+    .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
+    .then(function(o){ if(o&&o.ok){ showApp(); } })
+    .catch(function(){});
+
   $('loginBtn').addEventListener('click', function(){
     var st=$('loginStatus'); st.className='status'; st.textContent='Checking...';
     fetch('/api/admin-login',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:$('pw').value})})
+      credentials:'same-origin',body:JSON.stringify({password:$('pw').value})})
       .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
       .then(function(o){
         if(o&&o.ok){ st.textContent=''; showApp(); }
@@ -525,9 +531,9 @@
   // ---------------------------------------------------------------- pages data
   // checks: [label, pass|fail|na]
   var PAGES=[
-    {name:'Homepage', slug:'/', url:'https://www.sabraandcompany.com/', type:'Page', seo:96,aeo:90,geo:97,words:850, fix:'No high-priority fixes.',
+    {name:'Homepage', slug:'/', url:'https://www.sabraandcompany.com/', type:'Page', seo:100,aeo:100,geo:100,words:850, fix:'No high-priority fixes.',
      seoChecks:[['Page title',1],['Title length 30-65 chars',1],['Meta description',1],['Description 70-165 chars',1],['One H1',1],['Canonical tag',1],['Allowed in Google',1],['In sitemap',1],['300+ words',1],['Alt text on images',1],['Social sharing tags',1],['2+ H2 headings',1],['3+ internal links',1],['Mobile PageSpeed 90+',1],['Language tag',1]],
-     aeoChecks:[['FAQ with 3+ questions',1],['FAQ data matches visible text',1],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',0],['Structured data type tag',1]],
+     aeoChecks:[['FAQ with 3+ questions',1],['FAQ data matches visible text',1],['3+ question-phrased headings',1],['Short summary near top',1],['Lists or tables',1],['Breadcrumb schema',1],['Structured data type tag',1]],
      geoChecks:[['Organization schema',1],['8+ specific facts',1],['Cites an authority',1],['Names Sabra & Co 3+ times',1],['Shows last-updated date',1],['Listed in llms.txt',1],['600+ words',1],['Phone number on page',1],['AI crawlers allowed',1]]},
 
     {name:'About', slug:'/about.html', url:'https://www.sabraandcompany.com/about.html', type:'Page', seo:100,aeo:100,geo:100,words:780, fix:'No high-priority fixes.',

@@ -18,9 +18,30 @@ function safeEqual(a, b) {
   return crypto.timingSafeEqual(ab, bb);
 }
 
+function verifySession(req, secret) {
+  const cookie = req.headers.cookie || '';
+  const m = cookie.match(/sc_admin=([^;]+)/);
+  if (!m) return false;
+  const [expStr, sig] = decodeURIComponent(m[1]).split('.');
+  if (!expStr || !sig) return false;
+  const expected = crypto.createHmac('sha256', secret).update(expStr).digest('hex');
+  if (sig.length !== expected.length) return false;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return false;
+  return Number(expStr) > Date.now();
+}
+
 module.exports = async function handler(req, res) {
+  // GET ?check=1 — lightweight session check used by the admin dashboard on load.
+  // Returns { ok: true } if the sc_admin cookie is still valid, { ok: false } otherwise.
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'no-store');
+    const secret = process.env.ADMIN_SECRET;
+    if (!secret) return res.status(200).json({ ok: false });
+    return res.status(200).json({ ok: verifySession(req, secret) });
+  }
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+    res.setHeader('Allow', 'GET, POST');
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
   }
 
