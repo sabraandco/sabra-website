@@ -160,6 +160,48 @@
   .section-sub{font-size:.85rem;color:var(--taupe);margin:-.5rem 0 1.2rem;line-height:1.6;}
   .divider{border:none;border-top:1px solid var(--line);margin:2rem 0;}
 
+  /* rankings tab */
+  .rank-table-wrap{overflow-x:auto;}
+  .rank-kw-add{display:flex;gap:.6rem;margin-bottom:1.2rem;}
+  .rank-kw-add input{flex:1;padding:.6rem .8rem;font-family:'Jost',sans-serif;font-size:.88rem;font-weight:300;
+    color:var(--charcoal);background:#FFFDFA;border:1px solid var(--line);border-radius:0;}
+  .rank-kw-add input:focus{outline:2px solid var(--taupe);outline-offset:1px;}
+  .rank-pos{font-family:'Cormorant',serif;font-size:1.25rem;font-weight:300;}
+  .rank-pos.not-seen{font-size:.82rem;font-family:'Jost',sans-serif;color:var(--taupe);}
+  .rank-change{font-size:.78rem;white-space:nowrap;}
+  .rank-up{color:var(--ok);}
+  .rank-dn{color:var(--err);}
+  .rank-sparkline{display:inline-block;vertical-align:middle;}
+  .rank-few{font-size:.68rem;color:var(--taupe);display:block;}
+  .rank-remove{background:transparent;border:none;color:var(--line);cursor:pointer;font-size:.9rem;
+    padding:.2rem .4rem;line-height:1;}
+  .rank-remove:hover{color:var(--err);}
+  .rank-tracked{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--taupe);margin-bottom:1rem;}
+
+  /* analytics tab */
+  .an-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.9rem;margin-bottom:1.8rem;}
+  .an-tile{background:#FBF8F3;border:1px solid var(--line);padding:1.1rem 1rem .9rem;text-align:center;}
+  .an-tile-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--taupe);margin-bottom:.5rem;}
+  .an-tile-val{font-family:'Cormorant',serif;font-size:2.4rem;font-weight:300;line-height:1;margin-bottom:.25rem;}
+  .an-tile-sub{font-size:.68rem;color:var(--taupe);}
+  .an-chart-wrap{position:relative;width:100%;height:160px;overflow:hidden;}
+  .an-chart-wrap svg{width:100%;height:100%;}
+  .an-legend{display:flex;gap:1.2rem;margin-top:.5rem;margin-bottom:1.6rem;}
+  .an-leg-item{display:flex;align-items:center;gap:.35rem;font-size:.74rem;color:var(--taupe);}
+  .an-leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .an-source-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.65rem;}
+  .an-source-name{width:130px;font-size:.8rem;color:var(--taupe);flex-shrink:0;}
+  .an-source-track{flex:1;background:var(--linen);height:5px;border-radius:3px;}
+  .an-source-fill{height:5px;border-radius:3px;background:var(--charcoal);}
+  .an-source-val{font-size:.78rem;width:36px;text-align:right;flex-shrink:0;}
+  .an-source-pct{font-size:.72rem;color:var(--taupe);width:34px;flex-shrink:0;}
+  .an-two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-top:1.4rem;}
+  @media(max-width:760px){.an-two-col{grid-template-columns:1fr;}}
+  .an-section-label{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--taupe);margin-bottom:.9rem;}
+  .an-date-range{font-size:.72rem;color:var(--taupe);float:right;margin-top:.15rem;}
+  .an-top-pages td:first-child{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem;}
+  .an-connect-prompt{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+
   @media(max-width:700px){
     .tiles{grid-template-columns:repeat(2,1fr);}
     .ps-grid{grid-template-columns:repeat(2,1fr);}
@@ -202,6 +244,8 @@
     <button role="tab" data-tab="pages">Pages</button>
     <button role="tab" data-tab="pagespeed">PageSpeed</button>
     <button role="tab" data-tab="keywords">Keywords</button>
+    <button role="tab" data-tab="rankings">Rankings</button>
+    <button role="tab" data-tab="analytics">Analytics</button>
     <button role="tab" data-tab="recs">Recommendations</button>
     <button role="tab" data-tab="setup">Setup</button>
   </nav>
@@ -371,6 +415,103 @@
       </div>
       <button class="btn ghost" id="kwParseBtn">Load CSV</button>
       <p class="status" id="kwStatus" role="status"></p>
+    </div>
+  </div>
+
+  <!-- RANKINGS -->
+  <div id="tab-rankings" class="tab-panel">
+    <h2 class="section-title">Rankings</h2>
+    <p class="section-sub">Weekly positions from Google Search Console. Add any keyword you want to track; history builds automatically each time you visit.</p>
+
+    <div class="rank-kw-add">
+      <input id="rankKwInput" type="text" placeholder="interior designer colorado springs"/>
+      <button class="btn" id="rankAddBtn">Track keyword</button>
+    </div>
+
+    <div id="rankConnect" class="card" style="display:none;">
+      <div class="an-connect-prompt">
+        <p style="font-size:.88rem;color:var(--taupe);margin:0;line-height:1.6;">Connect Google Search Console to see live keyword positions.</p>
+        <button class="btn" id="rankConnectBtn">Connect Google</button>
+      </div>
+    </div>
+
+    <div id="rankLive">
+      <div id="rankTrackedLabel" class="rank-tracked"></div>
+      <div style="background:#FBF8F3;border:1px solid var(--line);">
+        <div class="rank-table-wrap">
+          <table id="rankTable">
+            <thead>
+              <tr>
+                <th style="min-width:200px;">Keyword</th>
+                <th>Position</th>
+                <th>Change</th>
+                <th>12-week trend</th>
+                <th>Impressions</th>
+                <th>Clicks</th>
+                <th>Best page</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rankBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <p id="rankStatus" class="status"></p>
+      <p style="font-size:.74rem;color:var(--taupe);margin-top:.8rem;">Trend sparklines build up over time each week you visit the dashboard. Position history is stored in your browser.</p>
+    </div>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div id="tab-analytics" class="tab-panel">
+    <h2 class="section-title" style="display:inline;">Analytics <span id="anDateRange" class="an-date-range"></span></h2>
+    <p class="section-sub" style="margin-top:.8rem;">Traffic data from Google Analytics for the last 28 days.</p>
+
+    <div id="anConnect" class="card" style="display:none;">
+      <div class="an-connect-prompt">
+        <p style="font-size:.88rem;color:var(--taupe);margin:0;line-height:1.6;">Connect Google Analytics to see live traffic data.</p>
+        <button class="btn" id="anConnectBtn">Connect Google</button>
+      </div>
+    </div>
+
+    <div id="anLive" class="hidden">
+      <!-- Stat tiles -->
+      <div class="an-tiles" id="anTiles"></div>
+
+      <!-- Daily visitors chart -->
+      <div style="margin-bottom:1.6rem;">
+        <div class="an-section-label">Daily visitors</div>
+        <div class="an-chart-wrap" id="anChartWrap">
+          <svg id="anChart" viewBox="0 0 800 160" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="an-legend">
+          <div class="an-leg-item"><div class="an-leg-dot" style="background:#3A2E24;"></div>Users</div>
+          <div class="an-leg-item"><div class="an-leg-dot" style="background:#B8A898;"></div>Sessions</div>
+        </div>
+      </div>
+
+      <div class="an-two-col">
+        <!-- How visitors find the site -->
+        <div>
+          <div class="an-section-label">How visitors find the site</div>
+          <div id="anSources"></div>
+        </div>
+
+        <!-- Top pages -->
+        <div>
+          <div class="an-section-label">Top pages</div>
+          <table style="width:100%;" class="an-top-pages">
+            <thead>
+              <tr>
+                <th>Page</th>
+                <th>Views</th>
+                <th>Users</th>
+                <th>Avg time</th>
+              </tr>
+            </thead>
+            <tbody id="anPagesBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -890,6 +1031,9 @@
     // analytics section on overview
     if(connected) loadAnalytics();
     else $('analyticsSection').classList.add('hidden');
+    // rankings tab state
+    renderRankings();
+    if(connected && !Object.keys(rankData).length) loadRankingsFromGSC();
   }
 
   function initGoogle(){
@@ -1036,6 +1180,301 @@
       list.innerHTML='<li style="padding:1rem 0;color:var(--taupe);font-size:.88rem;">No items in this category.</li>';
     }
   }
+
+  // ================================================================ RANKINGS
+  var rankData={};         // keyword -> {position, impressions, clicks, page, lowVolume} from GSC
+  var RANK_KW_KEY='sc_rank_kw';          // localStorage: array of tracked keyword strings
+  var RANK_HIST_KEY='sc_rank_hist';      // localStorage: {kw: [{week:'YYYY-WW', pos},...]}
+
+  function rankWeekKey(){
+    // ISO week string YYYY-WW so history buckets by week
+    var now=new Date();
+    var jan4=new Date(now.getFullYear(),0,4);
+    var w=Math.ceil((((now-jan4)/86400000)+jan4.getDay()+1)/7);
+    return now.getFullYear()+'-'+(w<10?'0'+w:w);
+  }
+
+  function rankTrackedKws(){
+    try{ return JSON.parse(localStorage.getItem(RANK_KW_KEY)||'[]'); }catch(e){ return []; }
+  }
+
+  function rankSaveKws(arr){
+    try{ localStorage.setItem(RANK_KW_KEY, JSON.stringify(arr)); }catch(e){}
+  }
+
+  function rankHistory(){
+    try{ return JSON.parse(localStorage.getItem(RANK_HIST_KEY)||'{}'); }catch(e){ return {}; }
+  }
+
+  function rankSaveHistory(h){
+    try{ localStorage.setItem(RANK_HIST_KEY, JSON.stringify(h)); }catch(e){}
+  }
+
+  function rankRecordSnapshot(){
+    // Called once per session after GSC data loads — stores current position in history
+    var week=rankWeekKey();
+    var h=rankHistory();
+    Object.keys(rankData).forEach(function(kw){
+      if(!h[kw]) h[kw]=[];
+      // Only add one entry per week
+      if(!h[kw].length || h[kw][h[kw].length-1].week!==week){
+        h[kw].push({week:week, pos:rankData[kw].position});
+      }
+      // Keep last 12 weeks
+      if(h[kw].length>12) h[kw]=h[kw].slice(h[kw].length-12);
+    });
+    rankSaveHistory(h);
+  }
+
+  function rankSparkline(history){
+    // Returns an SVG sparkline for the last 12 weeks (lower position = better = higher on chart)
+    var pts=history||[];
+    if(pts.length<2) return '<span style="font-size:.7rem;color:var(--taupe);">building&hellip;</span>';
+    var w=80, h=24, pad=2;
+    var positions=pts.map(function(p){ return p.pos||100; });
+    var mn=Math.min.apply(null,positions), mx=Math.max.apply(null,positions);
+    if(mx===mn){ mn=mn-1; mx=mx+1; }
+    var xs=pts.map(function(_,i){ return pad+(i/(pts.length-1))*(w-2*pad); });
+    var ys=pts.map(function(p){ return pad+(((p.pos||100)-mn)/(mx-mn))*(h-2*pad); }); // lower pos = top
+    var d=xs.map(function(x,i){ return (i===0?'M':'L')+x.toFixed(1)+' '+ys[i].toFixed(1); }).join(' ');
+    var trend=positions[positions.length-1]<positions[0]?'var(--ok)':'var(--err)';
+    if(positions[positions.length-1]===positions[0]) trend='var(--taupe)';
+    return '<svg class="rank-sparkline" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">'
+      +'<path d="'+d+'" fill="none" stroke="'+trend+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+      +'</svg>';
+  }
+
+  function renderRankings(){
+    var kws=rankTrackedKws();
+    var hist=rankHistory();
+    var body=$('rankBody');
+    var label=$('rankTrackedLabel');
+    if(!body) return;
+    body.innerHTML='';
+
+    if(!googleConnected){
+      $('rankConnect').style.display='';
+      $('rankLive').style.display='none';
+      return;
+    }
+    $('rankConnect').style.display='none';
+    $('rankLive').style.display='';
+
+    // Merge: show tracked keywords; if no tracked kws, show all from GSC
+    var display=kws.length?kws:Object.keys(rankData);
+    label.textContent=(kws.length?kws.length+' keyword'+(kws.length!==1?'s':''):display.length+' keyword'+(display.length!==1?'s':''))+' tracked this week';
+
+    if(!display.length){
+      body.innerHTML='<tr><td colspan="8" style="color:var(--taupe);font-size:.85rem;padding:1.2rem .75rem;">No keywords tracked yet. Add keywords above or connect Google Search Console to import them.</td></tr>';
+      return;
+    }
+
+    display.forEach(function(kw){
+      var d=rankData[kw.toLowerCase()]||rankData[kw]||null;
+      var kwHist=hist[kw]||hist[kw.toLowerCase()]||[];
+      var pos=d?d.position:null;
+      var prevHist=kwHist.slice(0,-1);
+      var prevPos=prevHist.length?prevHist[prevHist.length-1].pos:null;
+      var change=pos&&prevPos?prevPos-pos:null;
+
+      var posCell;
+      if(pos){
+        posCell='<span class="rank-pos">#'+pos.toFixed(1)+'</span>';
+        if(d.lowVolume) posCell+='<span class="rank-few">few searches</span>';
+      } else {
+        posCell='<span class="rank-pos not-seen">not seen</span>';
+      }
+
+      var changeCell='<span style="color:var(--taupe);">&ndash;</span>';
+      if(change!==null){
+        var cls=change>0?'rank-up':'rank-dn';
+        var sym=change>0?'&#9650;':'&#9660;';
+        changeCell='<span class="rank-change '+cls+'">'+sym+' '+Math.abs(change).toFixed(1)+'</span>';
+      }
+
+      var page=d&&d.page?d.page.replace('https://www.sabraandcompany.com','').replace(/^\//,''):'&ndash;';
+      var pageShort=page.length>24?page.slice(0,22)+'&hellip;':page;
+
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td style="font-weight:400;">'+kw+'</td>'
+        +'<td>'+posCell+'</td>'
+        +'<td>'+changeCell+'</td>'
+        +'<td>'+rankSparkline(kwHist)+'</td>'
+        +'<td>'+(d?d.impressions.toLocaleString():'&ndash;')+'</td>'
+        +'<td>'+(d?d.clicks:'&ndash;')+'</td>'
+        +'<td style="font-size:.76rem;color:var(--taupe);">'+(page!=='&ndash;'?'<a href="https://www.sabraandcompany.com/'+page+'" target="_blank" rel="noopener" style="color:var(--taupe);">'+pageShort+'</a>':'&ndash;')+'</td>'
+        +'<td><button class="rank-remove" data-kw="'+kw+'" title="Stop tracking">&times;</button></td>';
+      body.appendChild(tr);
+    });
+
+    // Remove buttons
+    body.querySelectorAll('.rank-remove').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var kw=btn.getAttribute('data-kw');
+        var arr=rankTrackedKws().filter(function(k){ return k!==kw; });
+        rankSaveKws(arr);
+        renderRankings();
+      });
+    });
+  }
+
+  function loadRankingsFromGSC(){
+    fetch('/api/search-console').then(function(r){ return r.json(); }).then(function(d){
+      if(!d||!d.ok) return;
+      rankData={};
+      (d.queries||[]).forEach(function(q){
+        rankData[q.query]={
+          position:q.position,
+          impressions:q.impressions,
+          clicks:q.clicks,
+          page:q.page||'',
+          lowVolume:q.impressions<10
+        };
+      });
+      rankRecordSnapshot();
+      renderRankings();
+    }).catch(function(){
+      $('rankStatus').className='status err';
+      $('rankStatus').textContent='Could not load Search Console data.';
+    });
+  }
+
+  $('rankAddBtn').addEventListener('click',function(){
+    var val=$('rankKwInput').value.trim().toLowerCase();
+    if(!val) return;
+    var arr=rankTrackedKws();
+    if(arr.indexOf(val)===-1){ arr.push(val); rankSaveKws(arr); }
+    $('rankKwInput').value='';
+    renderRankings();
+    if(googleConnected) loadRankingsFromGSC();
+  });
+
+  $('rankKwInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter') $('rankAddBtn').click();
+  });
+
+  $('rankConnectBtn').addEventListener('click',function(){
+    document.querySelector('.tab-bar button[data-tab="setup"]').click();
+  });
+
+  // Load rankings when tab is activated
+  document.querySelector('[data-tab="rankings"]').addEventListener('click',function(){
+    if(googleConnected && !Object.keys(rankData).length) loadRankingsFromGSC();
+    else renderRankings();
+  });
+
+  // ================================================================ ANALYTICS TAB
+  var anLoaded=false;
+
+  function fmtN(n){ return n>=10000?(n/1000).toFixed(1)+'k':n.toLocaleString(); }
+  function fmtDur(sec){
+    if(!sec||sec<1) return '&ndash;';
+    var m=Math.floor(sec/60); var s2=Math.round(sec%60);
+    return m>0?m+'m '+(s2<10?'0':'')+s2+'s':s2+'s';
+  }
+  function fmtDateRange(){
+    var now=new Date(); var from=new Date(now); from.setDate(from.getDate()-28);
+    function md(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
+    return md(from)+' to '+md(now);
+  }
+
+  function drawAnChart(daily){
+    var svg=$('anChart');
+    if(!svg||!daily||!daily.length){ return; }
+    var W=800, H=160, padX=4, padY=8;
+    var maxVal=Math.max.apply(null,daily.map(function(d){ return Math.max(d.users,d.sessions); }))||1;
+    function cx(i){ return padX+(i/(daily.length-1||1))*(W-2*padX); }
+    function cy(v){ return H-padY-((v/maxVal)*(H-2*padY)); }
+
+    function makePath(key, color, fill){
+      var d=daily.map(function(pt,i){ return (i===0?'M':'L')+cx(i).toFixed(1)+' '+cy(pt[key]).toFixed(1); }).join(' ');
+      var fillPath=d+' L'+cx(daily.length-1).toFixed(1)+' '+H+' L'+padX+' '+H+' Z';
+      return (fill?'<path d="'+fillPath+'" fill="'+fill+'" opacity="0.12"/>':'')
+        +'<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
+
+    svg.innerHTML=makePath('sessions','#B8A898','#B8A898')+makePath('users','#3A2E24','#3A2E24');
+
+    // x-axis date labels (first + last)
+    if(daily.length>1){
+      function shortDate(s){ var y=s.slice(0,4),m=s.slice(4,6),d=s.slice(6,8); return parseInt(m)+'/'+parseInt(d); }
+      svg.innerHTML+='<text x="'+padX+'" y="'+(H-1)+'" font-size="10" fill="#9B876C" font-family="Jost,sans-serif">'+shortDate(daily[0].date)+'</text>';
+      svg.innerHTML+='<text x="'+(W-padX)+'" y="'+(H-1)+'" font-size="10" fill="#9B876C" font-family="Jost,sans-serif" text-anchor="end">'+shortDate(daily[daily.length-1].date)+'</text>';
+    }
+  }
+
+  function renderAnSources(sources){
+    var el=$('anSources'); if(!el) return;
+    el.innerHTML='';
+    var total=sources.reduce(function(s,r){ return s+r.sessions; },0)||1;
+    sources.forEach(function(r){
+      var pct=Math.round(r.sessions/total*100);
+      el.innerHTML+='<div class="an-source-row">'
+        +'<div class="an-source-name">'+r.channel+'</div>'
+        +'<div class="an-source-track"><div class="an-source-fill" style="width:'+pct+'%"></div></div>'
+        +'<div class="an-source-val">'+r.sessions+'</div>'
+        +'<div class="an-source-pct">'+pct+'%</div>'
+        +'</div>';
+    });
+    if(!sources.length) el.innerHTML='<p style="font-size:.82rem;color:var(--taupe);">No source data yet.</p>';
+  }
+
+  function renderAnPages(pages){
+    var body=$('anPagesBody'); if(!body) return;
+    body.innerHTML='';
+    pages.forEach(function(p){
+      var label=p.path==='/'?'Homepage':p.path.replace(/^\/|\.html$/g,'').replace(/-/g,' ');
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td title="'+p.path+'">'+label+'</td><td>'+p.views+'</td><td>'+p.users+'</td><td>'+fmtDur(p.avgTime)+'</td>';
+      body.appendChild(tr);
+    });
+    if(!pages.length) body.innerHTML='<tr><td colspan="4" style="color:var(--taupe);font-size:.82rem;">No page data yet.</td></tr>';
+  }
+
+  function loadAnalyticsTab(){
+    fetch('/api/analytics').then(function(r){ return r.json(); }).then(function(d){
+      if(!d||!d.ok) return;
+      var s=d.summary||{};
+      var c=d.conversions||{};
+
+      // Date range label
+      var dr=$('anDateRange');
+      if(dr) dr.textContent='Last 28 days  ·  '+fmtDateRange();
+
+      // Stat tiles
+      $('anTiles').innerHTML=
+        '<div class="an-tile"><div class="an-tile-label">Users</div><div class="an-tile-val">'+fmtN(s.users||0)+'</div><div class="an-tile-sub">people who visited</div></div>'
+        +'<div class="an-tile"><div class="an-tile-label">Sessions</div><div class="an-tile-val">'+fmtN(s.sessions||0)+'</div><div class="an-tile-sub">visits</div></div>'
+        +'<div class="an-tile"><div class="an-tile-label">Page Views</div><div class="an-tile-val">'+fmtN(s.pageviews||0)+'</div><div class="an-tile-sub"> </div></div>'
+        +'<div class="an-tile"><div class="an-tile-label">Quote Requests</div><div class="an-tile-val">'+(c.quoteRequests||0)+'</div><div class="an-tile-sub">contact form sent</div></div>'
+        +'<div class="an-tile"><div class="an-tile-label">Phone Taps</div><div class="an-tile-val">'+(c.phoneTaps||0)+'</div><div class="an-tile-sub">tapped the phone number</div></div>';
+
+      drawAnChart(d.daily||[]);
+      renderAnSources(d.sources||[]);
+      renderAnPages(d.pages||[]);
+
+      $('anLive').classList.remove('hidden');
+      anLoaded=true;
+    }).catch(function(){});
+  }
+
+  function initAnalyticsTab(){
+    if(googleConnected){
+      $('anConnect').style.display='none';
+      if(!anLoaded) loadAnalyticsTab();
+    } else {
+      $('anConnect').style.display='';
+      $('anLive').classList.add('hidden');
+    }
+  }
+
+  $('anConnectBtn').addEventListener('click',function(){
+    document.querySelector('.tab-bar button[data-tab="setup"]').click();
+  });
+
+  document.querySelector('[data-tab="analytics"]').addEventListener('click',function(){
+    initAnalyticsTab();
+  });
 
 })();
 </script>

@@ -1,8 +1,21 @@
 // Fetches GA4 Analytics data for sabraandcompany.com.
-// Returns sessions, users, pageviews, bounce rate for the last 28 days.
+// Returns sessions, users, pageviews, daily breakdown, traffic sources,
+// top pages and conversion events for the last 28 days.
 // Requires Google OAuth (connect via Setup tab) and GA4_PROPERTY_ID env var.
 
 const { getToken } = require('./google-token');
+
+async function ga4(token, propertyId, body) {
+  const r = await fetch(
+    `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  );
+  return r.json();
+}
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -11,7 +24,6 @@ module.exports = async function handler(req, res) {
   }
 
   // ?status=1 — lightweight token-only check used by the SEO dashboard
-  // to determine whether Google is connected, without requiring GA4_PROPERTY_ID.
   if (req.query.status === '1') {
     res.setHeader('Cache-Control', 'no-store');
     try {
@@ -36,36 +48,70 @@ module.exports = async function handler(req, res) {
 
   if (setCookies && setCookies.length) res.setHeader('Set-Cookie', setCookies);
 
+  const range28 = { startDate: '28daysAgo', endDate: 'today' };
+
   try {
-    // GA4 Data API
-    const r = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+    const [summaryData, dailyData, sourcesData, pagesData, eventsData] = await Promise.all([
+      // Overall summary
+      ga4(token, propertyId, {
+        dateRanges: [range28],
+        metrics: [
+          { name: 'sessions' },
+          { name: 'activeUsers' },
+          { name: 'screenPageViews' },
+          { name: 'bounceRate' },
+          { name: 'averageSessionDuration' },
+        ],
+      }),
+      // Daily breakdown for chart
+      ga4(token, propertyId, {
+        dateRanges: [range28],
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+        orderBys: [{ dimension: { dimensionName: 'date' } }],
+        limit: 30,
+      }),
+      // Traffic sources
+      ga4(token, propertyId, {
+        dateRanges: [range28],
+        dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+        metrics: [{ name: 'sessions' }],
+        orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+        limit: 8,
+      }),
+      // Top pages with avg time
+      ga4(token, propertyId, {
+        dateRanges: [range28],
+        dimensions: [{ name: 'pagePath' }],
+        metrics: [
+          { name: 'screenPageViews' },
+          { name: 'activeUsers' },
+          { name: 'averageSessionDuration' },
+        ],
+        orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+        limit: 10,
+      }),
+      // Conversion events
+      ga4(token, propertyId, {
+        dateRanges: [range28],
+        dimensions: [{ name: 'eventName' }],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: {
+          filter: {
+            fieldName: 'eventName',
+            inListFilter: { values: ['quote_request', 'phone_tap', 'generate_lead', 'contact'] },
+          },
         },
-        body: JSON.stringify({
-          dateRanges: [{ startDate: '28daysAgo', endDate: 'yesterday' }],
-          metrics: [
-            { name: 'sessions' },
-            { name: 'activeUsers' },
-            { name: 'screenPageViews' },
-            { name: 'bounceRate' },
-            { name: 'averageSessionDuration' },
-          ],
-        }),
-      }
-    );
+        limit: 20,
+      }),
+    ]);
 
-    const data = await r.json();
-
-    if (data.error) {
-      return res.status(400).json({ ok: false, error: data.error.message });
+    if (summaryData.error) {
+      return res.status(400).json({ ok: false, error: summaryData.error.message });
     }
 
-    const row = (data.rows && data.rows[0] && data.rows[0].metricValues) || [];
+    // Summary
+    const row = (summaryData.rows && summaryData.rows[0] && summaryData.rows[0].metricValues) || [];
     const summary = {
       sessions: parseInt(row[0]?.value || '0', 10),
       users: parseInt(row[1]?.value || '0', 10),
@@ -74,33 +120,38 @@ module.exports = async function handler(req, res) {
       avgDuration: parseFloat(row[4]?.value || '0'),
     };
 
-    // Top pages by views
-    const pagesR = await fetch(
-      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          dateRanges: [{ startDate: '28daysAgo', endDate: 'yesterday' }],
-          dimensions: [{ name: 'pagePath' }],
-          metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
-          orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
-          limit: 15,
-        }),
-      }
-    );
+    // Daily data for chart
+    const daily = (dailyData.rows || []).map(r => ({
+      date: r.dimensionValues[0].value,           // YYYYMMDD
+      users: parseInt(r.metricValues[0].value, 10),
+      sessions: parseInt(r.metricValues[1].value, 10),
+    }));
 
-    const pagesData = await pagesR.json();
+    // Traffic sources
+    const sources = (sourcesData.rows || []).map(r => ({
+      channel: r.dimensionValues[0].value,
+      sessions: parseInt(r.metricValues[0].value, 10),
+    }));
+
+    // Top pages
     const pages = (pagesData.rows || []).map(r => ({
       path: r.dimensionValues[0].value,
       views: parseInt(r.metricValues[0].value, 10),
       users: parseInt(r.metricValues[1].value, 10),
+      avgTime: parseFloat(r.metricValues[2].value || '0'),
     }));
 
-    return res.status(200).json({ ok: true, summary, pages });
+    // Conversion events
+    const eventMap = {};
+    (eventsData.rows || []).forEach(r => {
+      eventMap[r.dimensionValues[0].value] = parseInt(r.metricValues[0].value, 10);
+    });
+    const conversions = {
+      quoteRequests: (eventMap['quote_request'] || 0) + (eventMap['generate_lead'] || 0) + (eventMap['contact'] || 0),
+      phoneTaps: eventMap['phone_tap'] || 0,
+    };
+
+    return res.status(200).json({ ok: true, summary, daily, sources, pages, conversions });
   } catch (e) {
     return res.status(500).json({ ok: false, error: 'Analytics request failed: ' + e.message });
   }
