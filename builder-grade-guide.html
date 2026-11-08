@@ -141,7 +141,7 @@ button,.btn{width:auto;padding:0 36px;justify-self:start}
     button.disabled = true;
     button.textContent = 'Sending…';
     status.textContent = '';
-    fetch('/api/guide', {
+    fetch('/api/subscribe?guide=1', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

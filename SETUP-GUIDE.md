@@ -1,7 +1,7 @@
 # Free guide signup: setup
 
-The guide page is `/builder-grade-guide.html`. It uses its own connection, `/api/guide`, so your
-regular newsletter signup and welcome email are not touched.
+The guide page is `/builder-grade-guide.html`. Guide requests use their own code path, so your
+regular newsletter signup and welcome email are not changed.
 
 ## 1. Create three segments in Resend (3 minutes)
 

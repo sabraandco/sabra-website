@@ -198,6 +198,9 @@ async function cancelScheduled(cfg, id) {
 }
 
 module.exports = async function handler(req, res) {
+  // Free guide requests only. Regular signups never carry this flag.
+  if (req.query && req.query.guide === '1') return require('../lib/guide.js')(req, res, { cleanName: cleanName });
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
