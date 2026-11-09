@@ -68,6 +68,12 @@ Common causes:
 - **Spam.** A hidden honeypot field sits off screen. People never see it; bots fill it
   in. Those submissions are silently dropped and no email is sent, so the bot gets no
   signal that it was caught.
+- **Known spam numbers.** Any enquiry using a number in `BLOCKED_PHONES` at the top of
+  `api/contact.js`, in the phone field or the message, is dropped the same quiet way. To
+  block another number, add its ten digits to that list.
+- **Messages with no words.** A message that is only a phone number or symbols is not
+  sent. The visitor sees a note asking them to describe their home, so a real person can
+  fix it and send again.
 - **Safety.** All submitted text is escaped before it goes into the email, so nothing
   someone types can inject markup into your inbox.
 - **Length limits.** Messages are capped at 4,000 characters so a flood attempt cannot
