@@ -23,6 +23,29 @@ function looksLikeEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
 }
 
+// Numbers known to be used by spammers. Ten digits, no country code or punctuation.
+// To block another one, add it to this list.
+const BLOCKED_PHONES = ['3072076448'];
+
+function digitsOnly(value) {
+  return value.replace(/\D/g, '');
+}
+
+// True if the blocked number appears in the phone field or the message,
+// however it was formatted (+1, brackets, dots, spaces).
+function usesBlockedPhone(phone, message) {
+  const phoneDigits = digitsOnly(phone);
+  const messageDigits = digitsOnly(message);
+  return BLOCKED_PHONES.some(function (number) {
+    return phoneDigits.endsWith(number) || messageDigits.includes(number);
+  });
+}
+
+// A real note has words in it. A phone number or a row of symbols does not.
+function hasWords(value) {
+  return (value.match(/\p{L}/gu) || []).length >= 3;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -49,6 +72,12 @@ module.exports = async function handler(req, res) {
   const message   = clean(body.message,    MAX.message);
   const source    = clean(body.source,     60) || 'website';
 
+  // Known spam number: same quiet treatment as the honeypot, no email is sent.
+  if (usesBlockedPhone(phone, message)) {
+    console.log('Enquiry dropped: blocked phone number', { source: source });
+    return res.status(200).json({ ok: true });
+  }
+
   const missing = [];
   if (!firstName) missing.push('first name');
   if (!email) missing.push('email');
@@ -58,6 +87,10 @@ module.exports = async function handler(req, res) {
   }
   if (!looksLikeEmail(email)) {
     return res.status(400).json({ ok: false, error: 'That email address does not look right.' });
+  }
+  // Shown on the form, so a real person can add a few words and send again.
+  if (!hasWords(message)) {
+    return res.status(400).json({ ok: false, error: 'Please tell us a little about your home and the rooms you would like to work on.' });
   }
 
   const apiKey = process.env.RESEND_API_KEY;
