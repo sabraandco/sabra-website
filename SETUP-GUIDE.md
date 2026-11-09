@@ -35,3 +35,5 @@ Then redeploy. If one is missing, the guide still sends and only that count is s
 Download counts can run slightly high because some email security tools open links automatically.
 
 A separate new subscriber count is available by adding a `RESEND_GUIDE_NEW_SEGMENT_ID` setting if your Resend plan allows another segment.
+
+The guide email ends with Sabra's full signature, set near the top of `lib/guide.js`.
