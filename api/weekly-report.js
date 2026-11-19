@@ -214,8 +214,9 @@ async function fetchSite() {
   return { urls, site, html };
 }
 
-function scoreSite(raw, homeMobileScore) {
-  const { DOMParser } = require('linkedom');
+async function scoreSite(raw, homeMobileScore) {
+  // linkedom's dependencies are ES modules, which Vercel's Node cannot require(); import works everywhere
+  const { DOMParser } = await import('linkedom');
   const { urls, site, html } = raw;
   const speed = {};
   if (homeMobileScore != null) { speed[SITE + '/'] = homeMobileScore; speed[SITE] = homeMobileScore; }
