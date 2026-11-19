@@ -253,6 +253,18 @@ module.exports = async function handler(req, res) {
         await putFile('sitemap.xml', Buffer.from(smNew, 'utf8').toString('base64'),
                       `Add ${slug} to sitemap`, sm.sha);
       }
+
+      // llms.txt: the summary AI tools read. A problem here never blocks the post.
+      try {
+        const llms = await getFile('llms.txt');
+        const llmsNew = addToLlms(llms.text, d, slug);
+        if (llmsNew !== llms.text) {
+          await putFile('llms.txt', Buffer.from(llmsNew, 'utf8').toString('base64'),
+                        `Add ${slug} to llms.txt`, llms.sha);
+        }
+      } catch (e) {
+        console.error('llms.txt not updated', e.message);
+      }
     }
 
     return res.status(200).json({
@@ -266,5 +278,19 @@ module.exports = async function handler(req, res) {
   }
 };
 
+// Adds a post to the top of the "Design Journal" list in llms.txt (newest first)
+function addToLlms(text, d, slug) {
+  const url = `${SITE}/${slug}.html`;
+  if (text.includes(url)) return text;
+  const clean = (t) => String(t || '').replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const line = `- [${clean(d.title).replace(/[\[\]]/g, '')}](${url}): ${clean(d.description)}`;
+  const heading = '## Design Journal\n';
+  const i = text.indexOf(heading);
+  if (i === -1) return text.replace(/\s*$/, '\n\n' + heading + '\n' + line + '\n');
+  let at = i + heading.length;
+  while (text[at] === '\n') at++;
+  return text.slice(0, at) + line + '\n' + text.slice(at);
+}
+
 // exported for testing
-module.exports._internals = { slugify, renderBlocks, buildArticle, buildCard, fillTemplate, insertCard, addToSitemap, esc };
+module.exports._internals = { slugify, renderBlocks, buildArticle, buildCard, fillTemplate, insertCard, addToSitemap, addToLlms, esc };
