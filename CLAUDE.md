@@ -12,6 +12,9 @@ Posts are added by Claude, not through /admin. For each new post:
 4. Add it to the top of the "## Design Journal" list in `llms.txt`:
    `- [Title](https://www.sabraandcompany.com/<slug>.html): meta description`
 5. Keep the meta description 70 to 165 characters and the title 30 to 65.
+6. Internal links: fill the template's "Keep reading" block with 2 related posts, link to the new post
+   from the Keep reading block of 1 or 2 older posts, and link an existing phrase in the text where it
+   fits naturally. Every page should link to at least 3 other pages in its main content.
 
 The dashboard at /admin checks all of this live, so a missed step shows up there.
 
