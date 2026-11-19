@@ -22,9 +22,9 @@ const crypto = require('crypto');
 const Audit = require('../admin/audit-core.js');
 const store = require('../lib/site-store');
 const { accessFromRefresh } = require('../lib/google-token');
+const { findSearchSite } = require('../lib/search-site');
 
 const SITE = 'https://www.sabraandcompany.com';
-const GSC_SITE = 'https://www.sabraandcompany.com/';
 const SUBJECT = 'Sabra & Co weekly site report';
 
 // ------------------------------------------------------------------ helpers
@@ -133,8 +133,8 @@ async function analytics(token) {
 }
 
 // ------------------------------------------------------------------ Search Console
-async function gsc(token, body) {
-  return fetchJson(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(GSC_SITE)}/searchAnalytics/query`, {
+async function gsc(token, prop, body) {
+  return fetchJson(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(prop)}/searchAnalytics/query`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -142,14 +142,15 @@ async function gsc(token, body) {
 }
 
 async function searchConsole(token, urls) {
+  const prop = await findSearchSite(token);
   // Search Console data runs about 2 days behind, so the week ends 3 days ago
   const cur = { startDate: ymd(9), endDate: ymd(3) };
   const prev = { startDate: ymd(16), endDate: ymd(10) };
   const total = j => { const r = (j.rows || [])[0] || {}; return { clicks: r.clicks || 0, impressions: r.impressions || 0, position: r.position || 0 }; };
   const [tc, tp, qc, qp] = await Promise.all([
-    gsc(token, { ...cur }), gsc(token, { ...prev }),
-    gsc(token, { ...cur, dimensions: ['query'], rowLimit: 10 }),
-    gsc(token, { ...prev, dimensions: ['query'], rowLimit: 250 }),
+    gsc(token, prop, { ...cur }), gsc(token, prop, { ...prev }),
+    gsc(token, prop, { ...cur, dimensions: ['query'], rowLimit: 10 }),
+    gsc(token, prop, { ...prev, dimensions: ['query'], rowLimit: 250 }),
   ]);
   const prevQ = Object.fromEntries((qp.rows || []).map(r => [r.keys[0], r]));
   const queries = (qc.rows || []).map(r => ({
@@ -162,13 +163,13 @@ async function searchConsole(token, urls) {
     'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inspectionUrl: u, siteUrl: GSC_SITE }),
+      body: JSON.stringify({ inspectionUrl: u, siteUrl: prop }),
     }).then(j => {
       const s = (j.inspectionResult && j.inspectionResult.indexStatusResult) || {};
       return { url: u, verdict: s.verdict || 'UNKNOWN', state: s.coverageState || 'Unknown', lastCrawl: s.lastCrawlTime || '' };
     }), { url: u, verdict: 'UNKNOWN', state: 'Could not check' })));
 
-  const sm = await safe(() => fetchJson(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(GSC_SITE)}/sitemaps`, {
+  const sm = await safe(() => fetchJson(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(prop)}/sitemaps`, {
     headers: { Authorization: `Bearer ${token}` },
   }), {});
   const sitemaps = (sm.sitemap || []).map(s => ({ path: s.path, errors: num(s.errors), warnings: num(s.warnings), lastDownloaded: s.lastDownloaded || '' }));

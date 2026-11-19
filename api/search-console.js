@@ -3,8 +3,8 @@
 // Requires Google OAuth (connect via Setup tab in SEO dashboard).
 
 const { getToken } = require('../lib/google-token');
+const { findSearchSite } = require('../lib/search-site');
 
-const SITE = 'https://www.sabraandcompany.com/';
 const DAYS = 28;
 
 function dateStr(daysAgo) {
@@ -13,9 +13,9 @@ function dateStr(daysAgo) {
   return d.toISOString().slice(0, 10);
 }
 
-async function scPost(token, body) {
+async function scPost(token, site, body) {
   const r = await fetch(
-    `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(SITE)}/searchAnalytics/query`,
+    `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/searchAnalytics/query`,
     {
       method: 'POST',
       headers: {
@@ -50,9 +50,10 @@ module.exports = async function handler(req, res) {
 
   try {
     // Top queries
+    const site = await findSearchSite(token);
     const [queriesData, pagesData] = await Promise.all([
-      scPost(token, { dimensions: ['query'] }),
-      scPost(token, { dimensions: ['page'] }),
+      scPost(token, site, { dimensions: ['query'] }),
+      scPost(token, site, { dimensions: ['page'] }),
     ]);
 
     if (queriesData.error) {
