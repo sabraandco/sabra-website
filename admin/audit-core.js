@@ -141,7 +141,9 @@
     });
     var imgs=Array.prototype.filter.call(doc.querySelectorAll('img'),function(i){ return !i.closest('[aria-hidden="true"]')&&i.getAttribute('role')!=='presentation'; });
     var altOk=imgs.every(function(i){ return i.hasAttribute('alt'); });
-    var facts=(mainText.match(/\$?\d[\d,.]*\s?(%|k\b|percent|sq|ft|feet|inch|in\b|hours?|days?|weeks?|years?|minutes?)?/gi)||[]).length;
+    var facts=(mainText.match(/\$?\d[\d,.]*\s?(%|k\b|percent|sq|ft|feet|inch|in\b|hours?|days?|weeks?|years?|minutes?)?/gi)||[]).length
+      // numbers written as words count too when they measure something ("ten feet", "two thirds", "three weeks")
+      +(mainText.match(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|fifteen|twenty|thirty|forty|fifty|sixty|hundred)[\s-]+(feet|foot|inch(es)?|percent|hours?|days?|weeks?|months?|years?|minutes?|seconds?|thirds?|quarters?|nights?|times)\b/gi)||[]).length;
     var brand=(bodyText.match(/Sabra\s*(&|&amp;|and)\s*Co/gi)||[]).length;
     var dated=!!doc.querySelector('time')||/(updated|published|posted)\W{0,3}[^.]{0,40}\b20\d\d\b/i.test(bodyText);
     var phone=!!doc.querySelector('a[href^="tel:"]')||/\(?\b\d{3}\)?[\s.\-]\d{3}[\s.\-]\d{4}\b/.test(bodyText);
