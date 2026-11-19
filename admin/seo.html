@@ -864,7 +864,10 @@
         try{ navigator.clipboard.writeText(url).catch(function(){}); }catch(ex){}
         var btn=e.currentTarget;
         btn.textContent='Copied!'; btn.classList.add('copied');
-        var gscUrl='https://search.google.com/search-console/inspect?resource_id=https://www.sabraandcompany.com/&id='+encodeURIComponent(url);
+        // use the property Search Console actually has (domain or URL prefix); the page address is on the clipboard either way
+        var prop=store('sc_gsc_site');
+        var gscUrl=prop?'https://search.google.com/search-console/inspect?resource_id='+encodeURIComponent(prop)+'&id='+encodeURIComponent(url)
+                       :'https://search.google.com/search-console';
         window.open(gscUrl,'_blank','noopener');
         setTimeout(function(){ btn.textContent='Request indexing'; btn.classList.remove('copied'); },3000);
       });
@@ -1148,6 +1151,7 @@
     var note=$('kwLiveNote');
     if(note) note.textContent='Loading from Search Console...';
     fetch('/api/search-console').then(function(r){ return r.json(); }).then(function(d){
+      if(d&&d.site) store('sc_gsc_site',d.site);
       if(!d||!d.ok){
         if(note) note.textContent='Could not load Search Console data.';
         return;
@@ -1384,6 +1388,7 @@
 
   function loadRankingsFromGSC(){
     fetch('/api/search-console').then(function(r){ return r.json(); }).then(function(d){
+      if(d&&d.site) store('sc_gsc_site',d.site);
       if(!d||!d.ok) return;
       rankData={};
       (d.queries||[]).forEach(function(q){

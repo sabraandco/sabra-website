@@ -76,7 +76,7 @@ module.exports = async function handler(req, res) {
       position: r.position,
     }));
 
-    return res.status(200).json({ ok: true, queries, pages });
+    return res.status(200).json({ ok: true, site, queries, pages });
   } catch (e) {
     return res.status(500).json({ ok: false, error: 'Search Console request failed: ' + e.message });
   }
