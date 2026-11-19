@@ -3,7 +3,8 @@
 // top pages and conversion events for the last 28 days.
 // Requires Google OAuth (connect via Setup tab) and GA4_PROPERTY_ID env var.
 
-const { getToken } = require('./google-token');
+const { getToken, parseCookies } = require('../lib/google-token');
+const store = require('../lib/site-store');
 
 async function ga4(token, propertyId, body) {
   const r = await fetch(
@@ -28,10 +29,19 @@ module.exports = async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-store');
     try {
       await getToken(req);
-      return res.status(200).json({ connected: true });
     } catch (e) {
       return res.status(200).json({ connected: false });
     }
+    // Keep a server-side copy of the connection (and the PageSpeed key, if the
+    // dashboard has one) so the Monday email report can run on its own.
+    let reportReady = false;
+    try {
+      const refresh = parseCookies(req)['g_refresh_token'];
+      if (refresh) { await store.saveGoogle(refresh); reportReady = true; }
+      const psKey = String(req.headers['x-psi-key'] || '').trim();
+      if (/^[A-Za-z0-9_\-]{20,60}$/.test(psKey)) await store.put('psi_key', { key: psKey });
+    } catch (e) { /* the report will say it needs reconnecting */ }
+    return res.status(200).json({ connected: true, reportReady });
   }
 
   const propertyId = process.env.GA4_PROPERTY_ID;

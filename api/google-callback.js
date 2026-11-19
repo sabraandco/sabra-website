@@ -80,6 +80,8 @@ module.exports = async function handler(req, res) {
   // Store refresh token if provided (offline access)
   if (tokens.refresh_token) {
     setCookies.push(`g_refresh_token=${encodeURIComponent(tokens.refresh_token)}; ${cookieOpts}; Max-Age=${60 * 60 * 24 * 90}`);
+    // and a server-side copy for the Monday email report
+    try { await require('../lib/site-store').saveGoogle(tokens.refresh_token); } catch (e) {}
   }
 
   res.setHeader('Set-Cookie', setCookies);

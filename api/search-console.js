@@ -2,7 +2,7 @@
 // Returns top queries and per-page clicks/impressions for the last 28 days.
 // Requires Google OAuth (connect via Setup tab in SEO dashboard).
 
-const { getToken } = require('./google-token');
+const { getToken } = require('../lib/google-token');
 
 const SITE = 'https://www.sabraandcompany.com/';
 const DAYS = 28;

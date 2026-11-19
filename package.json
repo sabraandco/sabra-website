@@ -1,0 +1,8 @@
+{
+  "name": "sabra-website",
+  "private": true,
+  "description": "Static site. The only dependency is for the weekly report function in api/.",
+  "dependencies": {
+    "linkedom": "0.18.14"
+  }
+}
