@@ -78,8 +78,11 @@
   }
 
   function mainOf(doc){
+    // inside <main>, a <header> is the page's own title block (and often its summary), so keep it;
+    // without <main>, strip headers since one is probably the site menu
+    var hasMain=!!doc.querySelector('main');
     var m=(doc.querySelector('main')||doc.body).cloneNode(true);
-    m.querySelectorAll('nav,header,footer,script,style,noscript,form,.nl-post,[aria-hidden="true"]').forEach(function(n){ n.remove(); });
+    m.querySelectorAll('nav,footer,script,style,noscript,form,.nl-post,[aria-hidden="true"]'+(hasMain?'':',header')).forEach(function(n){ n.remove(); });
     return m;
   }
 
