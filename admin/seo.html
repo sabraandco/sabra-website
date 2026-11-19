@@ -860,16 +860,20 @@
       // request indexing button
       dtd.querySelector('.ri-btn').addEventListener('click',function(e){
         e.stopPropagation();
-        var url=p.url;
+        var url=p.url, btn=e.currentTarget;
         try{ navigator.clipboard.writeText(url).catch(function(){}); }catch(ex){}
-        var btn=e.currentTarget;
-        btn.textContent='Copied!'; btn.classList.add('copied');
-        // use the property Search Console actually has (domain or URL prefix); the page address is on the clipboard either way
-        var prop=store('sc_gsc_site');
-        var gscUrl=prop?'https://search.google.com/search-console/inspect?resource_id='+encodeURIComponent(prop)+'&id='+encodeURIComponent(url)
-                       :'https://search.google.com/search-console';
-        window.open(gscUrl,'_blank','noopener');
-        setTimeout(function(){ btn.textContent='Request indexing'; btn.classList.remove('copied'); },3000);
+        // open the tab now (so it is not blocked), then point it at Google's own link for this page
+        var w=window.open('','_blank');
+        if(w){ try{ w.opener=null; w.document.title='Opening Search Console'; w.document.body.style.cssText='font:15px sans-serif;color:#5A4B3F;padding:2rem'; w.document.body.textContent='Opening Search Console\u2026'; }catch(ex){} }
+        btn.textContent='Opening\u2026'; btn.disabled=true;
+        fetch('/api/search-console?inspect='+encodeURIComponent(url)).then(function(r){ return r.json(); }).then(function(d){
+          var link=(d&&d.ok&&d.link)||'https://search.google.com/search-console';
+          if(w) w.location.href=link; else window.open(link,'_blank','noopener');
+          btn.textContent=d&&d.ok?(d.verdict==='PASS'?'Indexed: opened':'Opened in Search Console'):'Opened (link copied)';
+        }).catch(function(){
+          if(w) w.location.href='https://search.google.com/search-console';
+          btn.textContent='Opened (link copied)';
+        }).then(function(){ setTimeout(function(){ btn.textContent='Request indexing'; btn.disabled=false; },4000); });
       });
     });
   }

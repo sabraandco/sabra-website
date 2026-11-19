@@ -48,6 +48,29 @@ module.exports = async function handler(req, res) {
 
   if (setCookies && setCookies.length) res.setHeader('Set-Cookie', setCookies);
 
+  // ?inspect=<page url>: ask Google for this page's index status and the
+  // direct Search Console link (used by the dashboard's Request indexing button)
+  if (req.query.inspect) {
+    res.setHeader('Cache-Control', 'no-store');
+    let u;
+    try { u = new URL(String(req.query.inspect)); } catch (e) { return res.status(400).json({ ok: false, error: 'Bad page address.' }); }
+    if (!/(^|\.)sabraandcompany\.com$/i.test(u.hostname)) return res.status(400).json({ ok: false, error: 'Only sabraandcompany.com pages.' });
+    try {
+      const site = await findSearchSite(token);
+      const r = await fetch('https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inspectionUrl: u.href, siteUrl: site }),
+      });
+      const j = await r.json();
+      if (!r.ok || j.error) return res.status(400).json({ ok: false, error: (j.error && j.error.message) || 'Inspection failed' });
+      const ir = j.inspectionResult || {}, st = ir.indexStatusResult || {};
+      return res.status(200).json({ ok: true, link: ir.inspectionResultLink || '', verdict: st.verdict || '', state: st.coverageState || '' });
+    } catch (e) {
+      return res.status(500).json({ ok: false, error: e.message });
+    }
+  }
+
   try {
     // Top queries
     const site = await findSearchSite(token);
