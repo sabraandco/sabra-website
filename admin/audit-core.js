@@ -51,7 +51,7 @@
     'Lists or tables':['low','has no lists or tables. Scannable lists get quoted more often.'],
     'Structured data type tag':['low','does not say what kind of page it is in structured data (for example BlogPosting).'],
     '8+ specific facts':['low','has few specific facts (numbers, prices, measurements). Specifics make content more quotable.'],
-    'Cites an authority':['low','does not link to any outside source. One credible citation builds trust.'],
+    'Cites an authority':['low','does not link to any outside source. One credible citation builds trust. (Checked on blog posts only.)'],
     'Names Sabra & Co 3+ times':['low','mentions Sabra & Co fewer than 3 times, which weakens the link between the topic and your brand.'],
     '600+ words':['low','has under 600 words. Longer, thorough pages are cited more by AI answers.'],
     'AI crawlers allowed':['high','is blocked from AI crawlers in robots.txt, so ChatGPT and others cannot read or cite it.']
@@ -180,7 +180,7 @@
         ['3+ question-phrased headings',b(qHeads>=3)],['Short summary near top',b(summary)],['Lists or tables',b(lists)],
         ['Breadcrumb schema',b(crumbOk)],['Structured data type tag',b(ld.some(function(o){ return !hasType(o,['BreadcrumbList'].concat(ORG_TYPES)); }))]],
       geoChecks:[['Organization schema',b(org.length)],['Google Business Profile linked',b(sameAs.some(function(s){ return GBP_RE.test(s); }))],
-        ['8+ specific facts',b(facts>=8)],['Cites an authority',b(external>=1)],['Names Sabra & Co 3+ times',b(brand>=3)],
+        ['8+ specific facts',b(facts>=8)],['Cites an authority',isPost?b(external>=1):'na'],['Names Sabra & Co 3+ times',b(brand>=3)],
         ['Shows last-updated date',b(dated)],['Listed in llms.txt',inLlms],['600+ words',b(words>=600)],
         ['Phone number on page',b(phone)],['AI crawlers allowed',b(!robotsBlocks(site.robots,path,AI_BOTS))]]
     };
