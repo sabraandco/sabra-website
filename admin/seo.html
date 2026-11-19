@@ -928,7 +928,9 @@
     prev.addEventListener('click',function(){ window.open('/api/weekly-report?preview=1','_blank','noopener'); });
     send.addEventListener('click',function(){
       send.disabled=true; st.textContent='Building your report. This takes about half a minute\u2026';
-      fetch('/api/weekly-report?send=1',{method:'POST'}).then(function(r){ return r.json(); }).then(function(d){
+      fetch('/api/weekly-report?send=1',{method:'POST'}).then(function(r){
+        return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return {ok:false,error:(r.status===504?'the report took too long to build':'the server answered '+r.status)}; } });
+      }).then(function(d){
         st.textContent=d&&d.ok?('Sent. Check your inbox for \u201CSabra & Co weekly site report.\u201D'+(d.googleConnected===false?' Google is not connected for the report yet, so connect it in the Setup tab.':''))
           :('Could not send: '+((d&&d.error)||'unknown error'));
       }).catch(function(){ st.textContent='Could not reach the report right now. Try again in a minute.'; })

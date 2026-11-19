@@ -19,7 +19,6 @@
 // optional CRON_SECRET.
 
 const crypto = require('crypto');
-const { DOMParser } = require('linkedom');
 const Audit = require('../admin/audit-core.js');
 const store = require('../lib/site-store');
 const { accessFromRefresh } = require('../lib/google-token');
@@ -64,10 +63,12 @@ async function fetchJson(url, opts = {}, ms = 25000) {
 }
 
 async function fetchText(url) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), 15000);
   try {
-    const r = await fetch(url, { headers: { 'Cache-Control': 'no-cache', 'User-Agent': 'SabraCo-WeeklyReport' } });
+    const r = await fetch(url, { headers: { 'Cache-Control': 'no-cache', 'User-Agent': 'SabraCo-WeeklyReport' }, signal: ac.signal });
     return r.ok ? await r.text() : null;
-  } catch (e) { return null; }
+  } catch (e) { return null; } finally { clearTimeout(t); }
 }
 
 function ymd(daysAgo) {
@@ -182,7 +183,7 @@ async function searchConsole(token, urls) {
 async function pagespeed(strategy, key) {
   const q = new URLSearchParams({ url: SITE + '/', strategy, category: 'performance' });
   if (key) q.set('key', key);
-  const j = await fetchJson(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${q}`, {}, 50000);
+  const j = await fetchJson(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${q}`, {}, 40000);
   const a = (j.lighthouseResult && j.lighthouseResult.audits) || {};
   const f = (j.loadingExperience && j.loadingExperience.metrics) || {};
   const perf = j.lighthouseResult && j.lighthouseResult.categories && j.lighthouseResult.categories.performance;
@@ -203,53 +204,67 @@ async function pagespeed(strategy, key) {
 }
 
 // ------------------------------------------------------------------ site audit
-async function siteAudit(homeMobileScore) {
+// fetch every page in the sitemap now; score them once PageSpeed is back
+async function fetchSite() {
   const [sitemap, robots, llms, blog] = await Promise.all(['/sitemap.xml', '/robots.txt', '/llms.txt', '/blog.html'].map(p => fetchText(SITE + p)));
   const urls = [];
   (sitemap || '').replace(/<loc>\s*([^<\s]+)\s*<\/loc>/g, (_, u) => { urls.push(u.trim()); });
   const site = { sitemap: urls, robots: robots || '', llms, blog: blog || '' };
+  const html = await Promise.all(urls.map(u => fetchText(SITE + Audit.slugOf(u))));
+  return { urls, site, html };
+}
+
+function scoreSite(raw, homeMobileScore) {
+  const { DOMParser } = require('linkedom');
+  const { urls, site, html } = raw;
   const speed = {};
   if (homeMobileScore != null) { speed[SITE + '/'] = homeMobileScore; speed[SITE] = homeMobileScore; }
-  const pages = (await Promise.all(urls.map(async u => {
-    const html = await fetchText(SITE + Audit.slugOf(u));
-    return html ? Audit.auditPage(u, html, site, { DOMParser, speed }) : null;
-  }))).filter(Boolean);
+  const pages = urls.map((u, i) => html[i] ? Audit.auditPage(u, html[i], site, { DOMParser, speed }) : null).filter(Boolean);
   const summary = Audit.summarize(pages);
-  const recs = Audit.buildRecs(pages, { llms: llms !== null, blogLinks: Audit.blogLinks(site.blog), sitemap: urls });
+  const recs = Audit.buildRecs(pages, { llms: site.llms !== null, blogLinks: Audit.blogLinks(site.blog), sitemap: urls });
   return { urls, pages, summary, recs };
 }
 
 // ------------------------------------------------------------------ gather everything
-async function gather() {
+// Everything runs at once so the report finishes well inside Vercel's 60 seconds.
+// Each step's timing is saved as weekly_debug so a failed run can be diagnosed.
+async function gather(log) {
   const out = { generatedAt: new Date().toISOString(), week: `${niceDate(7)} to ${niceDate(1)}` };
+  const t0 = Date.now();
+  const mark = (name, extra) => { log[name] = Object.assign({ ms: Date.now() - t0 }, extra || {}); };
 
-  const psiKey = await safe(async () => ((await store.get('psi_key')) || {}).key || '', {});
-  const key = typeof psiKey === 'string' ? psiKey : '';
+  const keyP = safe(async () => ((await store.get('psi_key')) || {}).key || '', {});
+  const speedP = keyP.then(k => {
+    const key = typeof k === 'string' ? k : '';
+    return Promise.all([safe(() => pagespeed('mobile', key)), safe(() => pagespeed('desktop', key))]);
+  }).then(r => { mark('pagespeed', { mobile: r[0].score, desktop: r[1].score, error: r[0].error || r[1].error }); return r; });
 
-  // Google connection
-  let token = null;
-  const g = await safe(() => store.loadGoogle(), {});
-  if (g && g.refreshToken) {
+  const siteP = safe(() => fetchSite()).then(r => { mark('site', { pages: r.urls ? r.urls.length : 0, error: r.error }); return r; });
+
+  const googleP = safe(() => store.loadGoogle(), {}).then(async g => {
+    if (!g || !g.refreshToken) {
+      out.googleError = g && g.error ? 'The saved Google connection could not be read.' : 'Google is not connected for the report yet.';
+      mark('google', { error: out.googleError }); return null;
+    }
     const t = await safe(() => accessFromRefresh(g.refreshToken), {});
-    if (typeof t === 'string') token = t; else out.googleError = 'Google turned down the saved connection, so it needs reconnecting.';
-  } else {
-    out.googleError = g && g.error ? 'The saved Google connection could not be read.' : 'Google is not connected for the report yet.';
-  }
+    if (typeof t !== 'string') {
+      out.googleError = 'Google turned down the saved connection, so it needs reconnecting.';
+      mark('google', { error: t.error }); return null;
+    }
+    mark('google'); return t;
+  });
 
-  const [mobile, desktop] = await Promise.all([
-    safe(() => pagespeed('mobile', key)),
-    safe(() => pagespeed('desktop', key)),
-  ]);
+  const analyticsP = googleP.then(t => t ? safe(() => analytics(t)) : null)
+    .then(r => { mark('analytics', { error: r && r.error }); return r; });
+  const searchP = Promise.all([googleP, siteP]).then(([t, site]) => t ? safe(() => searchConsole(t, site.urls || [])) : null)
+    .then(r => { mark('search', { error: r && r.error }); return r; });
+  const lastP = safe(() => store.get('weekly_last'), {});
+
+  const [[mobile, desktop], site, an, sc, last] = await Promise.all([speedP, siteP, analyticsP, searchP, lastP]);
   out.speed = { mobile, desktop };
-
-  out.audit = await safe(() => siteAudit(mobile && mobile.score != null ? mobile.score : null));
-  const urls = (out.audit && out.audit.urls) || [];
-
-  if (token) {
-    const [an, sc] = await Promise.all([safe(() => analytics(token)), safe(() => searchConsole(token, urls))]);
-    out.analytics = an; out.search = sc;
-  }
-  out.last = await safe(() => store.get('weekly_last'), {});
+  out.audit = site.error ? site : await safe(async () => scoreSite(site, mobile && mobile.score != null ? mobile.score : null));
+  mark('audit', { error: out.audit.error });
+  out.analytics = an; out.search = sc; out.last = last;
   return out;
 }
 
@@ -485,8 +500,12 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ ok: true, skipped: 'Already sent this week.' });
       }
     }
-    const data = await gather();
+    const log = { startedAt: new Date().toISOString(), mode: cron ? 'cron' : preview ? 'preview' : 'send' };
+    await safe(() => store.put('weekly_debug', log));
+    const data = await gather(log);
     const html = renderEmail(data);
+    log.renderedMs = Date.now() - Date.parse(log.startedAt);
+    safe(() => store.put('weekly_debug', log));
     if (preview) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.status(200).send(html);
@@ -496,6 +515,7 @@ module.exports = async function handler(req, res) {
     if (cron) await safe(() => store.put('weekly_sent', { at: new Date().toISOString(), id }));
     return res.status(200).json({ ok: true, id, googleConnected: !data.googleError });
   } catch (e) {
+    await safe(() => store.put('weekly_debug', { failedAt: new Date().toISOString(), error: e.message || String(e), stack: String(e.stack || '').slice(0, 800) }));
     return res.status(500).json({ ok: false, error: e.message || String(e) });
   }
 };
