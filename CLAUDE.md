@@ -24,6 +24,8 @@ The dashboard at /admin checks all of this live, so a missed step shows up there
   existing page: it also sends `phone_tap` and `email_tap` events that the weekly report counts.
 - FAQs on pages and posts are `<details class="faq-item">` dropdowns with the question as an h3 in the summary.
 - FAQ schema questions and answers must match the FAQ text visible on the page.
+- Home, About and Services show "Last updated" (a `<time>` in the `page-updated` line above the footer)
+  plus `dateModified` in a WebPage JSON-LD block. When you change one of those pages, update both dates.
 
 ## Dashboard and weekly report
 - `admin/audit-core.js` is the one SEO/AEO/GEO audit. The dashboard (`admin/seo.html`) and the weekly
