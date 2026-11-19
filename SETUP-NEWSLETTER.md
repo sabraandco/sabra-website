@@ -50,9 +50,8 @@ Open your site in a private window, enter your own email in the footer form, and
 Send from **yoursite.com/admin/newsletter.html**, not from Resend's editor. Resend's editor
 swaps your fonts and styling for its own, so a designed email pasted there loses its look.
 
-**One time:** this page uses the same password as the Journal editor at /admin. If you have
-not set that up yet, add `ADMIN_PASSWORD` and `ADMIN_SECRET` in Vercel (see SETUP-ADMIN.md,
-step 2 and 3; the GitHub settings there are only needed for blog posts), then redeploy.
+**One time:** this page uses the same password as the website dashboard at /admin
+(`ADMIN_PASSWORD` and `ADMIN_SECRET` in Vercel).
 
 **Each issue:**
 1. Upload any new photos for the issue to your site first (Claude gives you a small zip).

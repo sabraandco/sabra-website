@@ -6,7 +6,7 @@
 //   { action:'send', html, subject, when? }      a Resend broadcast to the Newsletter segment,
 //                                                now or at `when` (an ISO date/time)
 //
-// Only works when signed in at /admin (same password and cookie as the Journal editor).
+// Only works when signed in at /admin (same password and cookie as the website dashboard).
 // Environment variables: ADMIN_SECRET, RESEND_API_KEY, RESEND_SEGMENT_ID,
 //                        NEWSLETTER_FROM (or CONTACT_FROM)
 
